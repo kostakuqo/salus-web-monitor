@@ -1,0 +1,26 @@
+.menu-item {
+  width: 100%;
+  display: flex;
+  margin: 4px 0;
+  cursor: pointer;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #2C3E50;
+  font-weight: 500;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+  border-left: 4px solid transparent;
+}
+
+.menu-item:hover {
+  background-color: #f0f4f8;
+ 
+}
+
+.menu-item.active {
+  background-color: #e0ebf8;
+  border-left-color: #4CAF50;
+  font-weight: 600;
+}

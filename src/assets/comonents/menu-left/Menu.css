@@ -1,0 +1,6 @@
+.left-menu {
+  width: 10%;
+  background-color: #1A355E;
+  color: white;
+  min-height: calc(100vh - 70px);
+}

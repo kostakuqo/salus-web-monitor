@@ -1,0 +1,17 @@
+.chiller {
+  margin-top: 8px;
+  width: 200px;       
+   height: 100px;       
+  background-color: #1A77CC;  
+    
+  display: flex;
+  justify-content: center;    
+  align-items: center;
+  cursor: pointer;        
+}
+
+.content-chiller {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+}
