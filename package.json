@@ -1,7 +1,7 @@
 {
   "name": "salus-web-monitor",
   "private": true,
-  "homepage": "https://kostakuqo.github.io/salus-web-monitor",
+ "homepage": "https://kostakuqo.github.io/salus-web-monitor",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
