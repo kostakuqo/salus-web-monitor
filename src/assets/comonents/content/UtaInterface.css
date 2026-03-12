@@ -1,0 +1,62 @@
+.uta-interface {
+    padding: 20px;
+    background: #e0f7fa;
+    border-radius: 8px;
+    width:100%;
+    padding:40px;
+    font-family: Arial, Helvetica, sans-serif;
+};
+
+.uta-interface{
+    padding:40px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.back-button{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    margin-top:25px;
+
+    padding:10px 18px;
+
+    background:#f5f7fa;
+    border:none;
+    border-radius:10px;
+
+    font-size:16px;
+    font-weight:500;
+
+    color:#333;
+
+    cursor:pointer;
+
+    transition:all 0.25s ease;
+}
+
+
+.back-icon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.back-icon svg{
+    width:20px;
+    height:20px;
+    color: red;
+}
+
+
+.back-button:hover{
+    background:#0077ff;
+    color:white;
+    transform:translateY(-2px);
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+
+.back-button:hover svg{
+    color:white;
+}

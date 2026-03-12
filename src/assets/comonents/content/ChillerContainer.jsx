@@ -4,12 +4,12 @@ import ChillerDescription from "./ChillerDescription";
 import "./Chiller.css";
 import "./ChillerContainer.css"
 
-export default function ChillerContainer() {
-    return (
-        <div className="chiller-container">
-            <Chiller />
-            <div className="connector-line" />
-            <ChillerDescription/>
-        </div>
-    );
+export default function ChillerContainer({ onChillerClick }) {
+  return (
+    <div className="chiller-container">
+      <Chiller onClick={onChillerClick} />
+      <div className="connector-line" />
+      <ChillerDescription />
+    </div>
+  );
 }

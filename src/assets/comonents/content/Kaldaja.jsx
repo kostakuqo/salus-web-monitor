@@ -1,14 +1,12 @@
 import React from "react";
-import "./kaldaja.css";
+import "./Kaldaja.css";
 
-
-export default function Kaldaja(){
-    return(
-        <div className="kaldaja">
-            <div className="content-kaldaja">
-                Kaldaja
-            </div>
-
-        </div>
-    )
+export default function Kaldaja({ onClick }) {
+  return (
+    <div className="kaldaja" onClick={onClick} style={{ cursor: "pointer" }}>
+      <div className="content-kaldaja">Kaldaja
+        <button className="kaldaja-details">Shiko Parametrat</button>
+      </div>
+    </div>
+  );
 }

@@ -1,7 +1,7 @@
 {
   "name": "salus-web-monitor",
   "private": true,
- "homepage": "https://kostakuqo.github.io/salus-web-monitor",
+  "homepage": "https://kostakuqo.github.io/salus-web-monitor",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -17,7 +17,8 @@
     "@fortawesome/react-fontawesome": "^3.2.0",
     "gh-pages": "^6.3.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-icons": "^5.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

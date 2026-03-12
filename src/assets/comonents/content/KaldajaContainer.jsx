@@ -1,16 +1,14 @@
 import React from "react";
-import Kaldaja from "./Kaldaja"
+import Kaldaja from "./Kaldaja";
 import KaldajaDescription from "./KaldajaDescription";
-import "./Kaldaja.css";
 import "./KaldajaContainer.css";
 
-export default function KaldajaContainer() {
-    return (
-        <div className="Kaldaja-container">
-            <Kaldaja/>
-            <div className="connector-line" />
-            <KaldajaDescription/>
-            
-        </div>
-    );
+export default function KaldajaContainer({ onKaldajaClick }) {
+  return (
+    <div className="kaldaja-container">
+      <Kaldaja onClick={onKaldajaClick} />
+      <div className="connector-line" />
+      <KaldajaDescription />
+    </div>
+  );
 }

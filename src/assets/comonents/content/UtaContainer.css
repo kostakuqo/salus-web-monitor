@@ -2,6 +2,7 @@
 .uta-container {
     display: flex;
     align-items: center;
+   max-width:100% ; 
     
 }
 
