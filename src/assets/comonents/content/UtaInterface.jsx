@@ -21,15 +21,15 @@ export default function UtaInterface({ onBack }) {
 
 
             <div className="uta-row header">
-                <div className="uta-cell">UTA ID</div>
-                <div className="uta-cell">(°C) dërgim</div>
-                <div className="uta-cell">(°C) Kthim</div>
-                <div className="uta-cell">(°C) Ujit në Hyrje</div>
-                <div className="uta-cell">Psi në Dërgim</div>
-                <div className="uta-cell">Inv Ajri Dërgim</div>
-                <div className="uta-cell">Inv Ajri Kthim</div>
-                <div className="uta-cell">Start</div>
-                <div className="uta-cell">Stop</div>
+                <div className="uta-cell"><strong>UTA ID</strong></div>
+                <div className="uta-cell"><strong>(°C) dërgim</strong></div>
+                <div className="uta-cell"><strong>(°C) Kthim</strong></div>
+                <div className="uta-cell"><strong>(°C) Ujit në Hyrje</strong></div>
+                <div className="uta-cell"><strong>Psi në Dërgim</strong></div>
+                <div className="uta-cell"><strong>Inv Ajri Dërgim</strong></div>
+                <div className="uta-cell"><strong>Inv Ajri Kthim</strong></div>
+                <div className="uta-cell"><strong>Start</strong></div>
+                <div className="uta-cell"><strong>Stop</strong></div>
             </div>
 
             {/* DATA ROWS */}

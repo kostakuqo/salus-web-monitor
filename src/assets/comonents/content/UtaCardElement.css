@@ -37,6 +37,7 @@
   cursor: pointer;
   font-size: 13px;
   color: white;
+  margin :2px;
 }
 
 .uta-button.start {

@@ -11,11 +11,17 @@
     padding:40px;
     font-family: Arial, Helvetica, sans-serif;
 }
+/* Bold doar pentru rândul header */
 .uta-row.header {
-    font-weight:bolder;
-    
-    color: white; /* text alb */
-    border-radius: 8px; /* colțuri rotunjite */
+    font-weight: 700; /* bold doar aici */
+    color: white;
+    border-radius: 8px;
+}
+
+/* Celulele header doar pentru aliniere și padding, fără a afecta fontul altor celule */
+.uta-row.header .uta-cell {
+    text-align: center;
+    padding: 8px;
 }
 
 .back-button{
