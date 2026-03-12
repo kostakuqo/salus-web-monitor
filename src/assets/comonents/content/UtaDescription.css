@@ -1,0 +1,24 @@
+
+.uta-description {
+    background-color: #1A77CC;    
+    max-width: 500px; 
+    border-radius: 4px; 
+    margin-bottom: 6px;    
+    
+}
+
+.uta-description-paragraph {
+    color: white;           
+    margin: 0;
+    font-size: 12px;
+    padding: 4px;
+    text-wrap: wrap;
+   
+}
+
+.uta-description-paragraph span {
+    display: block;        
+        
+}
+
+

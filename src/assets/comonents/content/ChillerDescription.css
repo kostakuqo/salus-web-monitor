@@ -1,0 +1,19 @@
+.chiller-description {
+    background-color: #1A77CC;    
+    max-width: 500px; 
+    border-radius: 4px;     
+    
+}
+
+.chiller-description-paragraph {
+    color: white;           
+    margin: 0;
+    font-size: 12px;
+    padding: 4px;
+    text-wrap: wrap;
+}
+
+.chiller-description-paragraph span {
+    display: block;        
+        
+}

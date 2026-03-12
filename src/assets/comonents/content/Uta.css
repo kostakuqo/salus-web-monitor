@@ -1,12 +1,12 @@
 .uta {
   width: 200px;       
   height: 100px;    
-  background-color: #1A77CC;  
-       
+  background-color: #1A77CC;     
   display: flex;
   justify-content: center;    
   align-items: center;
-  cursor: pointer;        
+  cursor: pointer; 
+  border-radius: 4px;       
 }
 
 .content-uta {

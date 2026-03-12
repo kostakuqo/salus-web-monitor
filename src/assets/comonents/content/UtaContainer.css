@@ -1,0 +1,23 @@
+
+.uta-container {
+    display: flex;
+    align-items: center;
+    
+}
+
+.connector-line {
+    position: relative;
+    width: 50px;        
+    height: 2px;        
+    background-color:  #1A77CC;
+}
+
+
+.connector-line::after {
+    content: '';
+    position: absolute;
+    right: -6px;       
+    transform: translateY(-50%);
+    border: 6px solid transparent; 
+    border-left-color:  #1A77CC;       
+}
