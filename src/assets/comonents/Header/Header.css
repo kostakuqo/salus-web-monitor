@@ -55,3 +55,17 @@
   flex: 1; 
   border-bottom: 2px solid white; 
 }
+@media (max-width: 768px) {
+  .logo-img {
+    display: none;
+  }
+
+  .menu {
+    display: none;
+  }
+
+  
+  .main-layout .content {
+    width: 100%;
+  }
+}

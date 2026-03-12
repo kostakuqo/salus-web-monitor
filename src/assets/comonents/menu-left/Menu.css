@@ -4,3 +4,17 @@
   color: white;
   min-height: calc(100vh - 70px);
 }
+@media (max-width: 768px) {
+  .left-menu {
+    display: none;
+  }
+
+  .menu {
+    display: none;
+  }
+
+  
+  .main-layout .content {
+    width: 100%;
+  }
+}
