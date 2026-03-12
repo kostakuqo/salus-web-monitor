@@ -1,39 +1,36 @@
 .uta-interface {
-    padding: 20px;
     background: #e0f7fa;
     border-radius: 8px;
     width:100%;
-    padding:40px;
     font-family: Arial, Helvetica, sans-serif;
     color: black !important
 };
+
 
 .uta-interface{
     padding:40px;
     font-family: Arial, Helvetica, sans-serif;
 }
-
+.uta-row.header {
+    font-weight:bolder;
+    
+    color: white; /* text alb */
+    border-radius: 8px; /* colțuri rotunjite */
+}
 
 .back-button{
     display:flex;
     align-items:center;
     gap:10px;
-
     margin-top:25px;
-
     padding:10px 18px;
-
     background:#f5f7fa;
     border:none;
     border-radius:10px;
-
     font-size:16px;
     font-weight:500;
-
     color:#333;
-
     cursor:pointer;
-
     transition:all 0.25s ease;
 }
 
@@ -61,3 +58,8 @@
 .back-button:hover svg{
     color:white;
 }
+
+.header{
+    font-weight: bold;
+}
+
