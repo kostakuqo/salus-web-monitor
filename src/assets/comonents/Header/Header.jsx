@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from "../../../../public/logos/salus_logo.png"
+import logo from "../salus_logo.png";
 import './Header.css';
 
 export default function Header() {
