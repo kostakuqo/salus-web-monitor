@@ -129,6 +129,49 @@
 
 
 
+@media (max-width: 768px) {
+  
+  .uta-cell {
+    display: none;
+  }
+
+  .uta-id {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+ 
+  .uta-cell:nth-last-child(2),
+  .uta-cell:last-child {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+  }
+  .uta-cell:nth-last-child(2),
+  .uta-cell:last-child {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end; 
+  }
+
+.uta-button {
+    flex: none;           
+    padding: 6px 12px;    
+    min-width: 60px;      
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+
+  .view-icon {
+    display: inline-block;
+    cursor: pointer;
+  }
+}
+
 
 
 

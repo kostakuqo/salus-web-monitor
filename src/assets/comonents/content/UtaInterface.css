@@ -167,4 +167,12 @@
 }
 
 
+@media (max-width: 768px) {
+  .uta-row.header{
+    display: none;
+  }
+}
+
+
+
 
