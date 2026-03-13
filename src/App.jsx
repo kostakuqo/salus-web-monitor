@@ -3,7 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import Header from './assets/comonents/Header/Header'
 import "./App.css";
-import Content from './assets/comonents/content/content';
+import Content from './assets/comonents/content/main-content/Content';
 import Menu from './assets/comonents/menu-left/Menu';
 
 
@@ -18,8 +18,8 @@ export default function App() {
                 <Menu />
 
                 <div className="content">
-                    <Content/>
-                     
+                    <Content />
+
                 </div>
             </div>
         </>

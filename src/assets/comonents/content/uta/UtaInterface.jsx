@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FiArrowLeft } from "react-icons/fi";
 import "./UtaInterface.css";
 import UtaCardElement from "./UtaCardElement";
+import TemperatureChart from "./TemperatureChar";
 
 export default function UtaInterface({ onBack }) {
     const utaData = [
@@ -36,7 +37,6 @@ export default function UtaInterface({ onBack }) {
                         </div>
                     </div>
 
-
                     <div className="uta-details-grid">
                         <div className="data-card">
                             <h4>Temp Air Hyrje</h4>
@@ -64,13 +64,19 @@ export default function UtaInterface({ onBack }) {
                         </div>
                     </div>
 
-
-
+                    {selectedUta && (
+                        <div className="uta-chart" style={{ width: "100%", maxWidth: "90%", margin: "0" }}>
+                            <TemperatureChart
+                                key={selectedUta.id}      // ✅ actualizare automată la schimbarea UTA
+                                data={[selectedUta]}
+                                height={400}               // height mai mic pentru dashboard
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         );
     }
-
 
     return (
         <div className="uta-interface">

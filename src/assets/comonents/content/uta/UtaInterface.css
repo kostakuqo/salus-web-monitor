@@ -68,7 +68,7 @@
     color: #333;
     cursor: pointer;
     transition: all 0.25s ease;
-    background-color: #007bff; /* albastru vizibil */
+    background-color: #007bff; 
     color: white;
 }
 .back-btn:hover{
