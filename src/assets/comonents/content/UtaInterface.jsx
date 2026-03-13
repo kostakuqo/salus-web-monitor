@@ -24,10 +24,10 @@ export default function UtaInterface({ onBack }) {
                 <div className="uta-cell"><strong>UTA ID</strong></div>
                 <div className="uta-cell"><strong>(°C) dërgim</strong></div>
                 <div className="uta-cell"><strong>(°C) Kthim</strong></div>
-                <div className="uta-cell"><strong>(°C) Ujit në Hyrje</strong></div>
-                <div className="uta-cell"><strong>Psi në Dërgim</strong></div>
-                <div className="uta-cell"><strong>Inv Ajri Dërgim</strong></div>
-                <div className="uta-cell"><strong>Inv Ajri Kthim</strong></div>
+                <div className="uta-cell"><strong>(°C) Ujit_In</strong></div>
+                <div className="uta-cell"><strong>Psi In</strong></div>
+                <div className="uta-cell"><strong>Inv In</strong></div>
+                <div className="uta-cell"><strong>Inv ret</strong></div>
                 <div className="uta-cell"><strong>Start</strong></div>
                 <div className="uta-cell"><strong>Stop</strong></div>
             </div>

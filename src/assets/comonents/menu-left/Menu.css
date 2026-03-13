@@ -1,18 +1,22 @@
-
 .left-menu {
   width: 10%;
   display: flex;
   flex-direction: column;
-  
+
   background-color: #1A355E;
   min-height: calc(100vh - 70px);
+}
+
+.back-button-mobile {
+  display: none;
 }
 
 
 
 
+
 .menu-toggle {
-  display: none; 
+  display: none;
   background: none;
   border: none;
   cursor: pointer;
@@ -22,7 +26,7 @@
   top: 11.5px;
   left: 0px;
   background-color: white;
-  color:#1A355E;
+  color: #1A355E;
   z-index: 500;
   padding: 2px 6px;
 }
@@ -30,11 +34,11 @@
 
 @media (max-width: 768px) {
   .menu-toggle {
-    display: block; 
+    display: block;
   }
 
   .left-menu.closed {
-    display: none; 
+    display: none;
   }
 
   .left-menu.open {
@@ -45,15 +49,45 @@
     left: 0;
     width: 100%;
     height: calc(100vh - 60px);
-    background-color: #1A355E; 
+    background-color: #1A355E;
     padding: 10px;
     z-index: 400;
     transition: transform 0.3s ease;
   }
 
-  
+
   .main-layout .content {
     width: 100%;
   }
-  
+
+  .back-button-mobile {
+    position: absolute;
+    bottom: 300px;
+    left: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #1A355E;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+
+
+
+  .back-button-mobile svg {
+    width: 20px;
+    height: 20px;
+    color: red;
+  }
+
 }

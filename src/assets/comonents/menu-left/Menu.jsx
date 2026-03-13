@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FiMenu } from "react-icons/fi";
+import { FiArrowLeft } from "react-icons/fi";
 import "./menu.css";
 import Dashboard from "../menu-items/dashboard/Dashboard";
 import Settings from "../menu-items/settings/Settings";
@@ -25,6 +26,10 @@ export default function Menu() {
         <General />
         <Harta />
         <Profile />
+        <button className="back-button-mobile" onClick={toggleMenu}>
+          <FiArrowLeft/>
+          Back
+        </button>
       </div>
     </>
   );
