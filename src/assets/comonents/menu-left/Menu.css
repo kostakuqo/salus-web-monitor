@@ -62,7 +62,7 @@
 
   .back-button-mobile {
     position: absolute;
-    bottom: 300px;
+    bottom: 10px;
     left: 0px;
     display: flex;
     align-items: center;
