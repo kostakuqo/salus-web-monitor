@@ -43,7 +43,7 @@
     position: fixed;
     top: 60px;
     left: 0;
-    width: 89.5%;
+    width: 100%;
     height: calc(100vh - 60px);
     background-color: #1A355E; 
     padding: 10px;
