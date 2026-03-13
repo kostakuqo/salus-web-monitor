@@ -1,6 +1,7 @@
 import React from "react";
 import "./UtaCardElement.css";
 import { FiPlay, FiSquare } from "react-icons/fi";
+import { FiEye } from "react-icons/fi";
 
 export default function UtaCardElement({
   id,
@@ -19,10 +20,14 @@ export default function UtaCardElement({
     <div className="uta-row" onClick={onClick}>
       <div className="uta-cell uta-id">
         {id}
+        <span className={`status ${status.toLowerCase()}`}>{status}</span>
 
-        <span className={`status ${status}`}>
-          {status}
-        </span>
+        {/* Icon vizualizare */}
+        <FiEye
+          className="view-icon"
+          onClick={() => onClick()}
+          title="View details"
+        />
       </div>
       <div className="uta-cell">{tempAirSupply}°C</div>
       <div className="uta-cell">{tempReturn}°C</div>

@@ -122,12 +122,12 @@
 }
 
 .status-tag.on {
-  background-color: #00c853;
+  background-color: #00674b;
   color: white;
 }
 
 .status-tag.off {
-  background-color: #d50000;
+  background-color: #C82333;
   color: white;
 }
 

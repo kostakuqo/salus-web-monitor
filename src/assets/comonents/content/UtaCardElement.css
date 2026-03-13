@@ -61,4 +61,75 @@
   background-color: #c82333;
   transform: translateY(-2px);
 }
+.view-cell {
+  width: 40px;             
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+
+.uta-row {
+  display: flex;
+  align-items: center; 
+  background: #f0f4f8;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+
+.uta-id { flex: 0 0 120px; display: flex; align-items: center; gap: 5px; font-weight: 700; }
+.view-cell { flex: 0 0 40px; display: flex; justify-content: center; align-items: center; }
+.tempAirSupply, .tempReturn, .tempWaterIn, .pressure, .inverterAirSupply, .inverterAirReturn { flex: 0 0 60px; text-align: center; }
+.start, .stop { flex: 0 0 60px; text-align: center; }
+
+
+.status {
+  padding: 6px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: white;
+  width: 50px;
+ 
+}
+.status.on { background-color: #00674b; }
+.status.off { background-color: #880808; }
+
+
+.view-icon {
+  cursor: pointer;
+  color: gray;
+  width: 30px;
+  height: 30px;
+  transition: color 0.2s ease;
+  display: block;
+  margin: auto;
+}
+.view-icon:hover { color: #0056b3; }
+
+
+.uta-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 13px;
+  color: white;
+  margin: 2px;
+}
+.uta-button.start { background-color: #00674b; }
+.uta-button.start:hover { background-color: #218838; transform: translateY(-2px); }
+.uta-button.stop { background-color: #880808; }
+.uta-button.stop:hover { background-color: #c82333; transform: translateY(-2px); }
+
+
+
+
+
+
 
