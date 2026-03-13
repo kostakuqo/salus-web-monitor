@@ -62,7 +62,7 @@
 
   .back-button-mobile {
     position: absolute;
-    bottom: 400px;
+    bottom: 0px;
     left: 0px;
     display: flex;
     align-items: center;
@@ -72,7 +72,7 @@
     padding: 12px 16px;
     border: none;
     border-radius: 8px;
-    background-color: #1A355E;
+    background-color: #1A77CC;
     color: white;
     font-size: 16px;
     font-weight: 600;
