@@ -1,16 +1,60 @@
+
 .left-menu {
   width: 10%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
   background-color: #1A355E;
-  color: white;
   min-height: calc(100vh - 70px);
 }
+
+
+.left-menu> :not(:last-child) {
+  margin-bottom: 8px;
+}
+.left-menu> :last-child {
+  margin-top: auto;
+}
+
+
+.menu-toggle {
+  display: none; 
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 28px;
+  position: fixed;
+  top: 11.5px;
+  left: 0px;
+  background-color: white;
+  color:#1A355E;
+  z-index: 500;
+  padding: 2px 6px;
+}
+
+
 @media (max-width: 768px) {
-  .left-menu {
-    display: none;
+  .menu-toggle {
+    display: block; 
   }
 
-  .menu {
-    display: none;
+  .left-menu.closed {
+    display: none; 
+  }
+
+  .left-menu.open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 70px);
+    background-color: #1A355E; 
+    padding: 10px;
+    z-index: 400;
+    transition: transform 0.3s ease;
   }
 
   

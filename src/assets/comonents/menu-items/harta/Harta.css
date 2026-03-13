@@ -5,10 +5,15 @@
   gap: 12px;              /* spațiu fix între icon și text */
 }
 
-
-
 .menu-item span {
   display: inline-block;  /* trebuie să fie bloc pentru a avea lățime fixă */
-  width: 100px;           /* lățimea fixă dorită */
-  flex-shrink: 0;         /* împiedică span-ul să se micșoreze */
+  width: 150px;           /* lățimea fixă dorită */
+  flex-shrink: 0;
+  padding-left: 4px;         /* împiedică span-ul să se micșoreze */
 }
+.menu-item {
+  display: flex;          /* face icon + span să fie pe linie */
+  align-items: center;    /* vertical centrat */
+  padding: 8px 12px;
+}
+

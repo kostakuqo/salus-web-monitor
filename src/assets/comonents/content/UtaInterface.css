@@ -3,7 +3,7 @@
     border-radius: 8px;
     width:100%;
     font-family: Arial, Helvetica, sans-serif;
-    color: black !important
+    color: black !important;
 };
 
 
@@ -11,61 +11,46 @@
     padding:40px;
     font-family: Arial, Helvetica, sans-serif;
 }
-/* Bold doar pentru rândul header */
+
 .uta-row.header {
-    font-weight: 700; /* bold doar aici */
+    font-weight: 700; 
     color: white;
     border-radius: 8px;
 }
 
-/* Celulele header doar pentru aliniere și padding, fără a afecta fontul altor celule */
 .uta-row.header .uta-cell {
     text-align: center;
     padding: 8px;
 }
 
-.back-button{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-top:25px;
-    padding:10px 18px;
-    background:#f5f7fa;
-    border:none;
-    border-radius:10px;
-    font-size:16px;
-    font-weight:500;
-    color:#333;
-    cursor:pointer;
-    transition:all 0.25s ease;
+.back-button {
+    display: flex;
+    align-items: center;
+    padding: 10px 18px;
+    background-color: red;  
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 20;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.25s ease;
 }
 
-
-.back-icon{
-    display:flex;
-    align-items:center;
-    justify-content:center;
+.back-button:hover {
+    background-color: #0077ff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.back-icon svg{
-    width:20px;
-    height:20px;
+.back-button .back-icon svg {
+    width: 20px;
+    height: 20px;
     color: red;
+    transition: color 0.25s ease;
 }
 
-
-.back-button:hover{
-    background:#0077ff;
-    color:white;
-    transform:translateY(-2px);
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
-}
-
-.back-button:hover svg{
-    color:white;
-}
-
-.header{
-    font-weight: bold;
+.back-button:hover .back-icon svg {
+    color: white;
 }
 

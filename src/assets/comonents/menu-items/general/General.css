@@ -1,11 +1,27 @@
 .menu-item {
+  display: flex;
+  align-items: center;
+  background: white;
+  color: #1A355E;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 3px;
+}
+
+.menu-item:hover {
+  background: #3b82f6;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  color: white;
+}
+
+.menu-item {
   display: flex;          /* icon + text pe linie */
   align-items: center;    /* vertical centrat */
   padding: 8px 12px;
   gap: 12px;              /* spațiu fix între icon și text */
 }
-
-
 
 .menu-item span {
   display: inline-block;  /* trebuie să fie bloc pentru a avea lățime fixă */
