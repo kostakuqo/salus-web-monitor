@@ -16,7 +16,11 @@
   font-weight: 500;
   color: #1a1a1a;
 }
-
+.uta-id {
+  display: flex;
+  align-items: center;
+  gap: 10px;   /* spațiul între id și status */
+}
 
 .uta-cell:first-child {
   font-weight: 700;

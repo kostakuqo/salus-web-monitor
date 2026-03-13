@@ -8,7 +8,12 @@
 }
 .content {
   flex: 1;
-  margin-top: 1px;
+  margin:0px;
+  margin: 10px;
+  
+  
+
+ 
 }
 
 .logo {
