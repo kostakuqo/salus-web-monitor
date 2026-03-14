@@ -1,42 +1,95 @@
 import React, { useState } from "react";
 import { FiArrowLeft } from "react-icons/fi";
+import { GoGraph } from "react-icons/go";
 import "./UtaInterface.css";
 import UtaCardElement from "./UtaCardElement";
-import TemperatureChart from "./TemperatureChar";
+import TemperatureChart from "./TemperatureChart";
 
 export default function UtaInterface({ onBack }) {
+
     const utaData = [
-        { id: "UTA 1234", status: "ON", tempAirSupply: 22, tempReturn: 19, tempWaterIn: 30, pressure: 1.2, inverterAirSupply: 80, inverterAirReturn: 75 },
-        { id: "UTA 4567", status: "OFF", tempAirSupply: 23, tempReturn: 20, tempWaterIn: 31, pressure: 1.1, inverterAirSupply: 70, inverterAirReturn: 68 },
-        { id: "UTA 8910", status: "ON", tempAirSupply: 21, tempReturn: 19, tempWaterIn: 29, pressure: 1.3, inverterAirSupply: 85, inverterAirReturn: 80 },
-        { id: "UTA 8911", status: "OFF", tempAirSupply: 21, tempReturn: 19, tempWaterIn: 29, pressure: 1.3, inverterAirSupply: 85, inverterAirReturn: 80 },
+        {
+            id: "UTA 1234",
+            status: "ON",
+            tempAirSupply: 22,
+            tempReturn: 19,
+            tempWaterIn: 30,
+            pressure: 1.2,
+            inverterAirSupply: 80,
+            inverterAirReturn: 75
+        },
+        {
+            id: "UTA 4567",
+            status: "OFF",
+            tempAirSupply: 23,
+            tempReturn: 20,
+            tempWaterIn: 31,
+            pressure: 1.1,
+            inverterAirSupply: 70,
+            inverterAirReturn: 68
+        },
+        {
+            id: "UTA 8910",
+            status: "ON",
+            tempAirSupply: 21,
+            tempReturn: 19,
+            tempWaterIn: 29,
+            pressure: 1.3,
+            inverterAirSupply: 85,
+            inverterAirReturn: 80
+        }
     ];
 
     const handleStart = (id) => alert(`${id} START pressed`);
     const handleStop = (id) => alert(`${id} STOP pressed`);
 
     const [selectedUta, setSelectedUta] = useState(null);
-
+    const [activeChart, setActiveChart] = useState(null);
 
     if (selectedUta) {
         return (
             <div className="uta-interface main-uta">
+
                 <div className="uta-details-container">
+
                     <div className="uta-details-header">
-                        <button className="back-btn" onClick={() => setSelectedUta(null)}>
+
+                        <button
+                            className="back-btn"
+                            onClick={() => {
+                                setSelectedUta(null);
+                                setActiveChart(null);
+                            }}
+                        >
                             <span className="back-icon"><FiArrowLeft /></span>
                             Back
                         </button>
+
                         <h2>{selectedUta.id}</h2>
+
                         <span className={`status-tag ${selectedUta.status.toLowerCase()}`}>
                             {selectedUta.status}
                         </span>
+
                         <div className="uta-actions">
-                            <button className="uta-button start" onClick={() => handleStart(selectedUta.id)}>Start</button>
-                            <button className="uta-button stop" onClick={() => handleStop(selectedUta.id)}>Stop</button>
+                            <button
+                                className="uta-button start"
+                                onClick={() => handleStart(selectedUta.id)}
+                            >
+                                Start
+                            </button>
+
+                            <button
+                                className="uta-button stop"
+                                onClick={() => handleStop(selectedUta.id)}
+                            >
+                                Stop
+                            </button>
                         </div>
+
                     </div>
 
+                    {/* DATA GRID */}
                     <div className="uta-details-grid">
                         <div className="data-card">
                             <h4>Temp Air Hyrje</h4>
@@ -64,15 +117,68 @@ export default function UtaInterface({ onBack }) {
                         </div>
                     </div>
 
-                    {selectedUta && (
-                        <div className="uta-chart" style={{ width: "100%", maxWidth: "90%", margin: "0" }}>
-                            <TemperatureChart
-                                key={selectedUta.id}      // ✅ actualizare automată la schimbarea UTA
-                                data={[selectedUta]}
-                                height={400}               // height mai mic pentru dashboard
-                            />
-                        </div>
-                    )}
+                    {/* CHART BUTTONS */}
+                    {/* CHART BUTTONS */}
+                    <div className="uta-charts-buttons">
+                        <button
+                            className={`chart-btn ${activeChart === "supply" ? "active" : ""}`}
+                            onClick={() => setActiveChart("supply")}
+                        >
+                            <GoGraph style={{ marginRight: "4px", fontSize: "15px", fontWeight: "bolder" }} /> {/* iconița */}
+                            Temp Air Hyrje
+                        </button>
+                        <button
+                            className={`chart-btn ${activeChart === "return" ? "active" : ""}`}
+                            onClick={() => setActiveChart("return")}
+                        >
+                            <GoGraph style={{ marginRight: "4px" }} /> {/* iconița */}
+                            Temp Air Kthim
+                        </button>
+                        <button
+                            className={`chart-btn ${activeChart === "water" ? "active" : ""}`}
+                            onClick={() => setActiveChart("water")}
+                        >
+                            <GoGraph style={{ marginRight: "4px" }} /> {/* iconița */}
+                            Temp Ujit
+                        </button>
+                    </div>
+
+                    {/* CHART AREA */}
+                    <div className="uta-chart">
+                        {activeChart && (
+                            <div className="chart-wrapper">
+                                {/* BUTON DE ÎNCHIDERE ÎN COLȚ */}
+                                <button className="chart-close-btn" onClick={() => setActiveChart(null)}>
+                                    ✕ Close
+                                </button>
+
+                                {activeChart === "supply" && (
+                                    <TemperatureChart
+                                        data={[selectedUta]}
+                                        dataKey="tempAirSupply"
+                                        label="Temp Air Hyrje"
+                                    />
+                                )}
+
+                                {activeChart === "return" && (
+                                    <TemperatureChart
+                                        data={[selectedUta]}
+                                        dataKey="tempReturn"
+                                        label="Temp Air Kthim"
+                                    />
+                                )}
+
+                                {activeChart === "water" && (
+                                    <TemperatureChart
+                                        data={[selectedUta]}
+                                        dataKey="tempWaterIn"
+                                        label="Temp Ujit Hyrje"
+                                    />
+                                )}
+                            </div>
+                        )}
+                    </div>
+
                 </div>
             </div>
         );
@@ -87,7 +193,7 @@ export default function UtaInterface({ onBack }) {
                 <div className="uta-cell"><strong>(°C) Ujit_In</strong></div>
                 <div className="uta-cell"><strong>Psi In</strong></div>
                 <div className="uta-cell"><strong>Inv In</strong></div>
-                <div className="uta-cell"><strong>Inv ret</strong></div>
+                <div className="uta-cell"><strong>Inv Ret</strong></div>
                 <div className="uta-cell"><strong>Start</strong></div>
                 <div className="uta-cell"><strong>Stop</strong></div>
             </div>
