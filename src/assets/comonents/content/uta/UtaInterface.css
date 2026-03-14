@@ -243,6 +243,115 @@
   transform: scale(1.05);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
+/* FORM EDITARE PARAMETRI */
+.edit-form {
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+  width: 100%;
+  background-color: white;
+  
+}
+
+.edit-form h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #1a355e;
+  font-size: 18px;
+  font-weight: 600;
+ 
+}
+.uta-button.edit{
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: border-color 0.25s;
+    font-size: 13px;
+    color: white;
+    flex: 0 0 60px;
+    text-align: center;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 2px;
+    background-color: #1a355e;
+}
+.uta-button.edit:hover {
+  background-color: #122347; /* mai închis la hover */
+  transform: translateY(-2px); /* efect de ridicare */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.edit-form form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 20px;
+}
+
+.edit-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.edit-form input {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.25s ease;
+}
+
+.edit-form input:focus {
+  border-color: #007bff;
+}
+
+.edit-form .form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.edit-form .form-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.edit-form .form-actions button[type="submit"] {
+  background-color: #218838;
+  color: white;
+}
+
+.edit-form .form-actions button[type="submit"]:hover {
+  background-color: #1b6f2d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.edit-form .form-actions button[type="button"] {
+  background-color: #C82333;
+  color: white;
+}
+
+.edit-form .form-actions button[type="button"]:hover {
+  background-color: #a71d27;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+
 
 
 @media (max-width: 600px) {
@@ -282,5 +391,17 @@
   }
   .uta-row.header{
     display: none;
+  }
+   .edit-form form {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-form .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .edit-form .form-actions button {
+    width: 100%;
   }
 }

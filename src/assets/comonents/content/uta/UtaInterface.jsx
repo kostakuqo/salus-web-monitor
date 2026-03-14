@@ -3,11 +3,12 @@ import { FiArrowLeft } from "react-icons/fi";
 import { GoGraph } from "react-icons/go";
 import "./UtaInterface.css";
 import UtaCardElement from "./UtaCardElement";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import TemperatureChart from "./TemperatureChart";
+import { faUser, faGear, faHome } from '@fortawesome/free-solid-svg-icons'
 
 export default function UtaInterface({ onBack }) {
-
-    const utaData = [
+    const [utaData, setUtaData] = useState([
         {
             id: "UTA 1234",
             status: "ON",
@@ -16,7 +17,7 @@ export default function UtaInterface({ onBack }) {
             tempWaterIn: 30,
             pressure: 1.2,
             inverterAirSupply: 80,
-            inverterAirReturn: 75
+            inverterAirReturn: 75,
         },
         {
             id: "UTA 4567",
@@ -26,7 +27,7 @@ export default function UtaInterface({ onBack }) {
             tempWaterIn: 31,
             pressure: 1.1,
             inverterAirSupply: 70,
-            inverterAirReturn: 68
+            inverterAirReturn: 68,
         },
         {
             id: "UTA 8910",
@@ -36,32 +37,42 @@ export default function UtaInterface({ onBack }) {
             tempWaterIn: 29,
             pressure: 1.3,
             inverterAirSupply: 85,
-            inverterAirReturn: 80
-        }
-    ];
+            inverterAirReturn: 80,
+        },
+    ]);
+
+    const [selectedUta, setSelectedUta] = useState(null);
+    const [activeChart, setActiveChart] = useState(null);
+    const [editMode, setEditMode] = useState(false);
+    const [editedUta, setEditedUta] = useState(null);
 
     const handleStart = (id) => alert(`${id} START pressed`);
     const handleStop = (id) => alert(`${id} STOP pressed`);
 
-    const [selectedUta, setSelectedUta] = useState(null);
-    const [activeChart, setActiveChart] = useState(null);
+    const handleSaveEditedUta = () => {
+        setUtaData((prev) =>
+            prev.map((u) => (u.id === editedUta.id ? editedUta : u))
+        );
+        setSelectedUta(editedUta);
+        setEditMode(false);
+    };
 
     if (selectedUta) {
         return (
             <div className="uta-interface main-uta">
-
                 <div className="uta-details-container">
-
                     <div className="uta-details-header">
-
                         <button
                             className="back-btn"
                             onClick={() => {
                                 setSelectedUta(null);
                                 setActiveChart(null);
+                                setEditMode(false);
                             }}
                         >
-                            <span className="back-icon"><FiArrowLeft /></span>
+                            <span className="back-icon">
+                                <FiArrowLeft />
+                            </span>
                             Back
                         </button>
 
@@ -78,16 +89,123 @@ export default function UtaInterface({ onBack }) {
                             >
                                 Start
                             </button>
-
                             <button
                                 className="uta-button stop"
                                 onClick={() => handleStop(selectedUta.id)}
                             >
                                 Stop
                             </button>
+                            <button
+                                className="uta-button edit"
+                                onClick={() => {
+                                    setEditedUta({ ...selectedUta });
+                                    setEditMode(true);
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faGear} style={{ marginRight: '6px' }} />
+                                Modifiko Parametrat
+                            </button>
                         </div>
-
                     </div>
+
+                    {/* FORM EDITARE */}
+                    {editMode && editedUta && (
+                        <div className="edit-form">
+                            <h3>Modifiko Parametrat</h3>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleSaveEditedUta();
+                                }}
+                            >
+                                <label>
+                                    Temperatura ajrit Hyrje:
+                                    <input
+                                        type="number"
+                                        value={editedUta.tempAirSupply}
+                                        onChange={(e) =>
+                                            setEditedUta({
+                                                ...editedUta,
+                                                tempAirSupply: Number(e.target.value),
+                                            })
+                                        }
+                                    />
+                                </label>
+                                <label>
+                                    Temperatura e ajrit Kthim:
+                                    <input
+                                        type="number"
+                                        value={editedUta.tempReturn}
+                                        onChange={(e) =>
+                                            setEditedUta({
+                                                ...editedUta,
+                                                tempReturn: Number(e.target.value),
+                                            })
+                                        }
+                                    />
+                                </label>
+                                <label>
+                                    Temp Ujit Hyrje:
+                                    <input
+                                        type="number"
+                                        value={editedUta.tempWaterIn}
+                                        onChange={(e) =>
+                                            setEditedUta({
+                                                ...editedUta,
+                                                tempWaterIn: Number(e.target.value),
+                                            })
+                                        }
+                                    />
+                                </label>
+                                <label>
+                                    Presioni:
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        value={editedUta.pressure}
+                                        onChange={(e) =>
+                                            setEditedUta({
+                                                ...editedUta,
+                                                pressure: Number(e.target.value),
+                                            })
+                                        }
+                                    />
+                                </label>
+                                <label>
+                                    Inverter Hyrje:
+                                    <input
+                                        type="number"
+                                        value={editedUta.inverterAirSupply}
+                                        onChange={(e) =>
+                                            setEditedUta({
+                                                ...editedUta,
+                                                inverterAirSupply: Number(e.target.value),
+                                            })
+                                        }
+                                    />
+                                </label>
+                                <label>
+                                    Inverter Kthim:
+                                    <input
+                                        type="number"
+                                        value={editedUta.inverterAirReturn}
+                                        onChange={(e) =>
+                                            setEditedUta({
+                                                ...editedUta,
+                                                inverterAirReturn: Number(e.target.value),
+                                            })
+                                        }
+                                    />
+                                </label>
+                                <div className="form-actions">
+                                    <button type="submit" className="">Save</button>
+                                    <button type="button" onClick={() => setEditMode(false)}>
+                                        Anullo
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
 
                     {/* DATA GRID */}
                     <div className="uta-details-grid">
@@ -118,27 +236,26 @@ export default function UtaInterface({ onBack }) {
                     </div>
 
                     {/* CHART BUTTONS */}
-                    {/* CHART BUTTONS */}
                     <div className="uta-charts-buttons">
                         <button
                             className={`chart-btn ${activeChart === "supply" ? "active" : ""}`}
                             onClick={() => setActiveChart("supply")}
                         >
-                            <GoGraph style={{ marginRight: "4px", fontSize: "15px", fontWeight: "bolder" }} /> {/* iconița */}
+                            <GoGraph style={{ marginRight: "4px", fontSize: "15px" }} />
                             Temp Air Hyrje
                         </button>
                         <button
                             className={`chart-btn ${activeChart === "return" ? "active" : ""}`}
                             onClick={() => setActiveChart("return")}
                         >
-                            <GoGraph style={{ marginRight: "4px" }} /> {/* iconița */}
+                            <GoGraph style={{ marginRight: "4px" }} />
                             Temp Air Kthim
                         </button>
                         <button
                             className={`chart-btn ${activeChart === "water" ? "active" : ""}`}
                             onClick={() => setActiveChart("water")}
                         >
-                            <GoGraph style={{ marginRight: "4px" }} /> {/* iconița */}
+                            <GoGraph style={{ marginRight: "4px" }} />
                             Temp Ujit
                         </button>
                     </div>
@@ -147,8 +264,10 @@ export default function UtaInterface({ onBack }) {
                     <div className="uta-chart">
                         {activeChart && (
                             <div className="chart-wrapper">
-                                {/* BUTON DE ÎNCHIDERE ÎN COLȚ */}
-                                <button className="chart-close-btn" onClick={() => setActiveChart(null)}>
+                                <button
+                                    className="chart-close-btn"
+                                    onClick={() => setActiveChart(null)}
+                                >
                                     ✕ Close
                                 </button>
 
@@ -178,7 +297,6 @@ export default function UtaInterface({ onBack }) {
                             </div>
                         )}
                     </div>
-
                 </div>
             </div>
         );
@@ -187,15 +305,33 @@ export default function UtaInterface({ onBack }) {
     return (
         <div className="uta-interface">
             <div className="uta-row header">
-                <div className="uta-cell"><strong>UTA ID</strong></div>
-                <div className="uta-cell"><strong>(°C) dërgim</strong></div>
-                <div className="uta-cell"><strong>(°C) Kthim</strong></div>
-                <div className="uta-cell"><strong>(°C) Ujit_In</strong></div>
-                <div className="uta-cell"><strong>Psi In</strong></div>
-                <div className="uta-cell"><strong>Inv In</strong></div>
-                <div className="uta-cell"><strong>Inv Ret</strong></div>
-                <div className="uta-cell"><strong>Start</strong></div>
-                <div className="uta-cell"><strong>Stop</strong></div>
+                <div className="uta-cell">
+                    <strong>UTA ID</strong>
+                </div>
+                <div className="uta-cell">
+                    <strong>(°C) dërgim</strong>
+                </div>
+                <div className="uta-cell">
+                    <strong>(°C) Kthim</strong>
+                </div>
+                <div className="uta-cell">
+                    <strong>(°C) Ujit_In</strong>
+                </div>
+                <div className="uta-cell">
+                    <strong>Psi In</strong>
+                </div>
+                <div className="uta-cell">
+                    <strong>Inv In</strong>
+                </div>
+                <div className="uta-cell">
+                    <strong>Inv Ret</strong>
+                </div>
+                <div className="uta-cell">
+                    <strong>Start</strong>
+                </div>
+                <div className="uta-cell">
+                    <strong>Stop</strong>
+                </div>
             </div>
 
             {utaData.map((uta) => (
@@ -209,7 +345,9 @@ export default function UtaInterface({ onBack }) {
             ))}
 
             <button className="back-button" onClick={onBack}>
-                <span className="back-icon"><FiArrowLeft /></span>
+                <span className="back-icon">
+                    <FiArrowLeft />
+                </span>
                 Back
             </button>
         </div>
