@@ -8,14 +8,11 @@ import TemperatureChart from "./TemperatureChart";
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
+import { initialUtaData } from "./uta data/utaData";
 
 export default function UtaInterface({ onBack }) {
-    const [utaData, setUtaData] = useState([
-        { id: "UTA 1234", status: "ON", tempAirSupply: 22, tempReturn: 19, tempWaterIn: 30, pressure: 1.2, inverterAirSupply: 80, inverterAirReturn: 75 },
-        { id: "UTA 4567", status: "OFF", tempAirSupply: 23, tempReturn: 20, tempWaterIn: 31, pressure: 1.1, inverterAirSupply: 70, inverterAirReturn: 68 },
-        { id: "UTA 8910", status: "ON", tempAirSupply: 21, tempReturn: 19, tempWaterIn: 29, pressure: 1.3, inverterAirSupply: 85, inverterAirReturn: 80 },
-        { id: "UTA 85580", status: "OFF", tempAirSupply: 45, tempReturn: 19, tempWaterIn: 29, pressure: 1.3, inverterAirSupply: 70, inverterAirReturn: 56 }
-    ]);
+    const [utaData, setUtaData] = useState(initialUtaData);
+   
 
     const [selectedUta, setSelectedUta] = useState(null);
     const [activeChart, setActiveChart] = useState(null);

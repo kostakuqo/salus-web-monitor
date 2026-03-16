@@ -1,14 +1,31 @@
 .menu-item {
-  display: flex;          /* icon + text pe linie */
-  align-items: center;    /* vertical centrat */
-  padding: 8px 12px;
-  gap: 12px;              /* spațiu fix între icon și text */
+  display: flex;          
+  align-items: center;    
+          
 }
 
 
 
 .menu-item span {
-  display: inline-block;  /* trebuie să fie bloc pentru a avea lățime fixă */
-  width: 100px;           /* lățimea fixă dorită */
-  flex-shrink: 0;         /* împiedică span-ul să se micșoreze */
+  display: inline-block;  
+  width: 100px;           
+  flex-shrink: 0;         
+}
+.dashboard-page {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard-page h2 {
+  font-size: 1.5rem;
+  color: #1A355E;
+  margin-bottom: 10px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
 }

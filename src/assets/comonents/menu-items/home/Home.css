@@ -1,0 +1,18 @@
+.menu-item {
+  display: flex;          
+  align-items: center;    
+  /* padding: 8px 12px; */
+  gap: 12px;              
+}
+
+.menu-item span {
+  display: inline-block;  
+  width: 100px;           
+  flex-shrink: 0;        
+}
+
+.menu-item span {
+  display: inline-block;  
+  width: 100px;           
+  flex-shrink: 0;         
+}
