@@ -7,7 +7,8 @@
   align-items: center;
   cursor: pointer; 
   position: relative;
-  margin-bottom: 4px;      
+  margin-bottom: 4px;
+  margin-top: 4px;      
 }
 
 .content-uta {

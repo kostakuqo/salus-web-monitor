@@ -5,7 +5,9 @@ import "./UtaInterface.css";
 import UtaCardElement from "./UtaCardElement";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import TemperatureChart from "./TemperatureChart";
-import { faGear } from '@fortawesome/free-solid-svg-icons'
+import { faGear } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 
 export default function UtaInterface({ onBack }) {
     const [utaData, setUtaData] = useState([
@@ -25,17 +27,17 @@ export default function UtaInterface({ onBack }) {
     const handleStop = (id) => alert(`${id} STOP pressed`);
 
     const handleSaveEditedUta = () => {
-        // Trimitem datele la API
+        // Ketu do nisen datat nepermjet api ne backend
         console.log("Trimitem la API:", editedUta);
 
-        // Afișăm mesaj de succes pe UI
+       
         setSaveMessage("Parametrat u ruajten me sukses!");
 
-        // Închidem editarea
+        // mbullet editimi
         setEditMode(false);
 
-        // Dispare automat după 3 secunde
-        setTimeout(() => setSaveMessage(""), 3000);
+        //mesazhi zhduket pas 2 sekondave 
+        setTimeout(() => setSaveMessage(""), 2000);
     };
 
     if (selectedUta) {
@@ -68,8 +70,8 @@ export default function UtaInterface({ onBack }) {
                         <span className={`status-tag ${selectedUta.status.toLowerCase()}`}>{selectedUta.status}</span>
 
                         <div className="uta-actions">
-                            <button className="uta-button start" onClick={() => handleStart(selectedUta.id)}>Start</button>
-                            <button className="uta-button stop" onClick={() => handleStop(selectedUta.id)}>Stop</button>
+                            <button className="uta-button start" onClick={() => handleStart(selectedUta.id)}><FontAwesomeIcon icon={faPlay} />Start</button>
+                            <button className="uta-button stop" onClick={() => handleStop(selectedUta.id)}><FontAwesomeIcon icon={faStop} />Stop</button>
                             <button className="uta-button edit" onClick={() => { setEditedUta({ ...selectedUta }); setEditMode(true); }}>
                                 <FontAwesomeIcon icon={faGear} style={{ marginRight: '6px' }} />
                                 Modifiko Parametrat
@@ -77,7 +79,7 @@ export default function UtaInterface({ onBack }) {
                         </div>
                     </div>
 
-                    {/* FORM EDITARE */}
+                    {/* FORM per te edituar parametrat */}
                     {editMode && editedUta && (
                         <div className="edit-form">
                             <h3>Modifiko Parametrat</h3>
@@ -107,8 +109,8 @@ export default function UtaInterface({ onBack }) {
                                     <input type="number" value={editedUta.inverterAirReturn} onChange={(e) => setEditedUta({ ...editedUta, inverterAirReturn: Number(e.target.value) })} />
                                 </label>
                                 <div className="form-actions">
-                                    <button type="submit" className="save-data">Save</button>
-                                    <button type="button" className="cancel-data" onClick={() => setEditMode(false)}>Anullo</button>
+                                    <button type="submit" className="save-data"><FontAwesomeIcon icon={faSave} />Save</button>
+                                    <button type="button" className="cancel-data" onClick={() => setEditMode(false)}><FontAwesomeIcon icon={faTimes} />Anullo</button>
                                 </div>
                             </form>
                         </div>
@@ -131,7 +133,7 @@ export default function UtaInterface({ onBack }) {
                         <button className={`chart-btn ${activeChart === "water" ? "active" : ""}`} onClick={() => setActiveChart("water")}><GoGraph style={{ marginRight: "4px" }} />Temp Ujit</button>
                     </div>
 
-                    {/* CHART AREA */}
+
                     <div className="uta-chart">
                         {activeChart && (
                             <div className="chart-wrapper">

@@ -1,9 +1,10 @@
 
 .uta-description {
-    background-color: #1A77CC;    
+    background-color: #1A77CC;  
+    width: 300px;
+    height: 100px;  
     max-width: 500px; 
-    border-radius: 4px; 
-    margin-bottom: 6px;    
+    margin-right: 6px;  
     
 }
 

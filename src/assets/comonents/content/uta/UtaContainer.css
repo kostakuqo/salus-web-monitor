@@ -2,13 +2,15 @@
 .uta-container {
     display: flex;
     align-items: center;
-   max-width:100% ; 
+    max-width:100% ; 
+    
+   
     
 }
 
 .connector-line {
     position: relative;
-    width: 50px;        
+    width: 50%;        
     height: 2px;        
     background-color:  #1A77CC;
 }

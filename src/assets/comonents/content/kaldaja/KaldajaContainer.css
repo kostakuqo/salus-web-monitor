@@ -7,7 +7,7 @@
 
 .connector-line {
     position: relative;
-    width: 50px;        
+    width: 50%;        
     height: 2px;        
     background-color:  #1A77CC;
 }
