@@ -7,7 +7,10 @@
   align-items: center;
   cursor: pointer; 
   position: relative;
-  margin-bottom: 4px;      
+  margin-bottom: 4px;
+  margin-top: 4px; 
+  padding: 8px 12px;    
+  gap: 8px; 
 }
 
 .content-chiller {
@@ -29,7 +32,7 @@
     text-align: center;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
-    border-radius: 0 0 12px 12px; /* colțuri rotunjite doar jos */
+    border-radius: 0 0 12px 12px; 
 }
 
 .chiller-details:hover {
@@ -40,4 +43,10 @@
 button{
   color: red;
   border-radius: none;
+}
+
+
+
+.chiller-icon {
+  font-size: 20px; /* mărimea icon-ului */
 }

@@ -3,7 +3,7 @@ import { FiArrowLeft } from "react-icons/fi";
 import { GoGraph } from "react-icons/go";
 import "./UtaInterface.css";
 import UtaCardElement from "./UtaCardElement";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TemperatureChart from "./TemperatureChart";
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons';

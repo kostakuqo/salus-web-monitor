@@ -8,7 +8,9 @@
   cursor: pointer; 
   position: relative;
   margin-bottom: 4px;
-  margin-top: 4px;      
+  margin-top: 4px; 
+  padding: 8px 12px;    
+  gap: 8px; 
 }
 
 .content-uta {
@@ -41,4 +43,10 @@
 button{
   color: red;
   border-radius: none;
+}
+
+
+
+.uta-icon {
+  font-size: 20px; /* mărimea icon-ului */
 }
