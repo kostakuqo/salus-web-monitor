@@ -1,25 +1,19 @@
-
 .uta-description {
     background-color: #1A77CC;  
     width: 300px;
+    max-width: 500px;   
     height: 100px;  
-    max-width: 500px; 
-    margin-right: 6px;  
-    
+    margin-right: 6px;
+    padding: 8px;            /* spațiu între text și container */
+    box-sizing: border-box;   /* ca padding-ul să nu extindă containerul */
+    overflow: hidden;         /* opțional: taie textul care depășește */
 }
 
 .uta-description-paragraph {
     color: white;           
     margin: 0;
     font-size: 12px;
-    padding: 4px;
-    text-wrap: wrap;
-   
+    line-height: 1.3;
+    overflow-wrap: break-word;  /* împiedică ieșirea textului */
+    word-break: break-word;     /* uneori necesar pentru cuvinte lungi */
 }
-
-.uta-description-paragraph span {
-    display: block;        
-        
-}
-
-
