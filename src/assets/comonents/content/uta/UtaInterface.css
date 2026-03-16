@@ -25,29 +25,24 @@
 }
 
 .back-button {
-    position: absolute;
-    top:320px;
-    right: 10px;
-    margin-top: 20px;
-    display: flex;
-    align-items: center;
-    padding: 6px 12px;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 20;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    background-color: #007bff;
-    color: white;
+  position: absolute;
+  top: 380px;
+  right: 10px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 20;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background-color: #007bff;
+  color: white;
 }
 
-/* .back-button:hover {
-  background-color: #0077ff;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-} */
+
 
 .back-button .back-icon svg {
   width: 20px;
@@ -143,6 +138,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 15px;
+  margin-top: 30px;
 }
 
 .data-card {
@@ -243,7 +239,7 @@
   transform: scale(1.05);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
-/* FORM EDITARE PARAMETRI */
+
 .edit-form {
   padding: 20px;
   border-radius: 12px;
@@ -251,7 +247,7 @@
   margin: 20px 0;
   width: 100%;
   background-color: white;
-  
+
 }
 
 .edit-form h3 {
@@ -260,29 +256,32 @@
   color: #1a355e;
   font-size: 18px;
   font-weight: 600;
- 
+
 }
-.uta-button.edit{
-    box-sizing: border-box;
-    font-family: inherit;
-    transition: border-color 0.25s;
-    font-size: 13px;
-    color: white;
-    flex: 0 0 60px;
-    text-align: center;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    margin: 2px;
-    background-color: #1a355e;
+
+.uta-button.edit {
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.25s;
+  font-size: 13px;
+  color: white;
+  flex: 0 0 60px;
+  text-align: center;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 2px;
+  background-color: #1a355e;
 }
+
 .uta-button.edit:hover {
-  background-color: #122347; /* mai închis la hover */
-  transform: translateY(-2px); /* efect de ridicare */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  background-color: #122347;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
+
 .edit-form form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -330,18 +329,18 @@
 }
 
 .edit-form .form-actions button[type="submit"] {
-  background-color: #218838;
+  background-color: #00674b;
   color: white;
 }
 
 .edit-form .form-actions button[type="submit"]:hover {
-  background-color: #1b6f2d;
+
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .edit-form .form-actions button[type="button"] {
-  background-color: #C82333;
+  background-color: #880808;
   color: white;
 }
 
@@ -350,11 +349,88 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
+.alert-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5); /* fundal semi-transparent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.alert-modal-content {
+  background-color: #fff;
+  padding: 20px 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  font-size: 18px;
+  color: #00674b;
+  font-weight: bold;
+  text-align: center;
+}
 
 
 
 
 @media (max-width: 600px) {
+  .uta-actions {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    padding-top: 8px;
+    width: 89%;
+
+
+  }
+
+  .uta-details-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .uta-details-header h2 {
+    margin: 0;
+    flex: 0 0 auto;
+    /* să nu se extindă */
+  }
+
+  .status-tag {
+    margin-left: auto;
+    /* îl duce la capătul din dreapta */
+    flex: 0 0 auto;
+  }
+
+  .uta-actions {
+    display: flex;
+    gap: 6px;
+    flex: 1 1 auto;
+    /* ocupă tot spațiul rămas */
+  }
+
+  .uta-button.start,
+  .uta-button.stop {
+    flex: 0 0 70px;
+    /* fixează lățimea butoanelor Start și Stop */
+  }
+
+  .uta-button.edit {
+    flex: 1 1 auto;
+    /* Modifiko ocupă tot spațiul rămas */
+  }
+
+
+
+
+  .uta-details-header h2 {
+    margin: 0;
+
+  }
+
   .chart-close-btn {
     top: 8px;
     right: 8px;
@@ -371,6 +447,7 @@
   .uta-charts-buttons .chart-btn {
     width: 100%;
   }
+
 
   .chart-close-btn {
     position: absolute;
@@ -389,19 +466,32 @@
     transition: all 0.25s ease;
     z-index: 10;
   }
-  .uta-row.header{
+
+  .uta-row.header {
     display: none;
   }
-   .edit-form form {
+
+  .edit-form form {
     grid-template-columns: 1fr;
   }
 
-  .edit-form .form-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
 
   .edit-form .form-actions button {
     width: 100%;
   }
+
+  .uta-details-header {
+    margin-bottom: 20px;
+  }
+
+  .uta-details-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-tag {
+    margin-left: auto;
+  }
+
 }
