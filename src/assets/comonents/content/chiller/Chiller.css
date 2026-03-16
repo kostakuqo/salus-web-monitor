@@ -11,6 +11,12 @@
   margin-top: 4px; 
   padding: 8px 12px;    
   gap: 8px; 
+  margin-left: 4px;
+}
+.chiller-container{
+ 
+  display: flex;
+ 
 }
 
 .content-chiller {
@@ -48,5 +54,5 @@ button{
 
 
 .chiller-icon {
-  font-size: 20px; /* mărimea icon-ului */
+  font-size: 20px;
 }

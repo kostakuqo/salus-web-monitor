@@ -1,26 +1,28 @@
-
 .uta-container {
     display: flex;
     align-items: center;
-    max-width:100% ; 
-    
-   
-    
+    width: 100%;
+
 }
 
 .connector-line {
-    position: relative;
-    width: 50%;        
-    height: 2px;        
-    background-color:  #1A77CC;
+    flex: 1;
+    height: 2px;
+    background-color: black;
+    min-width: 20px;
 }
 
+.uta-description {
+    margin-left: auto;
+
+
+}
 
 .connector-line::after {
     content: '';
     position: absolute;
-    right: -6px;       
+    right: -6px;
     transform: translateY(-50%);
-    border: 6px solid transparent; 
-    border-left-color:  #1A77CC;       
+    border: 6px solid transparent;
+    border-left-color: #1A77CC;
 }
