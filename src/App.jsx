@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Header from './assets/comonents/Header/Header';
 import Menu from './assets/comonents/menu-left/Menu';
 import Content from './assets/comonents/content/main=content/Content';
@@ -28,7 +28,7 @@ export default function AppWrapper() {
             <Route path="/chiller/*" element={<Content resetTrigger={resetTrigger} />} />
             <Route path="/kaldaja/*" element={<Content resetTrigger={resetTrigger} />} />
 
-            <Route path="/" element={<HomePage />} />
+            
             <Route path="/homepage" element={<HomePage />} />
 
             {/* Pagini Menu – Settings / General / Harta / Profile */}
