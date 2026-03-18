@@ -109,6 +109,24 @@
 .chiller-card{
   display: flex;
 }
+:root {
+  color-scheme: light;
+}
+
+body {
+  color: #1a1a1a;
+}
+
+.data-card,
+.chiller-row,
+.chiller-details-container,
+.chiller-chart {
+  color: #1a1a1a;
+}
+
+.chart-btn {
+  color: #1976d2;
+}
 
 /* Responsive */
 @media (max-width: 768px) {

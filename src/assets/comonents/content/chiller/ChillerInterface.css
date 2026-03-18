@@ -233,3 +233,21 @@
   font-weight: bold;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 } 
+:root {
+  color-scheme: light;
+}
+
+body {
+  color: #1a1a1a;
+}
+
+.data-card,
+.chiller-row,
+.chiller-details-container,
+.chiller-chart {
+  color: #1a1a1a;
+}
+
+.chart-btn {
+  color: #1976d2;
+}
