@@ -1,6 +1,9 @@
 /* /* ========================================
    Container principal
 ======================================== */
+:root {
+  color-scheme: light;
+}
 .chiller-interface {
   padding: 16px;
   font-family: 'Arial', sans-serif;
