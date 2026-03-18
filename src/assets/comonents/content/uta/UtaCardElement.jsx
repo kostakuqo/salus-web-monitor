@@ -11,7 +11,8 @@ export default function UtaCardElement({
   pressure,
   inverterAirSupply,
   inverterAirReturn,
-  chiller,     
+  chiller,
+  onStart,
   onStop,
   onClick
 }) {
@@ -21,7 +22,7 @@ export default function UtaCardElement({
         {id}
         <span className={`status ${status.toLowerCase()}`}>{status}</span>
 
-        
+
         <FiEye
           className="view-icon"
           onClick={() => onClick()}
@@ -30,7 +31,7 @@ export default function UtaCardElement({
       </div>
       <div className="uta-cell">{tempAirSupply}°C</div>
       <div className="uta-cell">{tempReturn}°C</div>
-       <div className="uta-cell">{chiller?.tempIn ?? "-"}°C</div>    {/* Water In from Chiller */}
+      <div className="uta-cell">{chiller?.tempIn ?? "-"}°C</div>    {/* Water In from Chiller */}
       {/* <div className="uta-cell">{chiller?.tempOut ?? "-"}°C</div>   Water Out from Chiller */}
       <div className="uta-cell">{pressure} bar</div>
       <div className="uta-cell">{inverterAirSupply}%</div>

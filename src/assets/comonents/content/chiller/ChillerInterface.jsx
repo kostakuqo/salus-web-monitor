@@ -50,7 +50,7 @@ export default function ChillerInterface({ onBack }) {
         <div className="chiller-details-container">
           <div className="chiller-details-header">
             <button
-              className="back-btn"
+              className="back-btn-chiller"
               onClick={() => {
                 setSelectedChiller(null);
                 setActiveChart(null);

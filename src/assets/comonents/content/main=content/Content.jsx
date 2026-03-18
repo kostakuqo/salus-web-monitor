@@ -11,92 +11,73 @@ import DashboardUtaPage from '../../menu-items/dashboard/DashboardUtaPage';
 import DashboardPage from '../../menu-items/dashboard/DashboardPage';
 import DashboardChillerPage from '../../menu-items/dashboard/DashboardChillerPage';
 
-export default function Content({ resetTrigger }) {
+
+
+export default function Content({ resetTrigger, showMapTrigger }) {
   const location = useLocation();
   const navigate = useNavigate();
 
   const [selectedUta, setSelectedUta] = useState(null);
   const [selectedChiller, setSelectedChiller] = useState(null);
   const [fromDashboard, setFromDashboard] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
-  
   const resetContentState = () => {
     setSelectedUta(null);
     setSelectedChiller(null);
     setFromDashboard(false);
+    setShowMap(false);
   };
 
   useEffect(() => resetContentState(), [location.pathname, resetTrigger]);
 
-  const handleBack = () => {
-    if (selectedUta) setSelectedUta(null);
-    if (selectedChiller) setSelectedChiller(null);
+  // Dacă meniul trimite semnalul de a afișa harta
+  useEffect(() => {
+    if (showMapTrigger) setShowMap(true);
+  }, [showMapTrigger]);
 
-    if (fromDashboard) {
-      navigate("/dashboard");
-    } else {
-      navigate("/"); 
-    }
+  const handleBack = () => {
+    setSelectedUta(null);
+    setSelectedChiller(null);
+    setShowMap(false);
+    if (fromDashboard) navigate("/dashboard");
+    else navigate("/");
+  };
+
+  const handleEquipmentClick = (id) => {
+    setShowMap(false);
+    if (id.includes("asp")) setSelectedUta({ id, name: id });
+    else if (id.includes("chl")) setSelectedChiller({ id, name: id });
   };
 
   const currentPage = location.pathname.split("/")[1] || "";
 
   return (
     <div className="content-grid">
-
-      {/* === Detalii UTA selectat === */}
       {selectedUta ? (
         <UtaInterface uta={selectedUta} onBack={handleBack} />
-
       ) : selectedChiller ? (
-        <ChillerInterface onBack={handleBack} chiller={selectedChiller} />
-
+        <ChillerInterface chiller={selectedChiller} onBack={handleBack} />
+      ) : showMap ? (
+        <AppUta onEquipmentClick={handleEquipmentClick} />
       ) : currentPage === "dashboard" ? (
         <>
-
-
-          <section>
-
-            <div className='dashboard-container'>
-              <DashboardUtaPage
-                onUtaClick={(uta) => {
-                  setSelectedUta(uta);
-                  setFromDashboard(true);
-                }}
-              />
-            </div>
-          </section>
-
-          <section>
-
-            <div className='dashboard-container'>
-              <DashboardChillerPage
-                onChillerClick={(chiller) => {
-                  setSelectedChiller(chiller);
-                  setFromDashboard(true);
-                }}
-              />
-            </div>
-          </section>
+          <DashboardUtaPage onUtaClick={(uta) => { setSelectedUta(uta); setFromDashboard(true); }} />
+          <DashboardChillerPage onChillerClick={(chiller) => { setSelectedChiller(chiller); setFromDashboard(true); }} />
         </>
-
       ) : currentPage === "uta" ? (
         <UtaInterface onBack={handleBack} />
-
       ) : currentPage === "chiller" ? (
         <ChillerInterface onBack={handleBack} />
-
       ) : currentPage === "kaldaja" ? (
         <KaldajaInterface onBack={handleBack} />
-
-      ) : currentPage === "" ? (
+      ) : (
         <>
-          {/* Pagina principală "/" cu containere */}
           <UtaContainer onUtaClick={(uta) => setSelectedUta(uta)} />
           <ChillerContainer onChillerClick={(chiller) => setSelectedChiller(chiller)} />
           <KaldajaContainer onKaldajaClick={() => navigate("/kaldaja")} />
         </>
-      ) : null /* Pagini precum settings/general/harta/profile → nu afișează nimic */}
+      )}
     </div>
   );
 }

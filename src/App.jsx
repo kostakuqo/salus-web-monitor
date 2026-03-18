@@ -5,6 +5,7 @@ import Menu from './assets/comonents/menu-left/Menu';
 import Content from './assets/comonents/content/main=content/Content';
 import HomePage from "./assets/comonents/menu-items/home/Homepage";
 import './App.css';
+import HartaPage from "./assets/comonents/menu-items/harta/HartaPage";
 
 // App.jsx
 export default function AppWrapper() {
@@ -19,6 +20,7 @@ export default function AppWrapper() {
           <Routes>
             {/* Home – pagina de intro */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/homepage" element={<HomePage />} />
 
             {/* Dashboard */}
             <Route path="/dashboard/*" element={<Content resetTrigger={resetTrigger} />} />
@@ -28,14 +30,13 @@ export default function AppWrapper() {
             <Route path="/chiller/*" element={<Content resetTrigger={resetTrigger} />} />
             <Route path="/kaldaja/*" element={<Content resetTrigger={resetTrigger} />} />
 
-            
-            <Route path="/homepage" element={<HomePage />} />
+            {/* Pagini Menu – Settings / General / Profile – Bosh për momentin */}
+            <Route path="/settings" element={null} />
+            <Route path="/general" element={null} />
+            <Route path="/profile" element={null} />
 
-            {/* Pagini Menu – Settings / General / Harta / Profile */}
-            <Route path="/settings/*" element={<Content resetTrigger={resetTrigger} />} />
-            <Route path="/general/*" element={<Content resetTrigger={resetTrigger} />} />
-            <Route path="/harta/*" element={<Content resetTrigger={resetTrigger} />} />
-            <Route path="/profile/*" element={<Content resetTrigger={resetTrigger} />} />
+            {/* Harta – afișează vetëm AppUta */}
+            <Route path="/harta/*" element={<HartaPage />} />
 
             {/* Orice alt URL → redirect la home */}
             <Route path="*" element={<Navigate to="/" />} />

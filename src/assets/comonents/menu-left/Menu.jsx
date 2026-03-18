@@ -18,13 +18,12 @@ export default function Menu() {
   const location = useLocation();
   const currentPage = location.pathname.split("/")[1] || "";
   const [isOpen, setIsOpen] = React.useState(false);
-  const toggleMenu = () => setIsOpen(!isOpen);
 
+  const toggleMenu = () => setIsOpen(!isOpen);
   const handleNavigate = (path) => {
     navigate(path);
     setIsOpen(false);
   };
-
   const getActiveClass = (page) =>
     currentPage === page ? "menu-item active" : "menu-item";
 
@@ -38,8 +37,6 @@ export default function Menu() {
         <div className={getActiveClass("homepage")} onClick={() => handleNavigate("/homepage")}>
           <Home />
         </div>
-
-
         <div className={getActiveClass("dashboard")} onClick={() => handleNavigate("/dashboard")}>
           <Dashboard />
         </div>
@@ -49,9 +46,12 @@ export default function Menu() {
         <div className={getActiveClass("general")} onClick={() => handleNavigate("/general")}>
           <General />
         </div>
+
+        {/* Butonul Harta */}
         <div className={getActiveClass("harta")} onClick={() => handleNavigate("/harta")}>
-          <Harta />
+          <span>Harta</span>
         </div>
+
         <div className={getActiveClass("profile")} onClick={() => handleNavigate("/profile")}>
           <Profile />
         </div>
