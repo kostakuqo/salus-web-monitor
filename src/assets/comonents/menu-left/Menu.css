@@ -1,16 +1,30 @@
 .left-menu {
-  width: 15%;
+  width: 15%; /* më mirë se 15% */
   display: flex;
   flex-direction: column;
   background-color: #1A355E;
   min-height: calc(100vh - 70px);
+ 
 }
-
 .back-button-mobile {
   display: none;
 }
-.menu-item{
-  all: unset;
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  height: 40px;            /* 🔥 kontrollon madhësinë */
+         /* 🔥 padding horizontal vetëm */
+  margin: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #e2e8f0;          /* 🔥 vizibil mbi background */
+  transition: all 0.2s ease;
+}
+.menu-item * {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 
@@ -21,14 +35,16 @@
   border: none;
   cursor: pointer;
   color: white;
-  font-size: 28px;
+  font-size: 20px;
   position: fixed;
   top: 11.5px;
+  padding: 0px;
   left: 0px;
+  margin-left: 4px;
   background-color: white;
   color: #1A355E;
   z-index: 500;
-  
+ 
 }
 
 

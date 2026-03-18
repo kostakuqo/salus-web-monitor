@@ -1,50 +1,232 @@
+/* /* ========================================
+   Container principal
+======================================== */
 .chiller-interface {
-    padding: 20px;
-    background: #e0f7fa;
-    border-radius: 8px;
-    width:100%;
-    padding:40px;
-    font-family: Arial, Helvetica, sans-serif;
-    color: black !important
-};
-
-.chiller-interface{
-    padding:40px;
-    font-family: Arial, Helvetica, sans-serif;
+  padding: 16px;
+  font-family: 'Arial', sans-serif;
+  background-color: #e0f7fa;
+  min-height: 100vh;
 }
 
-.back-button{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-top:25px;
-    padding:10px 18px;
-    background:#f5f7fa;
-    border:none;
-    border-radius:10px;
-    font-size:16px;
-    font-weight:500;
-    color:#333;
-    cursor:pointer;
-    transition:all 0.25s ease;
-}
-.back-icon{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-.back-icon svg{
-    width:20px;
-    height:20px;
-    color: red;
+.main-chiller {
+  max-width: 1200px;
+  margin: 0 auto;
+  /* padding: 16px; */
 }
 
-.back-button:hover{
-    background:#0077ff;
-    color:white;
-    transform:translateY(-2px);
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+/* ========================================
+   Card detalii Chiller
+======================================== */
+.chiller-details-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  margin-bottom: 20px;
 }
-.back-button:hover svg{
-    color:white;
+
+.chiller-details-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
 }
+
+.chiller-details-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #1976d2;
+}
+
+.status-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* ========================================
+   Status pătrat
+======================================== */
+.status-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 30px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+}
+
+.status-box.on {
+  background-color: #00674b;
+}
+
+.status-box.off {
+  background-color: #C82333;
+}
+
+/* ========================================
+   Grid date Chiller
+======================================== */
+.chiller-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.data-card {
+  background-color: #e3f2fd;
+  padding: 14px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease;
+}
+
+.data-card:hover {
+  transform: translateY(-2px);
+}
+
+.data-card h4 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  
+}
+
+/* ========================================
+   Chart buttons
+======================================== */
+.chiller-charts-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.chart-btn {
+  padding: 6px 12px;
+  border: 1px solid #1976d2;
+  border-radius: 6px;
+  background: white;
+  /* color: #1976d2; */
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.chart-btn.active,
+.chart-btn:hover {
+  background-color: #1976d2;
+  color: white;
+}
+
+/* ========================================
+   Chart wrapper
+======================================== */
+.chiller-chart {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.chiller-chart button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* ========================================
+   Lista Chiller
+======================================== */
+.chiller-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding: 8px;
+  align-items: center;
+  cursor: pointer;
+  background-color: white;
+  margin: 4px 0;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chiller-row:hover {
+  background: #3CB371 !important;
+  color: white;
+  cursor: pointer;
+} 
+.chiller-row.header {
+  font-weight: bold;
+  background-color: #e3f2fd;
+}
+
+/* ========================================
+   Cell Chiller
+======================================== */
+.chiller-cell {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* UTAs conectate */
+.uta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+/* ========================================
+   Back button & modal
+======================================== */
+.back-button {
+  position: absolute;
+  right: 20px;
+  top: 420px;
+  margin-top: 20px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #1976d2;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  /* display: inline-flex; */
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #155fa0;
+}
+
+.alert-modal {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  z-index: 1000;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+} 

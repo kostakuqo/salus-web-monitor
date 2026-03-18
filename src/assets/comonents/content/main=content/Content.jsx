@@ -8,48 +8,77 @@ import UtaInterface from '../uta/UtaInterface';
 import ChillerInterface from '../chiller/ChillerInterface';
 import KaldajaInterface from '../kaldaja/KaldajaInterface';
 import DashboardUtaPage from '../../menu-items/dashboard/DashboardUtaPage';
+import DashboardPage from '../../menu-items/dashboard/DashboardPage';
+import DashboardChillerPage from '../../menu-items/dashboard/DashboardChillerPage';
 
 export default function Content({ resetTrigger }) {
   const location = useLocation();
   const navigate = useNavigate();
 
   const [selectedUta, setSelectedUta] = useState(null);
+  const [selectedChiller, setSelectedChiller] = useState(null);
   const [fromDashboard, setFromDashboard] = useState(false);
 
+  
   const resetContentState = () => {
     setSelectedUta(null);
+    setSelectedChiller(null);
     setFromDashboard(false);
   };
 
-  // Reset la schimbarea URL sau trigger din meniu
   useEffect(() => resetContentState(), [location.pathname, resetTrigger]);
 
   const handleBack = () => {
-    setSelectedUta(null);
+    if (selectedUta) setSelectedUta(null);
+    if (selectedChiller) setSelectedChiller(null);
+
     if (fromDashboard) {
       navigate("/dashboard");
     } else {
-      navigate("/"); // pagina principală cu cele trei containere
+      navigate("/"); 
     }
   };
 
-  // Primul segment al URL-ului (ex: "dashboard", "settings")
   const currentPage = location.pathname.split("/")[1] || "";
 
   return (
     <div className="content-grid">
 
-      {/* Dacă un UTA a fost selectat */}
+      {/* === Detalii UTA selectat === */}
       {selectedUta ? (
         <UtaInterface uta={selectedUta} onBack={handleBack} />
 
+      ) : selectedChiller ? (
+        <ChillerInterface onBack={handleBack} chiller={selectedChiller} />
+
       ) : currentPage === "dashboard" ? (
-        <DashboardUtaPage
-          onUtaClick={(uta) => {
-            setSelectedUta(uta);
-            setFromDashboard(true);
-          }}
-        />
+        <>
+
+
+          <section>
+
+            <div className='dashboard-container'>
+              <DashboardUtaPage
+                onUtaClick={(uta) => {
+                  setSelectedUta(uta);
+                  setFromDashboard(true);
+                }}
+              />
+            </div>
+          </section>
+
+          <section>
+
+            <div className='dashboard-container'>
+              <DashboardChillerPage
+                onChillerClick={(chiller) => {
+                  setSelectedChiller(chiller);
+                  setFromDashboard(true);
+                }}
+              />
+            </div>
+          </section>
+        </>
 
       ) : currentPage === "uta" ? (
         <UtaInterface onBack={handleBack} />
@@ -61,15 +90,13 @@ export default function Content({ resetTrigger }) {
         <KaldajaInterface onBack={handleBack} />
 
       ) : currentPage === "" ? (
-        // **Pagina principală "/" → doar la start**
         <>
+          {/* Pagina principală "/" cu containere */}
           <UtaContainer onUtaClick={(uta) => setSelectedUta(uta)} />
-          <ChillerContainer onChillerClick={() => navigate("/chiller")} />
+          <ChillerContainer onChillerClick={(chiller) => setSelectedChiller(chiller)} />
           <KaldajaContainer onKaldajaClick={() => navigate("/kaldaja")} />
         </>
-
       ) : null /* Pagini precum settings/general/harta/profile → nu afișează nimic */}
-
     </div>
   );
 }

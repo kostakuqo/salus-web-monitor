@@ -1,0 +1,145 @@
+.chiller-row {
+  display: flex;
+  flex-direction: row;
+  background: #f0f4f8;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: background 0.2s, color 0.2s;
+}
+
+.chiller-cell {
+  flex: 1 1 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.chiller-id {
+  flex: 0 0 120px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+}
+
+.chiller-cell:first-child {
+  font-weight: 700;
+}
+
+.chiller-row:hover {
+  background: #3CB371 !important;
+  color: white;
+  cursor: pointer;
+}
+
+.chiller-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 13px;
+  color: white;
+  margin: 2px;
+}
+
+.chiller-button.start {
+  background-color: #00674b;
+}
+
+.chiller-button.start:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+.chiller-button.stop {
+  background-color: #880808;
+}
+
+.chiller-button.stop:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+}
+
+.view-cell-chiller {
+  flex: 0 0 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tempSupply, .tempReturn, .tempWaterIn, .pressure, .inverterSupply, .inverterReturn {
+  flex: 0 0 60px;
+  text-align: center;
+}
+
+.status-chiller {
+  padding: 6px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: white;
+  width: 50px;
+}
+
+.status-chiller.on {
+  background-color: #00674b;
+}
+
+.status-chiller.off {
+  background-color: #880808;
+}
+
+.view-icon-chiller {
+  cursor: pointer;
+  color: gray;
+  width: 30px;
+  height: 30px;
+  transition: color 0.2s ease;
+  display: block;
+  margin: auto;
+}
+
+.view-icon-chiller:hover {
+  color: #0056b3;
+}
+.chiller-card{
+  display: flex;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .chiller-cell {
+    display: none;
+  }
+
+  .chiller-id {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .chiller-cell:nth-last-child(2),
+  .chiller-cell:last-child {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+
+  .chiller-button {
+    flex: none;
+    padding: 6px 12px;
+    min-width: 60px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .view-icon-chiller {
+    display: inline-block;
+  }
+}

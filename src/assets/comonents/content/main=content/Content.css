@@ -1,6 +1,10 @@
 .content-grid{
     margin: 0;
     height: 100%;
+    background-color: #e0f7fa;
     
+}
+.dashboard-container{
+    padding: 10px;
 }
 

@@ -1,6 +1,102 @@
 export const initialUtaData = [
-  { id: "UTA 1234", status: "ON", tempAirSupply: 22, tempReturn: 19, tempWaterIn: 30, pressure: 1.2, inverterAirSupply: 80, inverterAirReturn: 75 },
-  { id: "UTA 4567", status: "OFF", tempAirSupply: 23, tempReturn: 20, tempWaterIn: 31, pressure: 1.1, inverterAirSupply: 70, inverterAirReturn: 68 },
-  { id: "UTA 8910", status: "ON", tempAirSupply: 21, tempReturn: 19, tempWaterIn: 29, pressure: 1.3, inverterAirSupply: 85, inverterAirReturn: 80 },
-  { id: "UTA 8580", status: "OFF", tempAirSupply: 45, tempReturn: 19, tempWaterIn: 29, pressure: 1.3, inverterAirSupply: 70, inverterAirReturn: 56 }
+  {
+    id: "UTA 1234",
+    status: "ON",
+    tempAirSupply: 22,
+    tempReturn: 19,
+    pressure: 1.2,
+    inverterAirSupply: 80,
+    inverterAirReturn: 75,
+    chiller: {
+      id: "CHILLER 1",
+      status: "OFF",       // <- status chiller adaugat aici
+      tempIn: 30,
+      tempOut: 40,
+      pressure: 1.1,
+      kaldaja: {
+        id: "KALDAJA 1",
+        tempSupply: 6,
+        tempReturn: 4,
+        inverter: {
+          id: "INV 1",
+          power: 70
+        }
+      }
+    }
+  },
+  {
+    id: "UTA 4567",
+    status: "OFF",
+    tempAirSupply: 23,
+    tempReturn: 20,
+    pressure: 1.1,
+    inverterAirSupply: 70,
+    inverterAirReturn: 68,
+    chiller: {
+      id: "CHILLER 2",
+      status: "ON",
+      tempIn: 31,
+      tempOut: 38,
+      pressure: 1.2,
+      kaldaja: {
+        id: "KALDAJA 2",
+        tempSupply: 7,
+        tempReturn: 5,
+        inverter: {
+          id: "INV 2",
+          power: 60
+        }
+      }
+    }
+  },
+  {
+    id: "UTA 4537",
+    status: "OFF",
+    tempAirSupply: 23,
+    tempReturn: 20,
+    pressure: 1.1,
+    inverterAirSupply: 70,
+    inverterAirReturn: 68,
+    chiller: {
+      id: "CHILLER 3",
+      status: "OFF",
+      tempIn: 31,
+      tempOut: 38,
+      pressure: 1.2,
+      kaldaja: {
+        id: "KALDAJA 2",
+        tempSupply: 7,
+        tempReturn: 5,
+        inverter: {
+          id: "INV 2",
+          power: 60
+        }
+      }
+    }
+  },
+  {
+    id: "UTA 4067",
+    status: "ON",
+    tempAirSupply: 23,
+    tempReturn: 20,
+    pressure: 1.1,
+    inverterAirSupply: 70,
+    inverterAirReturn: 68,
+    chiller: {
+      id: "CHILLER 4",
+      status: "ON",
+      tempIn: 31,
+      tempOut: 38,
+      pressure: 1.2,
+      kaldaja: {
+        id: "KALDAJA 2",
+        tempSupply: 7,
+        tempReturn: 5,
+        inverter: {
+          id: "INV 2",
+          power: 60
+        }
+      }
+    }
+  }
 ];

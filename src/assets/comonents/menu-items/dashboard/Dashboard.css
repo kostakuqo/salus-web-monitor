@@ -3,8 +3,10 @@
   align-items: center;    
           
 }
-
-
+.dashboard-page{
+  background-color: #E0F7FA;
+  
+}
 
 .menu-item span {
   display: inline-block;  

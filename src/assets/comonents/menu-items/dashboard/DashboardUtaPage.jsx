@@ -4,10 +4,10 @@ import DashboardUtaCard from "./DashboardUtaCard";
 import "./Dashboard.css"
 
 export default function DashboardUtaPage({ onUtaClick }) {
-  console.log("DashboardUtaPage render"); // 🔹 verifică dacă se afișează pagina
+  console.log("DashboardUtaPage render");
   return (
     <div className="dashboard-page">
-      <h2>UTA Status</h2>
+      <h2>UTA </h2>
       <div className="dashboard-grid">
         {initialUtaData.map((uta) => (
           <DashboardUtaCard
@@ -15,7 +15,7 @@ export default function DashboardUtaPage({ onUtaClick }) {
             id={uta.id}
             status={uta.status}
             onClick={() => {
-              console.log("Card clicked:", uta.id); // 🔹 verifică click pe card
+              console.log("Card clicked:", uta.id);
               onUtaClick(uta);
             }}
           />
