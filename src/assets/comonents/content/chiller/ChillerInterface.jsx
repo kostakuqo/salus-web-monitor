@@ -142,7 +142,7 @@ export default function ChillerInterface({ onBack }) {
         <div className="chiller-cell"><strong>Status</strong></div>
         <div className="chiller-cell"><strong>Temp in</strong></div>
         <div className="chiller-cell"><strong>Temp out</strong></div>
-        <div className="chiller-cell"><strong>UTA conectate</strong></div>
+        <div className="chiller-cell"><strong>UTA conected</strong></div>
       </div>
 
       {chillerData.map((chiller) => (

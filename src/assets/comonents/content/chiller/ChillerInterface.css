@@ -136,12 +136,15 @@
   font-size: 18px;
   cursor: pointer;
 }
+.chiller-id{
+  margin-bottom: 0px;
+}
 
 
 .chiller-row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  padding: 8px;
+  padding: 4px;
   align-items: center;
   cursor: pointer;
   background-color: white;
