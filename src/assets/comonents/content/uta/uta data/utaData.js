@@ -8,7 +8,7 @@ export const initialUtaData = [
     inverterAirSupply: 80,
     inverterAirReturn: 75,
     chiller: {
-      id: "CHILLER 1",
+      id: "CHILL 1",
       status: "OFF",       // <- status chiller adaugat aici
       tempIn: 30,
       tempOut: 40,
@@ -33,7 +33,7 @@ export const initialUtaData = [
     inverterAirSupply: 70,
     inverterAirReturn: 68,
     chiller: {
-      id: "CHILLER 2",
+      id: "CHILL 2",
       status: "ON",
       tempIn: 31,
       tempOut: 38,
@@ -58,7 +58,7 @@ export const initialUtaData = [
     inverterAirSupply: 70,
     inverterAirReturn: 68,
     chiller: {
-      id: "CHILLER 3",
+      id: "CHILL 3",
       status: "OFF",
       tempIn: 31,
       tempOut: 38,
@@ -83,7 +83,7 @@ export const initialUtaData = [
     inverterAirSupply: 70,
     inverterAirReturn: 68,
     chiller: {
-      id: "CHILLER 4",
+      id: "CHILL 4",
       status: "ON",
       tempIn: 31,
       tempOut: 38,

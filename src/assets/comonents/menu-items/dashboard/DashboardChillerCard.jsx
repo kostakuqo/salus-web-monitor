@@ -1,4 +1,4 @@
-// DashboardChillerCard.jsx
+
 import React from "react";
 import "./DashboardChillerCard.css";
 

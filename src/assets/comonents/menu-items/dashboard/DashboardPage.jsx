@@ -11,7 +11,7 @@ export default function DashboardPage() {
 
   const handleChillerClick = (chiller) => {
     console.log("Chiller selectat:", chiller.id);
-    // aici poți naviga către pagina Chiller detaliu
+    
   };
 
   return (

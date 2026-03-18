@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons"; // 🔹 iconul Home
-import './Home.css'; // optional, pentru stiluri
+import { faHome } from "@fortawesome/free-solid-svg-icons"; 
+import './Home.css'; 
 import HomePage from './Homepage';
 
 export default function Home() {

@@ -17,14 +17,14 @@
 }
 
 .menu-item {
-  display: flex;          /* icon + text pe linie */
-  align-items: center;    /* vertical centrat */
+  display: flex;          
+  align-items: center;    
   padding: 8px 12px;
-  gap: 12px;              /* spațiu fix între icon și text */
+  gap: 12px;              
 }
 
 .menu-item span {
-  display: inline-block;  /* trebuie să fie bloc pentru a avea lățime fixă */
-  width: 100px;           /* lățimea fixă dorită */
-  flex-shrink: 0;         /* împiedică span-ul să se micșoreze */
+  display: inline-block; 
+  width: 100px;           
+  flex-shrink: 0;        
 }

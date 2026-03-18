@@ -7,7 +7,7 @@
   margin-bottom: 10px;
   align-items: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: background 0.2s, color 0.2s;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .chiller-cell {
@@ -128,7 +128,7 @@ body {
   color: #1976d2;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .chiller-cell {
     display: none;
@@ -160,4 +160,5 @@ body {
   .view-icon-chiller {
     display: inline-block;
   }
+
 }

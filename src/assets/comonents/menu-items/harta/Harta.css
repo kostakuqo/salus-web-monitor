@@ -1,19 +1,19 @@
 .menu-item {
-  display: flex;          /* icon + text pe linie */
-  align-items: center;    /* vertical centrat */
+  display: flex;          
+  align-items: center;    
   padding: 8px 12px;
-  gap: 12px;              /* spațiu fix între icon și text */
+  gap: 12px;              
 }
 
 .menu-item span {
-  display: inline-block;  /* trebuie să fie bloc pentru a avea lățime fixă */
-  width: 150px;           /* lățimea fixă dorită */
+  display: inline-block;  
+  width: 150px;           
   flex-shrink: 0;
-  padding-left: 4px;         /* împiedică span-ul să se micșoreze */
+  padding-left: 4px;        
 }
 .menu-item {
-  display: flex;          /* face icon + span să fie pe linie */
-  align-items: center;    /* vertical centrat */
+  display: flex;          
+  align-items: center;    
   padding: 8px 12px;
 }
 
