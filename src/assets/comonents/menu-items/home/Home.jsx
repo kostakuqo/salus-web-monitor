@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons"; 
-import './Home.css'; 
+import { faHome } from "@fortawesome/free-solid-svg-icons";
+import './Home.css';
 import HomePage from './Homepage';
 
 export default function Home() {
@@ -11,7 +11,7 @@ export default function Home() {
 
     return (
         <div
-            className="menu-item"
+            className="home-button"
             onClick={() => navigate("/home")}
         >
             <FontAwesomeIcon icon={faHome} className="menu-icon" />

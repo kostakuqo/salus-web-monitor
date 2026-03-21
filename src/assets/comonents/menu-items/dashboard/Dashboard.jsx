@@ -9,7 +9,7 @@ export default function Dashboard() {
 
   return (
     <div
-      className="menu-item"
+      className="menu-dashboard-button"
       onClick={() => navigate("/dashboard")}
     >
       <FontAwesomeIcon icon={faHome} className="menu-icon" />

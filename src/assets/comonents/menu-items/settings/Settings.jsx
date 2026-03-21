@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faGear, faHome } from '@fortawesome/free-solid-svg-icons'
 
 export default function Settings() {
-    return <div className="menu-item">
+    return <div className="settings-button">
         <FontAwesomeIcon icon={faGear} className="menu-icon" />
         <span>Settings</span>
     </div>

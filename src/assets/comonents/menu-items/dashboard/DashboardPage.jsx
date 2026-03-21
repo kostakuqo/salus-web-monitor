@@ -1,6 +1,5 @@
 import React from "react";
 import DashboardUtaPage from "./DashboardUtaPage";
-import DashboardChillerPage from "./DashboardChillerPage";
 import "./DashboardPage.css";
 
 export default function DashboardPage() {

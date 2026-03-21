@@ -14,5 +14,5 @@ export default defineConfig({
       input: '/index.html'
     }
   },
-  base: '/salus-web-monitor/'
+  base: '/'
 });

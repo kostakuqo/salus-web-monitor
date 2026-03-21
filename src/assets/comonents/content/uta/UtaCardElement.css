@@ -82,7 +82,7 @@
 }
 
 
-.uta-id { flex: 0 0 120px; display: flex; align-items: center; gap: 5px; font-weight: 700; }
+.uta-id {  display: flex; align-items: center; gap: 5px; font-weight: 700; }
 .view-cell { flex: 0 0 40px; display: flex; justify-content: center; align-items: center; }
 .tempAirSupply, .tempReturn, .tempWaterIn, .pressure, .inverterAirSupply, .inverterAirReturn { flex: 0 0 60px; text-align: center; }
 .start, .stop { flex: 0 0 60px; text-align: center; }
@@ -136,6 +136,7 @@
   }
 
   .uta-id {
+    
     display: flex;
     justify-content: space-between;
     align-items: center;

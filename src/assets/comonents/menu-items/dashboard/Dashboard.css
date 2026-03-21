@@ -8,11 +8,7 @@
   
 }
 
-.menu-item span {
-  display: inline-block;  
-  width: 100px;           
-  flex-shrink: 0;         
-}
+
 .dashboard-page {
   padding: 20px;
   display: flex;

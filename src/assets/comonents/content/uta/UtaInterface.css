@@ -354,20 +354,21 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;       
-  height: 100vh;    
-  background-color: rgba(0, 0, 0, 0.5) !important; 
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5) !important;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;      
+  z-index: 9999;
 }
-  
+
+
 
 
 .alert-modal-content {
-  background-color: #ffffff !important;  
-  color: #000000 !important;            
+  background-color: #ffffff !important;
+  color: #000000 !important;
   padding: 20px 30px;
   border-radius: 10px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
@@ -400,12 +401,12 @@
   .uta-details-header h2 {
     margin: 0;
     flex: 0 0 auto;
-   
+
   }
 
   .status-tag {
     margin-left: auto;
-    
+
     flex: 0 0 auto;
   }
 
@@ -413,18 +414,18 @@
     display: flex;
     gap: 6px;
     flex: 1 1 auto;
-    
+
   }
 
   .uta-button.start,
   .uta-button.stop {
     flex: 0 0 70px;
-    
+
   }
 
   .uta-button.edit {
     flex: 1 1 auto;
-    
+
   }
 
 

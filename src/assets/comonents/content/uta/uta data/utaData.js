@@ -1,102 +1,95 @@
 export const initialUtaData = [
+  
   {
-    id: "UTA 1234",
+    id: "UTA-01",
     status: "ON",
-    tempAirSupply: 22,
-    tempReturn: 19,
-    pressure: 1.2,
-    inverterAirSupply: 80,
-    inverterAirReturn: 75,
-    chiller: {
-      id: "CHILL 1",
-      status: "OFF",       // <- status chiller adaugat aici
-      tempIn: 30,
-      tempOut: 40,
-      pressure: 1.1,
-      kaldaja: {
-        id: "KALDAJA 1",
-        tempSupply: 6,
-        tempReturn: 4,
-        inverter: {
-          id: "INV 1",
-          power: 70
-        }
-      }
-    }
+    Sezon_Modality:"HEATING",
+    Air_inp_Temp: -2,
+    Air_Output_Temp: 22,
+    Air_Return_Temp: 19,
+    Water_InpChillTemp: 7,
+    Water_outChill_Temp: 12,
+    Water_InpBoilTemp: 80,
+    Water_OutputBoilTemp: 65,
+    Boil_Pump_Invert: 72,
+    Chiller_Pump_Invert: 3,
+    Boil_Valve: 85,
+    Chiller_Valve: 12,
+    Inp_Damper: 90, 
+    Output_Damper: 90,
+    Out_Return_Pressure: 1.8,
+    Air_outHygro: 45,
+    Ventilator: 68,
+    Aspirator: 72,
+    Power_Status: "ON",
   },
   {
-    id: "UTA 4567",
-    status: "OFF",
-    tempAirSupply: 23,
-    tempReturn: 20,
-    pressure: 1.1,
-    inverterAirSupply: 70,
-    inverterAirReturn: 68,
-    chiller: {
-      id: "CHILL 2",
-      status: "ON",
-      tempIn: 31,
-      tempOut: 38,
-      pressure: 1.2,
-      kaldaja: {
-        id: "KALDAJA 2",
-        tempSupply: 7,
-        tempReturn: 5,
-        inverter: {
-          id: "INV 2",
-          power: 60
-        }
-      }
-    }
-  },
-  {
-    id: "UTA 4537",
-    status: "OFF",
-    tempAirSupply: 23,
-    tempReturn: 20,
-    pressure: 1.1,
-    inverterAirSupply: 70,
-    inverterAirReturn: 68,
-    chiller: {
-      id: "CHILL 3",
-      status: "OFF",
-      tempIn: 31,
-      tempOut: 38,
-      pressure: 1.2,
-      kaldaja: {
-        id: "KALDAJA 2",
-        tempSupply: 7,
-        tempReturn: 5,
-        inverter: {
-          id: "INV 2",
-          power: 60
-        }
-      }
-    }
-  },
-  {
-    id: "UTA 4067",
+    id: "UTA-06",
     status: "ON",
-    tempAirSupply: 23,
-    tempReturn: 20,
-    pressure: 1.1,
-    inverterAirSupply: 70,
-    inverterAirReturn: 68,
-    chiller: {
-      id: "CHILL 4",
-      status: "ON",
-      tempIn: 31,
-      tempOut: 38,
-      pressure: 1.2,
-      kaldaja: {
-        id: "KALDAJA 2",
-        tempSupply: 7,
-        tempReturn: 5,
-        inverter: {
-          id: "INV 2",
-          power: 60
-        }
-      }
-    }
-  }
-];
+    Sezon_Modality:"HEATING",
+    Air_inp_Temp: 34,
+    Air_Output_Temp: 22,
+    Air_Return_Temp: 19,
+    Water_InpChillTemp: 47,
+    Water_outChill_Temp: 32,
+    Water_InpBoilTemp: 80,
+    Water_OutputBoilTemp: 35,
+    Boil_Pump_Invert: 32,
+    Chiller_Pump_invert: 70,
+    Boil_Valve: 85,
+    Chiller_Valve: 12,
+    Inp_Damper: 90, 
+    Output_Damper: 90,
+    Out_Return_Pressure: 1.8,
+    Air_outHygro: 45,
+    Ventilator: 68,
+    Aspirator: 72,
+    Power_Status: "ON",
+  },
+  {
+    id: "UTA-05",
+    status: "ON",
+    Sezon_Modality:"HEATING",
+    Air_inp_Temp: -2,
+    Air_Output_Temp: 22,
+    Air_Return_Temp: 19,
+    Water_InpChillTemp: 7,
+    Water_outChill_Temp: 12,
+    Water_InpBoilTemp: 80,
+    Water_OutputBoilTemp: 65,
+    Boil_Pump_Invert: 72,
+    Chiller_Pump_invert: 0,
+    Boil_Valve: 85,
+    Chiller_Valve: 12,
+    Inp_Damper: 90, 
+    Output_Damper: 90,
+    Out_Return_Pressure: 1.8,
+    Air_outHygro: 45,
+    Ventilator: 68,
+    Aspirator: 72,
+    Power_Status: "ON",
+  },
+  {
+    id: "UTA-04",
+    status: "ON",
+    Sezon_Modality:"HEATING",
+    Air_inp_Temp: -2,
+    Air_Output_Temp: 22,
+    Air_Return_Temp: 19,
+    Water_InpChillTemp: 7,
+    Water_outChill_Temp: 12,
+    Water_InpBoilTemp: 80,
+    Water_OutputBoilTemp: 65,
+    Boil_Pump_Invert: 72,
+    Chiller_Pump_invert: 0,
+    Boil_Valve: 85,
+    Chiller_Valve: 12,
+    Inp_Damper: 90, 
+    Output_Damper: 90,
+    Out_Return_Pressure: 1.8,
+    Air_outHygro: 45,
+    Ventilator: 68,
+    Aspirator: 72,
+    Power_Status: "ON",
+  },
+]

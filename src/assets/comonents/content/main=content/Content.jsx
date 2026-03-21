@@ -9,7 +9,7 @@ import ChillerInterface from '../chiller/ChillerInterface';
 import KaldajaInterface from '../kaldaja/KaldajaInterface';
 import DashboardUtaPage from '../../menu-items/dashboard/DashboardUtaPage';
 import DashboardPage from '../../menu-items/dashboard/DashboardPage';
-import DashboardChillerPage from '../../menu-items/dashboard/DashboardChillerPage';
+
 
 
 
@@ -63,7 +63,7 @@ export default function Content({ resetTrigger, showMapTrigger }) {
       ) : currentPage === "dashboard" ? (
         <>
           <DashboardUtaPage onUtaClick={(uta) => { setSelectedUta(uta); setFromDashboard(true); }} />
-          <DashboardChillerPage onChillerClick={(chiller) => { setSelectedChiller(chiller); setFromDashboard(true); }} />
+          
         </>
       ) : currentPage === "uta" ? (
         <UtaInterface onBack={handleBack} />
