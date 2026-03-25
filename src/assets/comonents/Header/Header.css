@@ -74,6 +74,9 @@ header {
   .logo-img {
     display: none;
   }
+  .logo-svg{
+    display: none;
+  }
   
 
   .menu {

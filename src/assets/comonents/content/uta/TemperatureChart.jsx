@@ -11,32 +11,32 @@ import { faChevronDown, faCheck, faTimes } from "@fortawesome/free-solid-svg-ico
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const ALL_PARAMS = [
-  { key: "Air_inp_Temp",         label: "Temp Air In",       unit: "°C",  color: "#f97316" },
-  { key: "Air_Output_Temp",      label: "Temp Air Out",      unit: "°C",  color: "#eab308" },
-  { key: "Air_Return_Temp",      label: "Temp Air Return",   unit: "°C",  color: "#84cc16" },
-  { key: "Air_outHygro",         label: "Lagështira",        unit: "%",   color: "#06b6d4" },
-  { key: "Water_InpChillTemp",   label: "Ujë Hyrje Chiller", unit: "°C",  color: "#3b82f6" },
-  { key: "Water_outChill_Temp",  label: "Ujë Dalje Chiller", unit: "°C",  color: "#6366f1" },
-  { key: "Water_InpBoilTemp",    label: "Ujë Hyrje Kaldaja", unit: "°C",  color: "#ec4899" },
-  { key: "Water_OutputBoilTemp", label: "Ujë Dalje Kaldaja", unit: "°C",  color: "#f43f5e" },
-  { key: "Boil_Pump_Invert",     label: "Pompa Kaldaja",     unit: "%",   color: "#a855f7" },
-  { key: "Chiller_Pump_Invert",  label: "Pompa Chiller",     unit: "%",   color: "#8b5cf6" },
-  { key: "Boil_Valve",           label: "Valvula Kaldaja",   unit: "%",   color: "#14b8a6" },
-  { key: "Chiller_Valve",        label: "Valvula Chiller",   unit: "%",   color: "#10b981" },
-  { key: "Inp_Damper",           label: "Damper Hyrje",      unit: "%",   color: "#f59e0b" },
-  { key: "Output_Damper",        label: "Damper Dalje",      unit: "%",   color: "#ef4444" },
-  { key: "Aspirator",            label: "Aspirator",         unit: "%",   color: "#64748b" },
-  { key: "Ventilator",           label: "Ventilator",        unit: "%",   color: "#0ea5e9" },
-  { key: "Out_Return_Pressure",  label: "Presioni",          unit: "bar", color: "#d946ef" },
+  { key: "Air_inp_Temp", label: "Temp Air In", unit: "°C", color: "#f97316" },
+  { key: "Air_Output_Temp", label: "Temp Air Out", unit: "°C", color: "#eab308" },
+  { key: "Air_Return_Temp", label: "Temp Air Return", unit: "°C", color: "#84cc16" },
+  { key: "Air_outHygro", label: "Lagështira", unit: "%", color: "#06b6d4" },
+  { key: "Water_InpChillTemp", label: "Ujë Hyrje Chiller", unit: "°C", color: "#3b82f6" },
+  { key: "Water_outChill_Temp", label: "Ujë Dalje Chiller", unit: "°C", color: "#6366f1" },
+  { key: "Water_InpBoilTemp", label: "Ujë Hyrje Kaldaja", unit: "°C", color: "#ec4899" },
+  { key: "Water_OutputBoilTemp", label: "Ujë Dalje Kaldaja", unit: "°C", color: "#f43f5e" },
+  { key: "Boil_Pump_Invert", label: "Pompa Kaldaja", unit: "%", color: "#a855f7" },
+  { key: "Chiller_Pump_Invert", label: "Pompa Chiller", unit: "%", color: "#8b5cf6" },
+  { key: "Boil_Valve", label: "Valvula Kaldaja", unit: "%", color: "#14b8a6" },
+  { key: "Chiller_Valve", label: "Valvula Chiller", unit: "%", color: "#10b981" },
+  { key: "Inp_Damper", label: "Damper Hyrje", unit: "%", color: "#f59e0b" },
+  { key: "Output_Damper", label: "Damper Dalje", unit: "%", color: "#ef4444" },
+  { key: "Aspirator", label: "Aspirator", unit: "%", color: "#64748b" },
+  { key: "Ventilator", label: "Ventilator", unit: "%", color: "#0ea5e9" },
+  { key: "Out_Return_Pressure", label: "Presioni", unit: "bar", color: "#d946ef" },
 ];
 
 export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClose }) {
-  const [selectedParams, setSelectedParams]         = useState([]);
-  const [chartUta, setChartUta]                     = useState(initialUta || utaData?.[0] || null);
-  const [dropdownOpen, setDropdownOpen]             = useState(false);
-  const [paramDropdownOpen, setParamDropdownOpen]   = useState(false);
+  const [selectedParams, setSelectedParams] = useState([]);
+  const [chartUta, setChartUta] = useState(initialUta || utaData?.[0] || null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [paramDropdownOpen, setParamDropdownOpen] = useState(false);
 
-  const dropdownRef      = useRef(null);
+  const dropdownRef = useRef(null);
   const paramDropdownRef = useRef(null);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
   const data = chartUta ? [chartUta] : (utaData || []);
 
   const chartData = useMemo(() => {
-    const labels   = data.map((d, i) => d.time || `Pika ${i + 1}`);
+    const labels = data.map((d, i) => d.time || `Pika ${i + 1}`);
     const datasets = selectedParams.map((key) => {
       const param = ALL_PARAMS.find((p) => p.key === key);
       return {
@@ -103,7 +103,7 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
   };
 
   const activeParams = selectedParams.map((k) => ALL_PARAMS.find((p) => p.key === k)).filter(Boolean);
-  const allUtas      = utaData || (initialUta ? [initialUta] : []);
+  const allUtas = utaData || (initialUta ? [initialUta] : []);
 
   return (
     <>
@@ -201,13 +201,20 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
         .uce-chevron  { font-size:9px; color:#60a5fa; transition:transform 0.2s; }
         .uce-uta-trigger.open .uce-chevron { transform:rotate(180deg); }
 
-        .uce-uta-dropdown {
-          position: absolute; top: calc(100% + 6px); left: 0;
-          background: #131929; border: 1px solid #2d3748; border-radius: 8px;
-          min-width: 160px; box-shadow: 0 12px 32px rgba(0,0,0,.5);
-          z-index: 50; overflow: hidden;
-          animation: uceDdIn 0.15s ease;
-        }
+      .uce-uta-dropdown {
+  position: absolute; 
+  top: calc(100% + 6px); 
+  left: 0;
+  background: #131929; 
+  border: 1px solid #2d3748; 
+  border-radius: 8px;
+  min-width: 160px; 
+  max-height: 60vh;      /* limită pe mobil */
+  overflow-y: auto;       /* scroll dacă lista e lungă */
+  box-shadow: 0 12px 32px rgba(0,0,0,.5);
+  z-index: 50; 
+  animation: uceDdIn 0.15s ease;
+}
         .uce-opt {
           display: flex; align-items: center; gap: 8px;
           padding: 9px 13px; cursor: pointer; font-size: 12px; color: #94a3b8;
@@ -246,9 +253,7 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
               onClick={() => setParamDropdownOpen((v) => !v)}
             >
               <span className="uce-param-trigger-text">
-                {activeParams.length > 0
-                  ? activeParams.map((p) => p.label).join(", ")
-                  : "Zgjidh parametër..."}
+                Zgjidh parametër...
               </span>
               <FontAwesomeIcon icon={faChevronDown} className="uce-param-chevron" />
             </div>
@@ -301,7 +306,7 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
                 {dropdownOpen && (
                   <div className="uce-uta-dropdown">
                     {allUtas.map((uta) => {
-                      const isAct     = chartUta?.id === uta.id;
+                      const isAct = chartUta?.id === uta.id;
                       const statusKey = (uta.status || "").toLowerCase();
                       return (
                         <div
@@ -314,7 +319,7 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
                             style={{
                               background:
                                 statusKey === "running" ? "#4ade80" :
-                                statusKey === "stopped" ? "#f87171" : "#64748b",
+                                  statusKey === "stopped" ? "#f87171" : "#64748b",
                             }}
                           />
                           {uta.id}
@@ -332,14 +337,14 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
 
             {/* Active pills */}
             <div className="uce-pills">
-              <span className="uce-pills-label">Shfaq:</span>
+              <span className="uce-pills-label">created:</span>
               {activeParams.length > 0
                 ? activeParams.map((p) => (
-                    <span key={p.key} className="uce-pill" style={{ "--c": p.color }}>
-                      <span className="uce-pill-dot" />
-                      {p.label} ({p.unit})
-                    </span>
-                  ))
+                  <span key={p.key} className="uce-pill" style={{ "--c": p.color }}>
+                    <span className="uce-pill-dot" />
+                    {p.label} ({p.unit})
+                  </span>
+                ))
                 : <span style={{ fontSize: "11px", color: "#475569" }}>—</span>
               }
             </div>

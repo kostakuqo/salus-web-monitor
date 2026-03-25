@@ -30,7 +30,7 @@ export default function Header() {
         {/* Title with lines */}
         <div className="header-title">
           <span className="line"></span>
-          <h1>Salus Web Monitor</h1>
+          <h1>Monitor</h1>
           <span className="line"></span>
         </div>
 
