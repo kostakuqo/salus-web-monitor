@@ -13,6 +13,7 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
+
 .uta-row.header {
 
   font-weight: 700;
@@ -91,6 +92,7 @@
   background: #f0f9f9;
   border-radius: 12px;
   padding: 20px;
+  padding-bottom: 100px;
   width: 100%;
   margin: 0 auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -377,6 +379,29 @@
   min-width: 200px;
   max-width: 400px;
 }
+.uta-button.graph-bottom {
+  position: absolute;
+  bottom: 0px;
+  left: 15px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 10;
+}
+
+.uta-button.graph-bottom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
 
 
 
@@ -417,11 +442,11 @@
 
   }
 
-  .uta-button.start,
+  /* .uta-button.start,
   .uta-button.stop {
-    flex: 0 0 70px;
+    flex: 0 0 0px;
 
-  }
+  } */
 
   .uta-button.edit {
     flex: 1 1 auto;
@@ -497,6 +522,25 @@
 
   .status-tag {
     margin-left: auto;
+  }
+
+  .uta-button.graph-bottom {
+    left: 50%; /* Centrat pe ecran */
+    bottom: 0px; /* La 20px de marginea de jos */
+    transform: translateX(-50%);
+    width: 90%; /* Ocupă 90% din lățimea ecranului */
+    padding: 14px 20px; /* Mai mare pentru touch */
+    font-size: 16px; /* Mai vizibil textul */
+    border-radius: 12px; /* Rotunjit */
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3); /* Shadow mai elegant */
+    background: linear-gradient(135deg, #4f46e5, #6366f1); /* Gradient frumos */
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+
+  .uta-button.graph-bottom:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
   }
 
 }

@@ -4,68 +4,109 @@
   flex-direction: column;
   background-color: #1A355E;
   min-height: calc(100vh - 70px);
- 
+  padding: 8px;
 }
+/* .left-menu {
+  position: fixed;       
+  top: 0;               
+  left: 0;               
+  height: 100vh;        
+  width: 250px;         
+  overflow-y: auto;      
+  background-color: #0a0f1a;
+  z-index: 1000;        
+  transition: all 0.3s ease;
+} */
+
+.main-layout {
+  padding-top: 60px;
+}
+
 .back-button-mobile {
   display: none;
 }
 
 .menu-item {
-  
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 8px;
-    /* padding: 8px 14px; */
-    background: rgba(255, 255, 255, 0.08) !;
-    color: red;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    width: 90%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  width: 80%;
+  transition: background 0.2s ease;
 }
 
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
 
+.menu-item.active {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.35);
+}
 
+.menu-item * {
+  padding: 0 !important;
+  margin: 0 !important;
+  color: inherit !important;
+}
+
+/* ── Toggle — ascuns pe desktop implicit ── */
 .menu-toggle {
   display: none;
-  background: none;
+  align-items: center;
+  justify-content: center;
   border: none;
   cursor: pointer;
-  color: white;
-  font-size: 20px;
   position: fixed;
   top: 11.5px;
-  padding: 0px;
-  left: 0px;
-  margin-left: 4px;
+  left: 4px;
+  padding: 6px 8px;
   background-color: white;
   color: #1A355E;
+  border-radius: 6px;
   z-index: 500;
- 
+  width: 40px;
+  height: 40px;
 }
+
+/* ── Când meniul e hidden (pe Harta), butonul apare și pe desktop ── */
+.menu-toggle.visible-on-desktop {
+  display: flex;
+}
+
 .menu-show-btn {
   position: fixed;
-  top: 120px;
+  top: 10px;
   left: 0px;
   z-index: 9999;
   display: flex;
   align-items: center;
   gap: 6px;
   background: white;
-  color: black;
+  color: #1A355E;
   border: none;
   border-radius: 8px;
   padding: 8px 14px;
   cursor: pointer;
 }
 
+.menu-show-btn:hover {
+  background: #e8eef7;
+}
+
 .menu-show-label {
   font-size: 12px;
   font-weight: 600;
 }
+
 .menu-hide-btn {
   display: flex;
   align-items: center;
@@ -80,36 +121,44 @@
   font-size: 12px;
   font-weight: 600;
   width: 100%;
+  transition: background 0.2s ease;
 }
 
 .menu-hide-btn:hover {
   background: rgba(255, 255, 255, 0.15);
 }
 
-
+/* ──────────────── MOBILE ──────────────── */
 @media (max-width: 768px) {
+
+  /* Pe mobile apare mereu */
   .menu-toggle {
-    display: block;
-  }
-
-  .left-menu.closed {
-    display: none;
-  }
-
-  .left-menu.open {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .left-menu {
     position: fixed;
     top: 60px;
     left: 0;
     width: 100%;
     height: calc(100vh - 60px);
+    min-height: unset;
     background-color: #1A355E;
     padding: 10px;
     z-index: 400;
-    transition: transform 0.3s ease;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
   }
 
+  .left-menu.open {
+    transform: translateX(0);
+  }
+
+  .left-menu.closed {
+    transform: translateX(-100%);
+  }
 
   .main-layout .content {
     width: 100%;
@@ -118,31 +167,42 @@
   .back-button-mobile {
     position: absolute;
     bottom: 100px;
-    left: 0px;
+    left: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    width: 100%;
-    padding: 12px 16px;
-    border: none;
+    width: calc(100% - 16px);
+    padding: 10px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
-    background-color: #1A77CC;
+    background: rgba(255, 255, 255, 0.08);
     color: white;
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: background 0.2s ease;
   }
 
-
-
+  .back-button-mobile:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
 
   .back-button-mobile svg {
-    width: 20px;
-    height: 20px;
-    color: red;
+    width: 18px;
+    height: 18px;
+    color: white;
   }
+}
 
+/* Meniul ascuns complet — pe Harta page */
+.left-menu.hidden {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .left-menu.hidden {
+    display: none;
+    transform: translateX(-100%);
+  }
 }

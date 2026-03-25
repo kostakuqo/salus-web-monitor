@@ -2,7 +2,7 @@
   display: flex;          
   align-items: center;    
   padding: 8px 12px;
-  gap: 12px;              
+  /* gap: 12px;               */
 }
 
 .menu-item span {
@@ -14,6 +14,6 @@
 .menu-item {
   display: flex;          
   align-items: center;    
-  padding: 8px 12px;
+  /* padding: 8px 12px; */
 }
 

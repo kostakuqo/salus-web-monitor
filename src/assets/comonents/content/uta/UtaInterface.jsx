@@ -7,14 +7,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TemperatureChart from "./TemperatureChart";
 import { faGear, faSave, faTimes, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 import { initialUtaData } from "./uta data/utaData";
+const FORM_FIELDS = ["Air_inp_Temp", "Air_Return_Temp", "Water_InpChillTemp", "Out_Return_Pressure"];
 
-// Câmpurile exacte din form — doar acestea vor fi loguite
-const FORM_FIELDS = [
-  "Air_inp_Temp",
-  "Air_Return_Temp",
-  "Water_InpChillTemp",
-  "Out_Return_Pressure",
-];
+const FIELD_LABELS = {
+  Air_inp_Temp: { label: "Temperatura Air In", unit: "°C" },
+  Air_Output_Temp: { label: "Temperatura Air Out", unit: "°C" },
+  Air_Return_Temp: { label: "Temperatura Air Return", unit: "°C" },
+  Air_outHygro: { label: "Lageshtira", unit: "%" },
+  Water_InpChillTemp: { label: "Temperatura Uj Hyrje Chiller", unit: "°C" },
+  Water_outChill_Temp: { label: "Temperatura Uj Dalje Chiller", unit: "°C" },
+  Water_InpBoilTemp: { label: "Temperatura Uj Hyrje Kaldaja", unit: "°C" },
+  Water_OutputBoilTemp: { label: "Temperatura Uj Dalje Kaldaja", unit: "°C" },
+  Boil_Pump_Invert: { label: "Pompa Kaldaja", unit: "%" },
+  Chiller_Pump_Invert: { label: "Pompa Chiller", unit: "%" },
+  Boil_Valve: { label: "Valvula Kaldaja", unit: "%" },
+  Chiller_Valve: { label: "Valvula Chiller", unit: "%" },
+  Inp_Damper: { label: "Damper Hyrje", unit: "%" },
+  Output_Damper: { label: "Damper Dalje", unit: "%" },
+  Aspirator: { label: "Aspirator", unit: "%" },
+  Ventilator: { label: "Ventilator", unit: "%" },
+  Out_Return_Pressure: { label: "Presioni", unit: "bar" },
+  Sezon_Modality: { label: "Sezon", unit: "" },
+  status: { label: "Status", unit: "" },
+  id: { label: "UTA ID", unit: "" },
+};
 
 export default function UtaInterface({ onBack }) {
   const [utaData, setUtaData] = useState(initialUtaData);
@@ -28,21 +44,13 @@ export default function UtaInterface({ onBack }) {
   const handleStop = (id) => alert(`${id} STOP pressed`);
 
   const handleSaveEditedUta = () => {
-    // Construim un obiect cu DOAR câmpurile completate în form
     const formValues = FORM_FIELDS.reduce((acc, field) => {
       acc[field] = editedUta[field];
       return acc;
     }, {});
+    console.log("Date completate în form:", { utaId: editedUta.id, ...formValues });
 
-    // Adăugăm ID-ul UTA-ului pentru context
-    const logData = {
-      utaId: editedUta.id,
-      ...formValues,
-    };
-
-    console.log("Date completate în form:", logData);
-
-    setSaveMessage("Datele au fost afișate în consolă!");
+    setSaveMessage("Parametrat u ruajten me sukses!");
     setEditMode(false);
     setTimeout(() => setSaveMessage(""), 2000);
   };
@@ -61,48 +69,42 @@ export default function UtaInterface({ onBack }) {
 
         <div className="uta-details-container">
 
+          {/* HEADER */}
           <div className="uta-details-header">
             <button className="back-btn" onClick={() => {
               setSelectedUta(null);
               setActiveChart(null);
               setEditMode(false);
             }}>
-              <span className="back-icon"><FiArrowLeft /></span>
-              Back
+              <FiArrowLeft /> Back
             </button>
 
             <h2>{selectedUta.id}</h2>
-
             <span className={`status-tag ${selectedUta.status.toLowerCase()}`}>
               {selectedUta.status}
             </span>
 
             <div className="uta-actions">
               <button className="uta-button start" onClick={() => handleStart(selectedUta.id)}>
-                <FontAwesomeIcon icon={faPlay} />Start
+                <FontAwesomeIcon icon={faPlay} /> Start
               </button>
-
               <button className="uta-button stop" onClick={() => handleStop(selectedUta.id)}>
-                <FontAwesomeIcon icon={faStop} />Stop
+                <FontAwesomeIcon icon={faStop} /> Stop
               </button>
-
               <button className="uta-button edit" onClick={() => {
                 setEditedUta({ ...selectedUta });
                 setEditMode(true);
               }}>
-                <FontAwesomeIcon icon={faGear} style={{ marginRight: '6px' }} />
-                Modifiko Parametrat
+                <FontAwesomeIcon icon={faGear} /> Modifiko Parametrat
               </button>
             </div>
           </div>
 
-          {/* EDIT FORM */}
+          {/* FORM */}
           {editMode && editedUta && (
             <div className="edit-form">
               <h3>Modifiko Parametrat</h3>
-
               <form onSubmit={(e) => { e.preventDefault(); handleSaveEditedUta(); }}>
-
                 <label>
                   Temp Air In:
                   <input type="number"
@@ -137,77 +139,55 @@ export default function UtaInterface({ onBack }) {
 
                 <div className="form-actions">
                   <button type="submit" className="save-data">
-                    <FontAwesomeIcon icon={faSave} />Save
+                    <FontAwesomeIcon icon={faSave} /> Save
                   </button>
-
                   <button type="button" className="cancel-data" onClick={() => setEditMode(false)}>
-                    <FontAwesomeIcon icon={faTimes} />Anullo
+                    <FontAwesomeIcon icon={faTimes} /> Anullo
                   </button>
                 </div>
-
               </form>
             </div>
           )}
 
-          {/* DATA GRID FULL */}
+          {/* GRID */}
           <div className="uta-details-grid">
-            <div className="data-card"><h4>Temperatura ambjentale</h4><p>{selectedUta.Air_inp_Temp} °C</p></div>
-            <div className="data-card"><h4>Temperatur ne dergim</h4><p>{selectedUta.Air_Output_Temp} °C</p></div>
-            <div className="data-card"><h4>Temperatura ne kthim</h4><p>{selectedUta.Air_Return_Temp} °C</p></div>
-            <div className="data-card"><h4>Lageshtira</h4><p>{selectedUta.Air_outHygro} %</p></div>
-            <div className="data-card"><h4>Temperatura ujit ne hyrje Chillerit</h4><p>{selectedUta.Water_InpChillTemp} °C</p></div>
-            <div className="data-card"><h4>Temperatura ujit ne dalje Chillerit</h4><p>{selectedUta.Water_outChill_Temp} °C</p></div>
-            <div className="data-card"><h4>Temperatura ujit ne hyrje Kaldaja</h4><p>{selectedUta.Water_InpBoilTemp} °C</p></div>
-            <div className="data-card"><h4>Temperatura ujit ne dalje Kaldaja</h4><p>{selectedUta.Water_OutputBoilTemp} °C</p></div>
-            <div className="data-card"><h4>Pompa E kaldajes</h4><p>{selectedUta.Boil_Pump_Invert} %</p></div>
-            <div className="data-card"><h4>Pompa E Chillerit</h4><p>{selectedUta.Chiller_Pump_Invert} %</p></div>
-            <div className="data-card"><h4>Valvula e kaldajes</h4><p>{selectedUta.Boil_Valve} %</p></div>
-            <div className="data-card"><h4>Valvula e Chillerit</h4><p>{selectedUta.Chiller_Valve} %</p></div>
-            <div className="data-card"><h4>Damper Hyrje</h4><p>{selectedUta.Inp_Damper} %</p></div>
-            <div className="data-card"><h4>Damper Dalje</h4><p>{selectedUta.Output_Damper} %</p></div>
-            <div className="data-card"><h4>Aspirator</h4><p>{selectedUta.Aspirator} %</p></div>
-            <div className="data-card"><h4>Ventilator</h4><p>{selectedUta.Ventilator} %</p></div>
-            <div className="data-card">
-              <h4>Pressure</h4>
-              <p className="pressure">{selectedUta.Out_Return_Pressure} bar</p>
-            </div>
-            <div className="data-card">
-              <h4>Mode</h4>
-              <p className={selectedUta.Sezon_Modality === "HEATING" ? "mode-heat" : "mode-cool"}>
-                {selectedUta.Sezon_Modality}
-              </p>
-            </div>
+            {Object.entries(selectedUta).map(([key, val]) => {
+              if (!FIELD_LABELS[key]) return null;
+              const { label, unit } = FIELD_LABELS[key];
+              return (
+                <div key={key} className="data-card">
+                  <h4>{label}</h4>
+                  <p>{val}{unit && ` ${unit}`}</p>
+                </div>
+              );
+            })}
           </div>
 
-          {/* CHARTS */}
-          <div className="uta-charts-buttons">
-            <button className={`chart-btn ${activeChart === "supply" ? "active" : ""}`} onClick={() => setActiveChart("supply")}>
-              <GoGraph /> Temp Air In
-            </button>
-            <button className={`chart-btn ${activeChart === "return" ? "active" : ""}`} onClick={() => setActiveChart("return")}>
-              <GoGraph /> Temp Return
-            </button>
-            <button className={`chart-btn ${activeChart === "water" ? "active" : ""}`} onClick={() => setActiveChart("water")}>
-              <GoGraph /> Temp Water
-            </button>
-          </div>
+          {/* BUTTON GRAPH */}
+          <button
+            className="uta-button graph-bottom"
+            onClick={() => setActiveChart(prev => prev ? null : "main")}
+          >
+            <GoGraph style={{ marginRight: "6px" }} /> Graphics
+          </button>
 
-          <div className="uta-chart">
-            {activeChart && (
-              <div className="chart-wrapper">
-                <button className="chart-close-btn" onClick={() => setActiveChart(null)}>✕ Close</button>
-                {activeChart === "supply" && (
-                  <TemperatureChart data={[selectedUta]} dataKey="Air_inp_Temp" />
-                )}
-                {activeChart === "return" && (
-                  <TemperatureChart data={[selectedUta]} dataKey="Air_Return_Temp" />
-                )}
-                {activeChart === "water" && (
-                  <TemperatureChart data={[selectedUta]} dataKey="Water_InpChillTemp" />
-                )}
-              </div>
-            )}
-          </div>
+          {/* CHART */}
+          {activeChart === "main" && (
+            <div className="uta-graph-container" style={{
+              marginTop: "20px",
+              height: "600px",
+              background: "#0f1420",
+              borderRadius: "10px",
+              padding: "16px",
+              border: "1px solid #1e293b"
+            }}>
+              <TemperatureChart
+                utaData={utaData}
+                selectedUta={selectedUta}
+                onClose={() => setActiveChart(null)} // 🔥 AICI E TOT
+              />
+            </div>
+          )}
 
         </div>
       </div>
@@ -237,8 +217,7 @@ export default function UtaInterface({ onBack }) {
       ))}
 
       <button className="back-button" onClick={onBack}>
-        <span className="back-icon"><FiArrowLeft /></span>
-        Back
+        <FiArrowLeft /> Back
       </button>
     </div>
   );

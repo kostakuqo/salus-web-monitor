@@ -545,9 +545,7 @@ function Schematic({ d }) {
         fill={boilOn?C.BOIL+"0B":"#080808"}
         stroke={boilOn?C.BOIL+"66":C.EDGE} strokeWidth={1.5}
         strokeDasharray={boilOn?"none":"6 3"}/>
-      <text x={(B_PL+B_PR)/2} y={B_PCY+B_PR_+36}
-        textAnchor="middle" fontSize={8} fontWeight="700" letterSpacing=".15em"
-        fill={boilOn?C.BOIL:C.DIM} fontFamily="'Courier New',monospace">BOILER LOOP</text>
+    
 
       {/* left pipe: apă caldă urcă pompa→coil  (y merge sus) */}
       <Pipe x1={B_PL} y1={LOOP_TOP} x2={B_PL} y2={B_PCY-B_PR_-28} active={boilOn} col={C.BOIL} w={5}/>
@@ -559,7 +557,7 @@ function Schematic({ d }) {
       <rect x={B_PL+15} y={B_VCY-9} width={56} height={18} rx={3}
         fill={C.STEEL} stroke={boilOn?C.BOIL+"88":C.EDGE} strokeWidth={1}/>
       <text x={B_PL+43} y={B_VCY+4} textAnchor="middle" fontSize={8} fontWeight="700"
-        fill={boilOn?C.BOIL:C.DIM} fontFamily="'Courier New',monospace">Boil_Valve</text>
+        fill={boilOn?C.BOIL:C.DIM} fontFamily="'Courier New',monospace">Valve</text>
 
       {/* right pipe: apă răcită coboară coil→pompă  (y merge jos) */}
       <Pipe x1={B_PR} y1={LOOP_TOP} x2={B_PR} y2={B_PCY-B_PR_-28} active={boilOn} col={C.BOIL} w={5}/>
@@ -584,7 +582,7 @@ function Schematic({ d }) {
         fill={boilOn?C.BOIL:"#2A1A08"} fontFamily="'Courier New',monospace">W.OUT</text>
 
       <PumpDevice cx={B_PCX} cy={B_PCY} r={B_PR_} active={boilOn} col={C.BOIL}
-        pct={d.Boil_Pump_Invert} label="BOIL PUMP"/>
+        pct={d.Boil_Pump_Invert} label="PUMP"/>
 
 
       {/* ══════════════════════════════════════════════════
@@ -598,9 +596,7 @@ function Schematic({ d }) {
         fill={chillOn?C.CHILL+"0B":"#080808"}
         stroke={chillOn?C.CHILL+"66":C.EDGE} strokeWidth={1.5}
         strokeDasharray={chillOn?"none":"6 3"}/>
-      <text x={(C_PL+C_PR)/2} y={C_PCY+C_PR_+36}
-        textAnchor="middle" fontSize={8} fontWeight="700" letterSpacing=".15em"
-        fill={chillOn?C.CHILL:C.DIM} fontFamily="'Courier New',monospace">CHILLER LOOP</text>
+      
 
       {/* left pipe: supply IN — flow UP into coil */}
       <Pipe x1={C_PL} y1={LOOP_TOP} x2={C_PL} y2={C_PCY-C_PR_-28} active={chillOn} col={C.CHILL} w={5}/>
@@ -612,7 +608,7 @@ function Schematic({ d }) {
       <rect x={C_PL+15} y={C_VCY-9} width={70} height={18} rx={3}
         fill={C.STEEL} stroke={chillOn?C.CHILL+"88":C.EDGE} strokeWidth={1}/>
       <text x={C_PL+50} y={C_VCY+4} textAnchor="middle" fontSize={8} fontWeight="700"
-        fill={chillOn?C.CHILL:C.DIM} fontFamily="'Courier New',monospace">Chiller_Valve</text>
+        fill={chillOn?C.CHILL:C.DIM} fontFamily="'Courier New',monospace">Valve</text>
 
       {/* right pipe: return OUT — flow DOWN from coil */}
       <Pipe x1={C_PR} y1={LOOP_TOP} x2={C_PR} y2={C_PCY-C_PR_-28} active={chillOn} col={C.CHILL} w={5}/>
@@ -636,7 +632,7 @@ function Schematic({ d }) {
         fill={chillOn?C.CHILL:"#081828"} fontFamily="'Courier New',monospace">W.OUT</text>
 
       <PumpDevice cx={C_PCX} cy={C_PCY} r={C_PR_} active={chillOn} col={C.CHILL}
-        pct={d.Chiller_Pump_invert} label="CHILL PUMP"/>
+        pct={d.Chiller_Pump_invert} label="PUMP"/>
 
     </svg>
   );
@@ -791,4 +787,4 @@ export default function AhuDashboard() {
       <SensorTable d={d}/>
     </div>
   );
-}
+} 

@@ -3,7 +3,12 @@
     height: 100%;
     background-color: #e0f7fa;
     
+    
 }
+/* .content {
+  margin-left: 250px; 
+  padding: 20px;
+} */
 .dashboard-container{
     padding: 10px;
 }

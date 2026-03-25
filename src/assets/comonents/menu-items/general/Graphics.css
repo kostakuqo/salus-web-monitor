@@ -16,15 +16,15 @@
 
 .menu-item:hover {
   background: #3b82f6;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); */
   color: white;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
-  gap: 12px;
+  /* padding: 8px 12px; */
+  /* gap: 12px; */
 }
 
 .menu-item span {

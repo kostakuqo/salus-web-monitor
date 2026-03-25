@@ -6,6 +6,7 @@ import Content from './assets/comonents/content/main=content/Content';
 import HomePage from "./assets/comonents/menu-items/home/Homepage";
 import './App.css';
 import HartaPage from "./assets/comonents/menu-items/harta/HartaPage";
+import GraphicsPage from "./assets/comonents/menu-items/general/GraphicPage";
 
 // App.jsx
 export default function AppWrapper() {
@@ -37,6 +38,7 @@ export default function AppWrapper() {
 
             {/* Harta – afișează vetëm AppUta */}
             <Route path="/harta/*" element={<HartaPage />} />
+            <Route path="/graphics/*" element={<GraphicsPage />} />
 
             {/* Orice alt URL → redirect la home */}
             <Route path="*" element={<Navigate to="/" />} />

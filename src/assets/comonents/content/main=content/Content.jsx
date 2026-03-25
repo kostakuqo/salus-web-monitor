@@ -9,6 +9,7 @@ import ChillerInterface from '../chiller/ChillerInterface';
 import KaldajaInterface from '../kaldaja/KaldajaInterface';
 import DashboardUtaPage from '../../menu-items/dashboard/DashboardUtaPage';
 import DashboardPage from '../../menu-items/dashboard/DashboardPage';
+import GraphicsPage from '../../menu-items/general/GraphicPage';
 
 
 
@@ -19,35 +20,22 @@ export default function Content({ resetTrigger, showMapTrigger }) {
 
   const [selectedUta, setSelectedUta] = useState(null);
   const [selectedChiller, setSelectedChiller] = useState(null);
-  const [fromDashboard, setFromDashboard] = useState(false);
   const [showMap, setShowMap] = useState(false);
 
   const resetContentState = () => {
     setSelectedUta(null);
     setSelectedChiller(null);
-    setFromDashboard(false);
     setShowMap(false);
   };
 
   useEffect(() => resetContentState(), [location.pathname, resetTrigger]);
-
-  // Dacă meniul trimite semnalul de a afișa harta
-  useEffect(() => {
-    if (showMapTrigger) setShowMap(true);
-  }, [showMapTrigger]);
+  useEffect(() => { if (showMapTrigger) setShowMap(true); }, [showMapTrigger]);
 
   const handleBack = () => {
     setSelectedUta(null);
     setSelectedChiller(null);
     setShowMap(false);
-    if (fromDashboard) navigate("/dashboard");
-    else navigate("/");
-  };
-
-  const handleEquipmentClick = (id) => {
-    setShowMap(false);
-    if (id.includes("asp")) setSelectedUta({ id, name: id });
-    else if (id.includes("chl")) setSelectedChiller({ id, name: id });
+    navigate("/");
   };
 
   const currentPage = location.pathname.split("/")[1] || "";
@@ -58,13 +46,10 @@ export default function Content({ resetTrigger, showMapTrigger }) {
         <UtaInterface uta={selectedUta} onBack={handleBack} />
       ) : selectedChiller ? (
         <ChillerInterface chiller={selectedChiller} onBack={handleBack} />
-      ) : showMap ? (
-        <AppUta onEquipmentClick={handleEquipmentClick} />
       ) : currentPage === "dashboard" ? (
-        <>
-          <DashboardUtaPage onUtaClick={(uta) => { setSelectedUta(uta); setFromDashboard(true); }} />
-          
-        </>
+        <DashboardUtaPage onUtaClick={(uta) => setSelectedUta(uta)} />
+      ) : currentPage === "graphics" ? (
+        <GraphicsPage />
       ) : currentPage === "uta" ? (
         <UtaInterface onBack={handleBack} />
       ) : currentPage === "chiller" ? (
@@ -72,11 +57,9 @@ export default function Content({ resetTrigger, showMapTrigger }) {
       ) : currentPage === "kaldaja" ? (
         <KaldajaInterface onBack={handleBack} />
       ) : (
-        <>
-          <UtaContainer onUtaClick={(uta) => setSelectedUta(uta)} />
-          <ChillerContainer onChillerClick={(chiller) => setSelectedChiller(chiller)} />
-          <KaldajaContainer onKaldajaClick={() => navigate("/kaldaja")} />
-        </>
+        <div>
+          <p style={{ color: "#94a3b8" }}>Selectați o pagină din meniu</p>
+        </div>
       )}
     </div>
   );

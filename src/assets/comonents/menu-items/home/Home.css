@@ -3,6 +3,9 @@
   align-items: center;    
   gap: 12px;              
 }
+.home-button span{
+  margin-right: 20px;
+}  
 
 .menu-item span {
   display: inline-block;  

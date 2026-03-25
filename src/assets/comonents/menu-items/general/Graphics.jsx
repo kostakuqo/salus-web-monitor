@@ -1,12 +1,13 @@
 import React from "react";
-import "./General.css"
+import "./Graphics.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faGear, faHome } from '@fortawesome/free-solid-svg-icons'
 import { faSliders } from "@fortawesome/free-solid-svg-icons";
+import { GoGraph } from "react-icons/go";
 
-export default function General() {
+export default function Grahics() {
     return <div className="general-button">
-          <FontAwesomeIcon icon={faSliders} className="menu-icon" />
-          <span>General</span>
+          <GoGraph className="menu-icon" />
+          <span>Graphics</span>
         </div>
 }

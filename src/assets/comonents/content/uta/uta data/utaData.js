@@ -25,7 +25,7 @@ export const initialUtaData = [
   },
   {
     id: "UTA-06",
-    status: "ON",
+    status: "Off",
     Sezon_Modality:"HEATING",
     Air_inp_Temp: 34,
     Air_Output_Temp: 22,
@@ -48,7 +48,7 @@ export const initialUtaData = [
   },
   {
     id: "UTA-05",
-    status: "ON",
+    status: "OFF",
     Sezon_Modality:"HEATING",
     Air_inp_Temp: -2,
     Air_Output_Temp: 22,
