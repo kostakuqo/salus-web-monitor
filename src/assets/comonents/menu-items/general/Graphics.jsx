@@ -8,6 +8,6 @@ import { GoGraph } from "react-icons/go";
 export default function Grahics() {
     return <div className="general-button">
           <GoGraph className="menu-icon" />
-          <span>Graphics</span>
+          <span> Graphics</span>
         </div>
 }

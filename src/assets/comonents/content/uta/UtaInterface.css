@@ -381,7 +381,7 @@
 }
 .uta-button.graph-bottom {
   position: absolute;
-  bottom: 0px;
+  bottom: 10px;
   left: 15px;
   background: linear-gradient(135deg, #4f46e5, #6366f1);
   color: #fff;

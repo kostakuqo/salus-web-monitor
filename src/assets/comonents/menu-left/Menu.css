@@ -1,22 +1,19 @@
 .left-menu {
-  width: 15%; 
+  width: 15%;
   display: flex;
   flex-direction: column;
   background-color: #1A355E;
   min-height: calc(100vh - 70px);
   padding: 8px;
+  box-sizing: border-box;
+  transition: width 0.3s ease, padding 0.3s ease;
 }
-/* .left-menu {
-  position: fixed;       
-  top: 0;               
-  left: 0;               
-  height: 100vh;        
-  width: 250px;         
-  overflow-y: auto;      
-  background-color: #0a0f1a;
-  z-index: 1000;        
-  transition: all 0.3s ease;
-} */
+
+.left-menu.closed {
+  width: 0;
+  padding: 0; 
+  overflow: hidden;
+}
 
 .main-layout {
   padding-top: 60px;
@@ -58,7 +55,6 @@
   color: inherit !important;
 }
 
-/* ── Toggle — ascuns pe desktop implicit ── */
 .menu-toggle {
   display: none;
   align-items: center;
@@ -77,7 +73,7 @@
   height: 40px;
 }
 
-/* ── Când meniul e hidden (pe Harta), butonul apare și pe desktop ── */
+
 .menu-toggle.visible-on-desktop {
   display: flex;
 }
@@ -114,7 +110,7 @@
   margin-top: 8px;
   padding: 8px 14px;
   background: rgba(255, 255, 255, 0.08);
-  color: white;
+  color: red;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   cursor: pointer;
@@ -128,10 +124,8 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* ──────────────── MOBILE ──────────────── */
-@media (max-width: 768px) {
 
-  /* Pe mobile apare mereu */
+@media (max-width: 768px) {
   .menu-toggle {
     display: flex;
     align-items: center;
@@ -195,7 +189,6 @@
   }
 }
 
-/* Meniul ascuns complet — pe Harta page */
 .left-menu.hidden {
   display: none;
 }

@@ -11,7 +11,7 @@ export default function Harta({ onEquipmentClick }) {
       {/* Buton Harta cu clasa proprie */}
       <div className="harta-button" onClick={() => setShowMap(true)}>
         <FontAwesomeIcon icon={faMap} className="menu-icon" />
-        <span>Harta</span>
+        <span>Map</span>
       </div>
     </div>
   );

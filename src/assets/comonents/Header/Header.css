@@ -70,6 +70,22 @@ header {
 .st0 {
   fill: white;
 }
+.menu-toggle-header {
+  margin-top: 20px;
+  position: inherit;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  padding: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  margin-right: 15px;
+  transition: 0.2s;
+}
+
+.menu-toggle-header:hover {
+  background: rgba(255,255,255,0.2);
+}
 @media (max-width: 768px) {
   .logo-img {
     display: none;

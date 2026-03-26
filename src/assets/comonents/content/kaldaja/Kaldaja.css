@@ -1,16 +1,16 @@
 .kaldaja {
-  width: 200px;       
-  height: 100px;    
-  background-color: #1A77CC;     
+  width: 200px;
+  height: 100px;
+  background: linear-gradient(135deg, #1A355E, #3E5AA8);
   display: flex;
-  justify-content: center;    
+  justify-content: center;
   align-items: center;
-  cursor: pointer; 
+  cursor: pointer;
   position: relative;
   margin-bottom: 4px;
-  margin-top: 4px; 
-  padding: 8px 12px;    
-  gap: 8px; 
+  margin-top: 4px;
+  padding: 8px 12px;
+  gap: 8px;
   margin-left: 4px;
 }
 
@@ -19,29 +19,30 @@
   font-weight: bold;
   color: white;
 }
+
 .kaldaja-details {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 10px 0;
-    background-color: #1A77CC;
-    border-top: 1px solid rgba(255,255,255,0.5);
-    color: white;
-    font-size: 12px;
-    font-weight: 500;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-    border-radius: 0 0 12px 12px; 
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px 0;
+  background: linear-gradient(135deg, #1A355E, #3E5AA8);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  border-radius: 0 0 12px 12px;
 }
 
 .kaldaja-details:hover {
-    background-color: #005FCC;
-    transform: translateY(-2px);
+  background-color: #005FCC;
+  transform: translateY(-2px);
 }
 
-button{
+button {
   color: red;
   border-radius: none;
 }
@@ -49,5 +50,5 @@ button{
 
 
 .kaldaja-icon {
-  font-size: 20px; 
+  font-size: 20px;
 }

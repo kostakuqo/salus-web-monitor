@@ -11,9 +11,9 @@ import { faChevronDown, faCheck, faTimes } from "@fortawesome/free-solid-svg-ico
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const ALL_PARAMS = [
-  { key: "Air_inp_Temp", label: "Temp Air In", unit: "°C", color: "#f97316" },
-  { key: "Air_Output_Temp", label: "Temp Air Out", unit: "°C", color: "#eab308" },
-  { key: "Air_Return_Temp", label: "Temp Air Return", unit: "°C", color: "#84cc16" },
+  { key: "Air_inp_Temp", label: "Temp Air hyrje", unit: "°C", color: "#f97316" },
+  { key: "Air_Output_Temp", label: "Temp Air dergim", unit: "°C", color: "#eab308" },
+  { key: "Air_Return_Temp", label: "Temp Air kthim", unit: "°C", color: "#84cc16" },
   { key: "Air_outHygro", label: "Lagështira", unit: "%", color: "#06b6d4" },
   { key: "Water_InpChillTemp", label: "Ujë Hyrje Chiller", unit: "°C", color: "#3b82f6" },
   { key: "Water_outChill_Temp", label: "Ujë Dalje Chiller", unit: "°C", color: "#6366f1" },

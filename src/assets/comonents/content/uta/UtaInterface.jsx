@@ -168,7 +168,7 @@ export default function UtaInterface({ onBack }) {
             className="uta-button graph-bottom"
             onClick={() => setActiveChart(prev => prev ? null : "main")}
           >
-            <GoGraph style={{ marginRight: "6px" }} /> Graphics
+            <GoGraph style={{ marginRight: "6px" }} /> Shiko Grafiket
           </button>
 
           {/* CHART */}

@@ -1,7 +1,7 @@
 .chiller {
   width: 200px;       
   height: 100px;    
-  background-color: #1A77CC;     
+   background: linear-gradient(135deg, #1A355E, #3E5AA8);   
   display: flex;
   justify-content: center;    
   align-items: center;
@@ -30,7 +30,7 @@
     left: 0;
     width: 100%;
     padding: 10px 0;
-    background-color: #1A77CC;
+     background: linear-gradient(135deg, #1A355E, #3E5AA8);
     border-top: 1px solid rgba(255,255,255,0.5);
     color: white;
     font-size: 12px;
