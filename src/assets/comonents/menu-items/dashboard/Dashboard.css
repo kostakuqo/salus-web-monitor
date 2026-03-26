@@ -27,3 +27,8 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 15px;
 }
+.menu-dashboard-button {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 🔥 kjo shton hapësirën */
+}

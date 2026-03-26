@@ -4,7 +4,11 @@
   /* padding: 8px 12px;
   gap: 12px;               */
 }
-
+.profile-button {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 🔥 kjo shton hapësirën */
+}
 .menu-item span {
   display: inline-block;  
   width: 100px;           

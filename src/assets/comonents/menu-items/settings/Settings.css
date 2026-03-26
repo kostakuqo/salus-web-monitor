@@ -10,6 +10,11 @@
   width: 100px;           
   flex-shrink: 0;        
 }
+.settings-button {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 🔥 kjo shton hapësirën */
+}
 
 .menu-item span {
   display: inline-block;  

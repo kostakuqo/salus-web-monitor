@@ -6,6 +6,11 @@
 .home-button span{
   margin-right: 20px;
 }  
+.home-button {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 🔥 kjo shton hapësirën */
+}
 
 .menu-item span {
   display: inline-block;  
