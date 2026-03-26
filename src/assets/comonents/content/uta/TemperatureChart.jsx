@@ -166,6 +166,7 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
           border-radius: 8px; color: #64748b;
           cursor: pointer; transition: all 0.15s; font-size: 14px;
           border:1px solid red;
+          margin-left:auto;
         }
         .uce-close-btn:hover { background: #2d1f1f; border-color: #ef4444; color: #ef4444; }
 
@@ -185,10 +186,11 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
         /* UTA selector */
         .uce-uta-sel { position: relative; }
         .uce-uta-trigger {
-          display: inline-flex; align-items: center; gap: 7px;
+          display: inline-flex; align-items: center; justify-content:space-between;gap: 7px;
           background: #1a2035; border: 1px solid #3b82f6;
           border-radius: 7px; padding: 5px 11px;
           cursor: pointer; transition: all 0.15s; user-select: none;
+          width:160px;
         }
         .uce-uta-trigger:hover, .uce-uta-trigger.open { background: #1e2d4a; border-color: #60a5fa; }
         .uce-pulse {
@@ -277,23 +279,7 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
               </div>
             )}
           </div>
-
-          {/* ── BUTON CLOSE ── */}
-          {onClose && (
-            <button className="uce-close-btn" onClick={onClose} title="Mbyll grafikun">
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          )}
-        </div>
-
-        {/* ── CHART BOX ── */}
-        <div className="uce-box">
-
-          <div className="uce-box-header">
-            <div className="uce-box-header-left">
-
-              {/* UTA dropdown */}
-              <div className="uce-uta-sel" ref={dropdownRef}>
+          <div className="uce-uta-sel" ref={dropdownRef}>
                 <div
                   className={`uce-uta-trigger ${dropdownOpen ? "open" : ""}`}
                   onClick={() => setDropdownOpen((v) => !v)}
@@ -333,6 +319,23 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
                   </div>
                 )}
               </div>
+
+          {/* ── BUTON CLOSE ── */}
+          {onClose && (
+            <button className="uce-close-btn" onClick={onClose} title="Mbyll grafikun">
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+          )}
+        </div>
+
+        {/* ── CHART BOX ── */}
+        <div className="uce-box">
+
+          <div className="uce-box-header">
+            <div className="uce-box-header-left">
+
+              {/* UTA dropdown */}
+              
             </div>
 
             {/* Active pills */}
