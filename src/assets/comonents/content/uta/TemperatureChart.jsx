@@ -1,6 +1,5 @@
 // UtaChartEmbed.jsx
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import ReactDOM from "react-dom";
 import {
   Chart as ChartJS, CategoryScale, LinearScale,
   PointElement, LineElement, Title, Tooltip, Legend,
@@ -12,97 +11,90 @@ import { faChevronDown, faCheck, faTimes } from "@fortawesome/free-solid-svg-ico
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const ALL_PARAMS = [
-  { key: "Air_inp_Temp",        label: "Temp Air hyrje",      unit: "°C", color: "#f97316" },
-  { key: "Air_Output_Temp",     label: "Temp Air dergim",     unit: "°C", color: "#eab308" },
-  { key: "Air_Return_Temp",     label: "Temp Air kthim",      unit: "°C", color: "#84cc16" },
-  { key: "Air_outHygro",        label: "Lagështira",          unit: "%",  color: "#06b6d4" },
-  { key: "Water_InpChillTemp",  label: "Ujë Hyrje Chiller",  unit: "°C", color: "#3b82f6" },
-  { key: "Water_outChill_Temp", label: "Ujë Dalje Chiller",  unit: "°C", color: "#6366f1" },
-  { key: "Water_InpBoilTemp",   label: "Ujë Hyrje Kaldaja",  unit: "°C", color: "#ec4899" },
-  { key: "Water_OutputBoilTemp",label: "Ujë Dalje Kaldaja",  unit: "°C", color: "#f43f5e" },
-  { key: "Boil_Pump_Invert",    label: "Pompa Kaldaja",       unit: "%",  color: "#a855f7" },
-  { key: "Chiller_Pump_Invert", label: "Pompa Chiller",       unit: "%",  color: "#8b5cf6" },
-  { key: "Boil_Valve",          label: "Valvula Kaldaja",     unit: "%",  color: "#14b8a6" },
-  { key: "Chiller_Valve",       label: "Valvula Chiller",     unit: "%",  color: "#10b981" },
-  { key: "Inp_Damper",          label: "Damper Hyrje",        unit: "%",  color: "#f59e0b" },
-  { key: "Output_Damper",       label: "Damper Dalje",        unit: "%",  color: "#ef4444" },
-  { key: "Aspirator",           label: "Aspirator",           unit: "%",  color: "#64748b" },
-  { key: "Ventilator",          label: "Ventilator",          unit: "%",  color: "#0ea5e9" },
-  { key: "Out_Return_Pressure", label: "Presioni",            unit: "bar",color: "#d946ef" },
+  { key: "Air_inp_Temp", label: "Temp Air hyrje", unit: "°C", color: "#f97316" },
+  { key: "Air_Output_Temp", label: "Temp Air dergim", unit: "°C", color: "#eab308" },
+  { key: "Air_Return_Temp", label: "Temp Air kthim", unit: "°C", color: "#84cc16" },
+  { key: "Air_outHygro", label: "Lagështira", unit: "%", color: "#06b6d4" },
+  { key: "Water_InpChillTemp", label: "Ujë Hyrje Chiller", unit: "°C", color: "#3b82f6" },
+  { key: "Water_outChill_Temp", label: "Ujë Dalje Chiller", unit: "°C", color: "#6366f1" },
+  { key: "Water_InpBoilTemp", label: "Ujë Hyrje Kaldaja", unit: "°C", color: "#ec4899" },
+  { key: "Water_OutputBoilTemp", label: "Ujë Dalje Kaldaja", unit: "°C", color: "#f43f5e" },
+  { key: "Boil_Pump_Invert", label: "Pompa Kaldaja", unit: "%", color: "#a855f7" },
+  { key: "Chiller_Pump_Invert", label: "Pompa Chiller", unit: "%", color: "#8b5cf6" },
+  { key: "Boil_Valve", label: "Valvula Kaldaja", unit: "%", color: "#14b8a6" },
+  { key: "Chiller_Valve", label: "Valvula Chiller", unit: "%", color: "#10b981" },
+  { key: "Inp_Damper", label: "Damper Hyrje", unit: "%", color: "#f59e0b" },
+  { key: "Output_Damper", label: "Damper Dalje", unit: "%", color: "#ef4444" },
+  { key: "Aspirator", label: "Aspirator", unit: "%", color: "#64748b" },
+  { key: "Ventilator", label: "Ventilator", unit: "%", color: "#0ea5e9" },
+  { key: "Out_Return_Pressure", label: "Presioni", unit: "bar", color: "#d946ef" },
 ];
 
-// Hook care calculează poziția unui element și o ține la zi la scroll/resize
-function useAnchorRect(ref, isOpen) {
-  const [rect, setRect] = useState(null);
+// Returnează coordonatele fixe ale unui element față de viewport
+function getFixedCoords(el) {
+  const rect = el.getBoundingClientRect();
+  return { top: rect.bottom + 6, left: rect.left, width: rect.width };
+}
 
+export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClose }) {
+  const [selectedParams, setSelectedParams] = useState([]);
+  const [chartUta, setChartUta] = useState(initialUta || utaData?.[0] || null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [paramDropdownOpen, setParamDropdownOpen] = useState(false);
+
+  // Coordonate fixe pentru dropdown-uri pe mobil
+  const [utaCoords, setUtaCoords] = useState({ top: 0, left: 0, width: 160 });
+  const [paramCoords, setParamCoords] = useState({ top: 0, left: 0, width: 220 });
+
+  const dropdownRef = useRef(null);
+  const paramDropdownRef = useRef(null);
+  const utaTriggerRef = useRef(null);
+  const paramTriggerRef = useRef(null);
+
+  const isMobile = () => window.innerWidth <= 600;
+
+  // Închide la click în afară
   useEffect(() => {
-    if (!isOpen || !ref.current) { setRect(null); return; }
-
-    const update = () => {
-      const r = ref.current?.getBoundingClientRect();
-      if (r) setRect({ top: r.bottom + window.scrollY, left: r.left + window.scrollX, width: r.width });
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
+        setDropdownOpen(false);
+      if (paramDropdownRef.current && !paramDropdownRef.current.contains(e.target))
+        setParamDropdownOpen(false);
     };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
-    update();
+  // Recalculează coordonatele la scroll/resize dacă e deschis
+  useEffect(() => {
+    if (!dropdownOpen && !paramDropdownOpen) return;
+    const update = () => {
+      if (dropdownOpen && utaTriggerRef.current)
+        setUtaCoords(getFixedCoords(utaTriggerRef.current));
+      if (paramDropdownOpen && paramTriggerRef.current)
+        setParamCoords(getFixedCoords(paramTriggerRef.current));
+    };
     window.addEventListener("scroll", update, true);
     window.addEventListener("resize", update);
     return () => {
       window.removeEventListener("scroll", update, true);
       window.removeEventListener("resize", update);
     };
-  }, [isOpen, ref]);
+  }, [dropdownOpen, paramDropdownOpen]);
 
-  return rect;
-}
+  const handleUtaToggle = () => {
+    if (!dropdownOpen && utaTriggerRef.current)
+      setUtaCoords(getFixedCoords(utaTriggerRef.current));
+    setDropdownOpen((v) => !v);
+    setParamDropdownOpen(false);
+  };
 
-// Dropdown randat în body via portal — scapă de orice overflow/transform/stacking context
-function PortalDropdown({ anchorRef, isOpen, children, minWidth = 200 }) {
-  const rect = useAnchorRect(anchorRef, isOpen);
-  if (!isOpen || !rect) return null;
-
-  return ReactDOM.createPortal(
-    <div
-      style={{
-        position: "absolute",
-        top: rect.top + 6,
-        left: rect.left,
-        minWidth: Math.max(rect.width, minWidth),
-        zIndex: 999999,
-        maxHeight: "45vh",
-        overflowY: "auto",
-        background: "#131929",
-        border: "1px solid #2d3748",
-        borderRadius: 8,
-        boxShadow: "0 12px 32px rgba(0,0,0,.6)",
-        animation: "uceDdIn 0.15s ease",
-      }}
-    >
-      {children}
-    </div>,
-    document.body
-  );
-}
-
-export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClose }) {
-  const [selectedParams, setSelectedParams] = useState([]);
-  const [chartUta, setChartUta]             = useState(initialUta || utaData?.[0] || null);
-  const [dropdownOpen, setDropdownOpen]     = useState(false);
-  const [paramDropdownOpen, setParamDropdownOpen] = useState(false);
-
-  const utaTriggerRef   = useRef(null);
-  const paramTriggerRef = useRef(null);
-
-  // Închide la click în afară
-  useEffect(() => {
-    const handler = (e) => {
-      if (utaTriggerRef.current && !utaTriggerRef.current.contains(e.target))
-        setDropdownOpen(false);
-      if (paramTriggerRef.current && !paramTriggerRef.current.contains(e.target))
-        setParamDropdownOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  const handleParamToggle = () => {
+    if (!paramDropdownOpen && paramTriggerRef.current)
+      setParamCoords(getFixedCoords(paramTriggerRef.current));
+    setParamDropdownOpen((v) => !v);
+    setDropdownOpen(false);
+  };
 
   const toggleParam = (key) => {
     setSelectedParams((prev) =>
@@ -158,23 +150,37 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
   const activeParams = selectedParams.map((k) => ALL_PARAMS.find((p) => p.key === k)).filter(Boolean);
   const allUtas = utaData || (initialUta ? [initialUta] : []);
 
+  // Pe mobil folosim position:fixed cu coordonate din getBoundingClientRect
+  // Pe desktop rămâne position:absolute din CSS
+  const mobileStyle = (coords) =>
+    isMobile()
+      ? {
+          position: "fixed",
+          top: coords.top,
+          left: coords.left,
+          width: Math.max(coords.width, 220),
+          zIndex: 999999,
+          maxHeight: "40vh",
+          overflowY: "auto",
+        }
+      : {};
+
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700&display=swap');
 
-        @keyframes uceDdIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes ucePulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
         .uce-wrap {
           display: flex; flex-direction: column; height: 100%;
           font-family: 'DM Mono', monospace; color: #e2e8f0; gap: 12px;
         }
+
         .uce-top-row {
           display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+          position: relative; z-index: 100;
         }
 
-        /* PARAM TRIGGER */
+        /* PARAM DROPDOWN */
         .uce-param-select { position: relative; flex: 1; max-width: 340px; }
         .uce-param-trigger {
           display: flex; justify-content: space-between; align-items: center;
@@ -189,51 +195,29 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
         .uce-param-chevron        { font-size: 9px; color: #60a5fa; transition: transform 0.2s; flex-shrink: 0; }
         .uce-param-trigger.open .uce-param-chevron { transform: rotate(180deg); }
 
-        /* OPTIUNI PARAM */
+        .uce-param-dropdown {
+          position: absolute; top: calc(100% + 6px); left: 0;
+          width: 100%; min-width: 220px;
+          background: #131929; border: 1px solid #2d3748; border-radius: 8px;
+          z-index: 99999; max-height: 260px; overflow-y: auto;
+          box-shadow: 0 12px 32px rgba(0,0,0,.5);
+          animation: uceDdIn 0.15s ease;
+        }
+        .uce-param-dropdown::-webkit-scrollbar { width: 4px; }
+        .uce-param-dropdown::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+        @keyframes uceDdIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
         .uce-param-opt {
           display: flex; align-items: center; gap: 8px;
           padding: 9px 13px; cursor: pointer; font-size: 12px; color: #94a3b8;
           border-bottom: 1px solid #1e293b; transition: background 0.12s;
         }
-        .uce-param-opt:last-child { border-bottom: none; }
-        .uce-param-opt:hover      { background: #1a2035; color: #e2e8f0; }
-        .uce-param-opt.active     { background: #1a2a45; color: #93c5fd; }
-        .uce-param-opt-dot        { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .uce-param-opt-check      { font-size: 10px; color: #3b82f6; margin-left: auto; }
-
-        /* UTA TRIGGER */
-        .uce-uta-sel { position: relative; }
-        .uce-uta-trigger {
-          display: inline-flex; align-items: center; justify-content: space-between; gap: 7px;
-          background: #1a2035; border: 1px solid #3b82f6;
-          border-radius: 7px; padding: 5px 11px;
-          cursor: pointer; transition: all 0.15s; user-select: none; width: 160px;
-        }
-        .uce-uta-trigger:hover, .uce-uta-trigger.open { background: #1e2d4a; border-color: #60a5fa; }
-        .uce-pulse {
-          width: 7px; height: 7px; border-radius: 50%;
-          background: #3b82f6; box-shadow: 0 0 6px #3b82f6;
-          animation: ucePulse 2s infinite;
-        }
-        .uce-uta-name { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; color:#93c5fd; letter-spacing:0.06em; }
-        .uce-chevron  { font-size:9px; color:#60a5fa; transition:transform 0.2s; }
-        .uce-uta-trigger.open .uce-chevron { transform:rotate(180deg); }
-
-        /* OPTIUNI UTA */
-        .uce-opt {
-          display: flex; align-items: center; gap: 8px;
-          padding: 9px 13px; cursor: pointer; font-size: 12px; color: #94a3b8;
-          border-bottom: 1px solid #1e293b; transition: background 0.12s;
-        }
-        .uce-opt:last-child { border-bottom: none; }
-        .uce-opt:hover      { background: #1a2035; color: #e2e8f0; }
-        .uce-opt.active     { background: #1a2a45; color: #93c5fd; }
-        .uce-opt-dot        { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-        .uce-opt-status     { font-size:9px; margin-left:auto; padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.06em; }
-        .uce-opt-status.running { background:#14532d; color:#4ade80; }
-        .uce-opt-status.stopped { background:#450a0a; color:#f87171; }
-        .uce-opt-status.idle    { background:#1e293b; color:#64748b; }
-        .uce-opt-check { font-size:10px; color:#3b82f6; margin-left:auto; }
+        .uce-param-opt:last-child  { border-bottom: none; }
+        .uce-param-opt:hover       { background: #1a2035; color: #e2e8f0; }
+        .uce-param-opt.active      { background: #1a2a45; color: #93c5fd; }
+        .uce-param-opt-dot         { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .uce-param-opt-check       { font-size: 10px; color: #3b82f6; margin-left: auto; }
 
         /* CLOSE BTN */
         .uce-close-btn {
@@ -259,6 +243,49 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
         }
         .uce-box-header-left { display: flex; align-items: center; gap: 10px; }
 
+        /* UTA SELECTOR */
+        .uce-uta-sel { position: relative; }
+        .uce-uta-trigger {
+          display: inline-flex; align-items: center; justify-content: space-between; gap: 7px;
+          background: #1a2035; border: 1px solid #3b82f6;
+          border-radius: 7px; padding: 5px 11px;
+          cursor: pointer; transition: all 0.15s; user-select: none;
+          width: 160px;
+        }
+        .uce-uta-trigger:hover, .uce-uta-trigger.open { background: #1e2d4a; border-color: #60a5fa; }
+        .uce-pulse {
+          width: 7px; height: 7px; border-radius: 50%;
+          background: #3b82f6; box-shadow: 0 0 6px #3b82f6;
+          animation: ucePulse 2s infinite;
+        }
+        @keyframes ucePulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+        .uce-uta-name { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; color:#93c5fd; letter-spacing:0.06em; }
+        .uce-chevron  { font-size:9px; color:#60a5fa; transition:transform 0.2s; }
+        .uce-uta-trigger.open .uce-chevron { transform:rotate(180deg); }
+
+        .uce-uta-dropdown {
+          position: absolute; top: calc(100% + 6px); left: 0;
+          background: #131929; border: 1px solid #2d3748; border-radius: 8px;
+          min-width: 160px; max-height: 60vh; overflow-y: auto;
+          box-shadow: 0 12px 32px rgba(0,0,0,.5);
+          z-index: 99999; animation: uceDdIn 0.15s ease;
+        }
+
+        .uce-opt {
+          display: flex; align-items: center; gap: 8px;
+          padding: 9px 13px; cursor: pointer; font-size: 12px; color: #94a3b8;
+          border-bottom: 1px solid #1e293b; transition: background 0.12s;
+        }
+        .uce-opt:last-child { border-bottom: none; }
+        .uce-opt:hover      { background: #1a2035; color: #e2e8f0; }
+        .uce-opt.active     { background: #1a2a45; color: #93c5fd; }
+        .uce-opt-dot        { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+        .uce-opt-status     { font-size:9px; margin-left:auto; padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.06em; }
+        .uce-opt-status.running { background:#14532d; color:#4ade80; }
+        .uce-opt-status.stopped { background:#450a0a; color:#f87171; }
+        .uce-opt-status.idle    { background:#1e293b; color:#64748b; }
+        .uce-opt-check { font-size:10px; color:#3b82f6; margin-left:auto; }
+
         /* PILLS */
         .uce-pills       { display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
         .uce-pills-label { font-size:10px; color:#475569; text-transform:uppercase; letter-spacing:0.08em; }
@@ -275,79 +302,79 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
         {/* TOP ROW */}
         <div className="uce-top-row">
 
-          {/* Param trigger */}
-          <div className="uce-param-select">
+          {/* Param dropdown */}
+          <div className="uce-param-select" ref={paramDropdownRef}>
             <div
               ref={paramTriggerRef}
               className={`uce-param-trigger ${paramDropdownOpen ? "open" : ""}`}
-              onClick={() => { setParamDropdownOpen((v) => !v); setDropdownOpen(false); }}
+              onClick={handleParamToggle}
             >
               <span className="uce-param-trigger-text">Zgjidh parametër...</span>
               <FontAwesomeIcon icon={faChevronDown} className="uce-param-chevron" />
             </div>
+
+            {paramDropdownOpen && (
+              <div className="uce-param-dropdown" style={mobileStyle(paramCoords)}>
+                {ALL_PARAMS.map((param) => {
+                  const sel = selectedParams.includes(param.key);
+                  return (
+                    <div
+                      key={param.key}
+                      className={`uce-param-opt ${sel ? "active" : ""}`}
+                      onClick={() => toggleParam(param.key)}
+                    >
+                      <div className="uce-param-opt-dot" style={{ background: param.color }} />
+                      {param.label} ({param.unit})
+                      {sel && <FontAwesomeIcon icon={faCheck} className="uce-param-opt-check" />}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {/* Param dropdown — portal în body */}
-          <PortalDropdown anchorRef={paramTriggerRef} isOpen={paramDropdownOpen} minWidth={240}>
-            {ALL_PARAMS.map((param) => {
-              const sel = selectedParams.includes(param.key);
-              return (
-                <div
-                  key={param.key}
-                  className={`uce-param-opt ${sel ? "active" : ""}`}
-                  onMouseDown={(e) => e.preventDefault()} // previne blur înainte de click
-                  onClick={() => toggleParam(param.key)}
-                >
-                  <div className="uce-param-opt-dot" style={{ background: param.color }} />
-                  {param.label} ({param.unit})
-                  {sel && <FontAwesomeIcon icon={faCheck} className="uce-param-opt-check" />}
-                </div>
-              );
-            })}
-          </PortalDropdown>
-
-          {/* UTA trigger */}
-          <div className="uce-uta-sel">
+          {/* UTA dropdown */}
+          <div className="uce-uta-sel" ref={dropdownRef}>
             <div
               ref={utaTriggerRef}
               className={`uce-uta-trigger ${dropdownOpen ? "open" : ""}`}
-              onClick={() => { setDropdownOpen((v) => !v); setParamDropdownOpen(false); }}
+              onClick={handleUtaToggle}
             >
               <div className="uce-pulse" />
               <span className="uce-uta-name">{chartUta?.id || "Zgjidh UTA"}</span>
               <FontAwesomeIcon icon={faChevronDown} className="uce-chevron" />
             </div>
-          </div>
 
-          {/* UTA dropdown — portal în body */}
-          <PortalDropdown anchorRef={utaTriggerRef} isOpen={dropdownOpen} minWidth={180}>
-            {allUtas.map((uta) => {
-              const isAct = chartUta?.id === uta.id;
-              const statusKey = (uta.status || "").toLowerCase();
-              return (
-                <div
-                  key={uta.id}
-                  className={`uce-opt ${isAct ? "active" : ""}`}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => { setChartUta(uta); setDropdownOpen(false); }}
-                >
-                  <div
-                    className="uce-opt-dot"
-                    style={{
-                      background:
-                        statusKey === "running" ? "#4ade80" :
-                        statusKey === "stopped" ? "#f87171" : "#64748b",
-                    }}
-                  />
-                  {uta.id}
-                  {uta.status && (
-                    <span className={`uce-opt-status ${statusKey}`}>{uta.status}</span>
-                  )}
-                  {isAct && <FontAwesomeIcon icon={faCheck} className="uce-opt-check" />}
-                </div>
-              );
-            })}
-          </PortalDropdown>
+            {dropdownOpen && (
+              <div className="uce-uta-dropdown" style={mobileStyle(utaCoords)}>
+                {allUtas.map((uta) => {
+                  const isAct = chartUta?.id === uta.id;
+                  const statusKey = (uta.status || "").toLowerCase();
+                  return (
+                    <div
+                      key={uta.id}
+                      className={`uce-opt ${isAct ? "active" : ""}`}
+                      onClick={() => { setChartUta(uta); setDropdownOpen(false); }}
+                    >
+                      <div
+                        className="uce-opt-dot"
+                        style={{
+                          background:
+                            statusKey === "running" ? "#4ade80" :
+                            statusKey === "stopped" ? "#f87171" : "#64748b",
+                        }}
+                      />
+                      {uta.id}
+                      {uta.status && (
+                        <span className={`uce-opt-status ${statusKey}`}>{uta.status}</span>
+                      )}
+                      {isAct && <FontAwesomeIcon icon={faCheck} className="uce-opt-check" />}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           {/* Close button */}
           {onClose && (
