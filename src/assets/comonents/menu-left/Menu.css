@@ -109,9 +109,9 @@
   gap: 6px;
   margin-top: 8px;
   padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #1A355E;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white;
+  border: 1px solid white !important;
   border-radius: 8px;
   cursor: pointer;
   font-size: 12px;
@@ -121,7 +121,7 @@
 }
 
 .menu-hide-btn:hover {
-  background: #C82333;
+  background: #C82333 !important;
   color: white;
 }
 

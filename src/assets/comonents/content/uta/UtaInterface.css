@@ -8,14 +8,7 @@
   padding: 10px;
 }
 
-.uta-interface {
-
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-
 .uta-row.header {
-
   font-weight: 700;
   color: white;
   border-radius: 8px;
@@ -43,8 +36,6 @@
   color: white;
 }
 
-
-
 .back-button .back-icon svg {
   width: 20px;
   height: 20px;
@@ -67,7 +58,6 @@
   border-radius: 10px;
   font-size: 16px;
   font-weight: 20;
-  color: #333;
   cursor: pointer;
   transition: all 0.25s ease;
   background-color: #007bff;
@@ -75,18 +65,15 @@
 }
 
 .back-btn:hover {
-
   background-color: #0077ff;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
 }
 
 .main-uta {
   padding: 20px;
 }
-
 
 .uta-details-container {
   background: #f0f9f9;
@@ -106,7 +93,6 @@
   align-items: center;
   justify-content: flex-start;
   padding: 10px;
-
 }
 
 .uta-actions {
@@ -172,7 +158,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-
 .uta-charts-buttons {
   display: flex;
   gap: 12px;
@@ -194,17 +179,11 @@
   border: 1px solid gray;
 }
 
-
-
-
 .chart-btn:hover {
   background: #e9f0ff;
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
-
-
-
 
 .chart-btn.active {
   background: #218838;
@@ -235,7 +214,6 @@
   z-index: 10;
 }
 
-
 .chart-close-btn:hover {
   background: #ff4d4f;
   transform: scale(1.05);
@@ -249,7 +227,6 @@
   margin: 20px 0;
   width: 100%;
   background-color: white;
-
 }
 
 .edit-form h3 {
@@ -258,7 +235,6 @@
   color: #1a355e;
   font-size: 18px;
   font-weight: 600;
-
 }
 
 .uta-button.edit {
@@ -336,7 +312,6 @@
 }
 
 .edit-form .form-actions button[type="submit"]:hover {
-
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
@@ -365,9 +340,6 @@
   z-index: 9999;
 }
 
-
-
-
 .alert-modal-content {
   background-color: #ffffff !important;
   color: #000000 !important;
@@ -379,6 +351,7 @@
   min-width: 200px;
   max-width: 400px;
 }
+
 .uta-button.graph-bottom {
   position: absolute;
   bottom: 10px;
@@ -403,8 +376,9 @@
   box-shadow: 0 6px 16px rgba(0,0,0,0.4);
 }
 
-
-
+/* ============================================
+   MEDIA MOBIL
+   ============================================ */
 
 @media (max-width: 600px) {
   .uta-actions {
@@ -413,71 +387,31 @@
     left: 20px;
     padding-top: 8px;
     width: 89%;
-
-
+    display: flex;
+    gap: 6px;
+    flex: 1 1 auto;
   }
 
   .uta-details-header {
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-bottom: 20px;
   }
 
   .uta-details-header h2 {
     margin: 0;
     flex: 0 0 auto;
-
   }
 
   .status-tag {
     margin-left: auto;
-
     flex: 0 0 auto;
   }
 
-  .uta-actions {
-    display: flex;
-    gap: 6px;
-    flex: 1 1 auto;
-
-  }
-
-  /* .uta-button.start,
-  .uta-button.stop {
-    flex: 0 0 0px;
-
-  } */
-
   .uta-button.edit {
     flex: 1 1 auto;
-
   }
-
-
-
-
-  .uta-details-header h2 {
-    margin: 0;
-
-  }
-
-  .chart-close-btn {
-    top: 8px;
-    right: 8px;
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
-  }
-
-  .uta-charts-buttons {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .uta-charts-buttons .chart-btn {
-    width: 100%;
-  }
-
 
   .chart-close-btn {
     position: absolute;
@@ -505,35 +439,29 @@
     grid-template-columns: 1fr;
   }
 
-
   .edit-form .form-actions button {
     width: 100%;
   }
 
-  .uta-details-header {
-    margin-bottom: 20px;
-  }
-
-  .uta-details-header {
+  .uta-charts-buttons {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
   }
 
-  .status-tag {
-    margin-left: auto;
+  .uta-charts-buttons .chart-btn {
+    width: 100%;
   }
 
   .uta-button.graph-bottom {
-    left: 50%; /* Centrat pe ecran */
-    bottom: 0px; /* La 20px de marginea de jos */
+    left: 50%;
+    bottom: 0px;
     transform: translateX(-50%);
-    width: 90%; /* Ocupă 90% din lățimea ecranului */
-    padding: 14px 20px; /* Mai mare pentru touch */
-    font-size: 16px; /* Mai vizibil textul */
-    border-radius: 12px; /* Rotunjit */
-    box-shadow: 0 6px 16px rgba(0,0,0,0.3); /* Shadow mai elegant */
-    background: linear-gradient(135deg, #4f46e5, #6366f1); /* Gradient frumos */
+    width: 90%;
+    padding: 14px 20px;
+    font-size: 16px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
     transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
   }
 
@@ -542,5 +470,4 @@
     box-shadow: 0 8px 20px rgba(0,0,0,0.35);
     background: linear-gradient(135deg, #6366f1, #4f46e5);
   }
-
 }

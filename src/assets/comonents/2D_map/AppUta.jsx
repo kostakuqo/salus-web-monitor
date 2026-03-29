@@ -21,7 +21,6 @@ const C = {
   OK:"#00FF88", WARN:"#FFD700",
 };
 
-// ─── Tooltip definitions for each schematic element ───────────────────────────
 const TOOLTIPS = {
   ASPIRATOR:    { title: "ASPIRATOR", desc: "Ventilator kthimi — thith ajrin e kthyer nga hapësirat dhe e dërgon nëpër HEX. Shpejtësia kontrollohet nga inverteri (0–100 %)." },
   VENTILATOR:   { title: "VENTILATOR", desc: "Ventilator furnizimi — shpërndan ajrin e trajtuar drejt hapësirave. Funksionon në sinkron me Aspiratorin." },
@@ -43,14 +42,12 @@ const TOOLTIPS = {
   ROOM:         { title: "ROOM — Hapësira e Kondicionuar", desc: "Zona e kondicionuar e ndërtesës. Temperatura e treguar është vlera e furnizimit aktual drejt hapësirës." },
 };
 
-// ─── SVG Tooltip Overlay (rendered inside SVG via foreignObject) ──────────────
 function SvgTooltip({ x, y, tipKey, vw }) {
   if (!tipKey) return null;
   const tip = TOOLTIPS[tipKey];
   if (!tip) return null;
 
   const W = 200, H = 68;
-  // clamp so tooltip stays within viewBox
   let tx = x - W / 2;
   if (tx < 8) tx = 8;
   if (tx + W > vw - 8) tx = vw - W - 8;
@@ -58,7 +55,6 @@ function SvgTooltip({ x, y, tipKey, vw }) {
 
   return (
     <g style={{ pointerEvents: "none" }}>
-      {/* arrow */}
       <polygon
         points={`${x},${y - 10} ${x - 7},${y - 18} ${x + 7},${y - 18}`}
         fill="#0d1526" stroke="#3b82f6" strokeWidth={1}
@@ -84,7 +80,6 @@ function SvgTooltip({ x, y, tipKey, vw }) {
   );
 }
 
-// ─── Hover zone helper — invisible rect that triggers tooltip ─────────────────
 function HoverZone({ x, y, w, h, tipKey, onHover }) {
   return (
     <rect
@@ -97,7 +92,6 @@ function HoverZone({ x, y, w, h, tipKey, onHover }) {
   );
 }
 
-// ─── Primitives ───────────────────────────────────────────────────────────────
 function ValBadge({ x, y, value, unit, col, small = false }) {
   const fs = small ? 8 : 10;
   const str = `${value} ${unit}`;
@@ -260,39 +254,40 @@ function WaterValve({ cx, cy, r=10, pct, active, col }) {
   );
 }
 
-function PumpDevice({ cx, cy, r=22, active, col, pct, label }) {
-  const boxW = r*2+64; const boxH = r*2+52;
-  const bx = cx-boxW/2; const by = cy-r-22;
-  const fs = r*1.05;
+// ─── PumpDevice — redus: r default 14 (era 22) ───────────────────────────────
+function PumpDevice({ cx, cy, r=14, active, col, pct, label }) {
+  const boxW = r*2+44; const boxH = r*2+36;
+  const bx = cx-boxW/2; const by = cy-r-16;
+  const fs = r*0.75;
   const wy = cy+r*0.52; const wx = cx-r*0.32;
-  const amp=3, step=r*0.17;
+  const amp=2, step=r*0.17;
   const wavePath = `M${wx},${wy} q${step},${-amp} ${step*2},0 q${step},${amp} ${step*2},0`;
   return (
     <g>
-      <rect x={bx} y={by} width={boxW} height={boxH} rx={7}
+      <rect x={bx} y={by} width={boxW} height={boxH} rx={5}
         fill={C.PLATE} stroke={active?col+"77":C.EDGE} strokeWidth={2}/>
-      {[[bx+6,by+6],[bx+boxW-6,by+6],[bx+6,by+boxH-6],[bx+boxW-6,by+boxH-6]].map(([px,py],i)=>
-        <circle key={i} cx={px} cy={py} r={3} fill={active?col:C.EDGE} opacity={.7}/>)}
-      <circle cx={cx} cy={cy} r={r+5} fill={C.STEEL} stroke={active?col+"88":C.EDGE} strokeWidth={1.5}/>
+      {[[bx+5,by+5],[bx+boxW-5,by+5],[bx+5,by+boxH-5],[bx+boxW-5,by+boxH-5]].map(([px,py],i)=>
+        <circle key={i} cx={px} cy={py} r={2.5} fill={active?col:C.EDGE} opacity={.7}/>)}
+      <circle cx={cx} cy={cy} r={r+4} fill={C.STEEL} stroke={active?col+"88":C.EDGE} strokeWidth={1.5}/>
       <circle cx={cx} cy={cy} r={r}   fill="#0A1420" stroke={active?col:C.EDGE} strokeWidth={1.5}/>
       <text x={cx} y={cy+fs*0.36} textAnchor="middle" fontSize={fs} fontWeight="700"
         fill={active?col:C.DIM} fontFamily="'Courier New',monospace" letterSpacing="-.05em">M</text>
-      <path d={wavePath} fill="none" stroke={active?col:C.DIM} strokeWidth={1.2} opacity={.7}/>
-      {active && <circle cx={cx} cy={cy} r={r+5} fill="none" stroke={col} strokeWidth={1} opacity={0}>
+      <path d={wavePath} fill="none" stroke={active?col:C.DIM} strokeWidth={1} opacity={.7}/>
+      {active && <circle cx={cx} cy={cy} r={r+4} fill="none" stroke={col} strokeWidth={1} opacity={0}>
         <animate attributeName="opacity" values=".5;0;.5" dur="2s" repeatCount="indefinite"/>
-        <animate attributeName="r" values={`${r+5};${r+14};${r+5}`} dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="r" values={`${r+4};${r+11};${r+4}`} dur="2s" repeatCount="indefinite"/>
       </circle>}
-      <rect x={bx-14} y={cy-6} width={14} height={12} rx={2}
+      <rect x={bx-10} y={cy-5} width={10} height={10} rx={2}
         fill={active?col+"33":C.DIM} stroke={active?col:C.EDGE} strokeWidth={1}/>
-      <text x={bx-7} y={cy-10} textAnchor="middle" fontSize={7} fontWeight="700"
+      <text x={bx-5} y={cy-8} textAnchor="middle" fontSize={6} fontWeight="700"
         fill={active?col:C.DIM} fontFamily="'Courier New',monospace">IN</text>
-      <rect x={bx+boxW} y={cy-6} width={14} height={12} rx={2}
+      <rect x={bx+boxW} y={cy-5} width={10} height={10} rx={2}
         fill={active?col+"33":C.DIM} stroke={active?col:C.EDGE} strokeWidth={1}/>
-      <text x={bx+boxW+7} y={cy-10} textAnchor="middle" fontSize={7} fontWeight="700"
+      <text x={bx+boxW+5} y={cy-8} textAnchor="middle" fontSize={6} fontWeight="700"
         fill={active?col:C.DIM} fontFamily="'Courier New',monospace">OUT</text>
-      <text x={cx} y={by-9} textAnchor="middle" fontSize={9} fontWeight="700"
+      <text x={cx} y={by-7} textAnchor="middle" fontSize={8} fontWeight="700"
         letterSpacing=".1em" fill={active?col:C.TEXT} fontFamily="'Courier New',monospace">{label}</text>
-      <ValBadge x={cx} y={by+boxH+16} value={pct} unit="%" col={active?C.WARN:C.DIM} small/>
+      <ValBadge x={cx} y={by+boxH+13} value={pct} unit="%" col={active?C.WARN:C.DIM} small/>
     </g>
   );
 }
@@ -354,16 +349,18 @@ function Schematic({ d }) {
   const B_PL = BOIL_X+14;
   const B_PR = BOIL_X+BOIL_W-14;
   const B_PCX= (B_PL+B_PR)/2;
-  const B_PR_= 20;
-  const B_PCY= LOOP_TOP+165;
-  const B_PBW= (B_PR_*2+64)/2;
+  // ← pump radius agora 14 (era 20)
+  const B_PR_= 14;
+  const B_PCY= LOOP_TOP+130;
+  const B_PBW= (B_PR_*2+44)/2;
 
   const C_PL = CHILL_X+14;
   const C_PR = CHILL_X+CHILL_W-14;
   const C_PCX= (C_PL+C_PR)/2;
-  const C_PR_= 20;
-  const C_PCY= LOOP_TOP+165;
-  const C_PBW= (C_PR_*2+64)/2;
+  // ← pump radius agora 14 (era 20)
+  const C_PR_= 14;
+  const C_PCY= LOOP_TOP+130;
+  const C_PBW= (C_PR_*2+44)/2;
 
   const mid=(CX_T+CX_B)/2;
   const py1=RET_Y+DH/2+5, py2=SUP_Y-DH/2-5, pmid=(py1+py2)/2;
@@ -374,7 +371,6 @@ function Schematic({ d }) {
   const B_VCY = LOOP_TOP + (B_PCY - B_PR_ - 28 - LOOP_TOP)/2;
   const C_VCY = LOOP_TOP + (C_PCY - C_PR_ - 28 - LOOP_TOP)/2;
 
-  // Fan radius + padding for hover zone
   const FR = 26;
 
   return (
@@ -405,7 +401,6 @@ function Schematic({ d }) {
       <text x={CH_RET} y={CX_T+15} textAnchor="middle" fontSize={6} fill={ventOn?C.RET:"#5A3A1A"} fontFamily="'Courier New',monospace">RET</text>
       <text x={CX_X+CX_W/2} y={CX_T-9} textAnchor="middle" fontSize={9} fontWeight="700"
         letterSpacing=".12em" fill="#4A8A9A" fontFamily="'Courier New',monospace">HEX</text>
-      {/* HEX hover zone */}
       <HoverZone x={CX_X-4} y={CX_T-4} w={CX_W+8} h={CX_B-CX_T+8} tipKey="HEX"
         onHover={(k,_x,_y) => onHover(k, CX_X+CX_W/2, CX_T-4)}/>
 
@@ -620,13 +615,13 @@ function Schematic({ d }) {
 
       {/* ══ BOILER LOOP ══ */}
       <rect x={B_PL-26} y={LOOP_TOP-6} width={B_PR-B_PL+52}
-        height={B_PCY+B_PR_+44-LOOP_TOP} rx={8}
+        height={B_PCY+B_PR_+36-LOOP_TOP} rx={8}
         fill={boilOn?C.BOIL+"0B":"#080808"}
         stroke={boilOn?C.BOIL+"66":C.EDGE} strokeWidth={1.5}
         strokeDasharray={boilOn?"none":"6 3"}/>
 
-      <Pipe x1={B_PL} y1={LOOP_TOP} x2={B_PL} y2={B_PCY-B_PR_-28} active={boilOn} col={C.BOIL} w={5}/>
-      <FlowLine x1={B_PL} y1={B_PCY-B_PR_-30} x2={B_PL} y2={LOOP_TOP+6} active={boilOn} col={C.BOIL}/>
+      <Pipe x1={B_PL} y1={LOOP_TOP} x2={B_PL} y2={B_PCY-B_PR_-20} active={boilOn} col={C.BOIL} w={5}/>
+      <FlowLine x1={B_PL} y1={B_PCY-B_PR_-22} x2={B_PL} y2={LOOP_TOP+6} active={boilOn} col={C.BOIL}/>
       <circle cx={B_PL} cy={LOOP_TOP} r={6} fill={boilOn?C.BOIL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
 
       {/* BOILER VALVE */}
@@ -638,14 +633,14 @@ function Schematic({ d }) {
       <HoverZone x={B_PL-14} y={B_VCY-14} w={70} h={28} tipKey="BOILER_VALVE"
         onHover={(k) => onHover(k, B_PL+20, B_VCY-14)}/>
 
-      <Pipe x1={B_PR} y1={LOOP_TOP} x2={B_PR} y2={B_PCY-B_PR_-28} active={boilOn} col={C.BOIL} w={5}/>
-      <FlowLine x1={B_PR} y1={LOOP_TOP+6} x2={B_PR} y2={B_PCY-B_PR_-30} active={boilOn} col={C.BOIL}/>
+      <Pipe x1={B_PR} y1={LOOP_TOP} x2={B_PR} y2={B_PCY-B_PR_-20} active={boilOn} col={C.BOIL} w={5}/>
+      <FlowLine x1={B_PR} y1={LOOP_TOP+6} x2={B_PR} y2={B_PCY-B_PR_-22} active={boilOn} col={C.BOIL}/>
       <circle cx={B_PR} cy={LOOP_TOP} r={6} fill={boilOn?C.BOIL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
 
-      <Pipe x1={B_PL} y1={B_PCY} x2={B_PCX-B_PBW-14} y2={B_PCY} active={boilOn} col={C.BOIL} w={5}/>
-      <FlowLine x1={B_PL+4} y1={B_PCY} x2={B_PCX-B_PBW-16} y2={B_PCY} active={boilOn} col={C.BOIL}/>
-      <Pipe x1={B_PCX+B_PBW+14} y1={B_PCY} x2={B_PR} y2={B_PCY} active={boilOn} col={C.BOIL} w={5}/>
-      <FlowLine x1={B_PCX+B_PBW+16} y1={B_PCY} x2={B_PR-4} y2={B_PCY} active={boilOn} col={C.BOIL}/>
+      <Pipe x1={B_PL} y1={B_PCY} x2={B_PCX-B_PBW-10} y2={B_PCY} active={boilOn} col={C.BOIL} w={5}/>
+      <FlowLine x1={B_PL+4} y1={B_PCY} x2={B_PCX-B_PBW-12} y2={B_PCY} active={boilOn} col={C.BOIL}/>
+      <Pipe x1={B_PCX+B_PBW+10} y1={B_PCY} x2={B_PR} y2={B_PCY} active={boilOn} col={C.BOIL} w={5}/>
+      <FlowLine x1={B_PCX+B_PBW+12} y1={B_PCY} x2={B_PR-4} y2={B_PCY} active={boilOn} col={C.BOIL}/>
       <circle cx={B_PL} cy={B_PCY} r={6} fill={boilOn?C.BOIL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
       <circle cx={B_PR} cy={B_PCY} r={6} fill={boilOn?C.BOIL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
 
@@ -656,22 +651,22 @@ function Schematic({ d }) {
       <text x={B_PR+30} y={LOOP_TOP+11} textAnchor="middle" fontSize={8} fontWeight="700"
         fill={boilOn?C.BOIL:"#2A1A08"} fontFamily="'Courier New',monospace">W.OUT</text>
 
-      <PumpDevice cx={B_PCX} cy={B_PCY} r={B_PR_} active={boilOn} col={C.BOIL}
+      {/* ── Boiler Pump — r=14 (era 20) ── */}
+      <PumpDevice cx={B_PCX} cy={B_PCY} active={boilOn} col={C.BOIL}
         pct={d.Boil_Pump_Invert} label="PUMP"/>
-      {/* Boiler pump hover zone */}
-      <HoverZone x={B_PCX-(B_PR_*2+64)/2} y={B_PCY-B_PR_-22}
-        w={B_PR_*2+64} h={B_PR_*2+52} tipKey="BOILER_PUMP"
-        onHover={(k) => onHover(k, B_PCX, B_PCY-B_PR_-22)}/>
+      <HoverZone x={B_PCX-(B_PR_*2+44)/2} y={B_PCY-B_PR_-16}
+        w={B_PR_*2+44} h={B_PR_*2+36} tipKey="BOILER_PUMP"
+        onHover={(k) => onHover(k, B_PCX, B_PCY-B_PR_-16)}/>
 
       {/* ══ CHILLER LOOP ══ */}
       <rect x={C_PL-26} y={LOOP_TOP-6} width={C_PR-C_PL+52}
-        height={C_PCY+C_PR_+44-LOOP_TOP} rx={8}
+        height={C_PCY+C_PR_+36-LOOP_TOP} rx={8}
         fill={chillOn?C.CHILL+"0B":"#080808"}
         stroke={chillOn?C.CHILL+"66":C.EDGE} strokeWidth={1.5}
         strokeDasharray={chillOn?"none":"6 3"}/>
 
-      <Pipe x1={C_PL} y1={LOOP_TOP} x2={C_PL} y2={C_PCY-C_PR_-28} active={chillOn} col={C.CHILL} w={5}/>
-      <FlowLine x1={C_PL} y1={C_PCY-C_PR_-30} x2={C_PL} y2={LOOP_TOP+6} active={chillOn} col={C.CHILL}/>
+      <Pipe x1={C_PL} y1={LOOP_TOP} x2={C_PL} y2={C_PCY-C_PR_-20} active={chillOn} col={C.CHILL} w={5}/>
+      <FlowLine x1={C_PL} y1={C_PCY-C_PR_-22} x2={C_PL} y2={LOOP_TOP+6} active={chillOn} col={C.CHILL}/>
       <circle cx={C_PL} cy={LOOP_TOP} r={6} fill={chillOn?C.CHILL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
 
       {/* CHILLER VALVE */}
@@ -683,14 +678,14 @@ function Schematic({ d }) {
       <HoverZone x={C_PL-14} y={C_VCY-14} w={80} h={28} tipKey="CHILLER_VALVE"
         onHover={(k) => onHover(k, C_PL+25, C_VCY-14)}/>
 
-      <Pipe x1={C_PR} y1={LOOP_TOP} x2={C_PR} y2={C_PCY-C_PR_-28} active={chillOn} col={C.CHILL} w={5}/>
-      <FlowLine x1={C_PR} y1={LOOP_TOP+6} x2={C_PR} y2={C_PCY-C_PR_-30} active={chillOn} col={C.CHILL}/>
+      <Pipe x1={C_PR} y1={LOOP_TOP} x2={C_PR} y2={C_PCY-C_PR_-20} active={chillOn} col={C.CHILL} w={5}/>
+      <FlowLine x1={C_PR} y1={LOOP_TOP+6} x2={C_PR} y2={C_PCY-C_PR_-22} active={chillOn} col={C.CHILL}/>
       <circle cx={C_PR} cy={LOOP_TOP} r={6} fill={chillOn?C.CHILL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
 
-      <Pipe x1={C_PL} y1={C_PCY} x2={C_PCX-C_PBW-14} y2={C_PCY} active={chillOn} col={C.CHILL} w={5}/>
-      <FlowLine x1={C_PL+4} y1={C_PCY} x2={C_PCX-C_PBW-16} y2={C_PCY} active={chillOn} col={C.CHILL}/>
-      <Pipe x1={C_PCX+C_PBW+14} y1={C_PCY} x2={C_PR} y2={C_PCY} active={chillOn} col={C.CHILL} w={5}/>
-      <FlowLine x1={C_PCX+C_PBW+16} y1={C_PCY} x2={C_PR-4} y2={C_PCY} active={chillOn} col={C.CHILL}/>
+      <Pipe x1={C_PL} y1={C_PCY} x2={C_PCX-C_PBW-10} y2={C_PCY} active={chillOn} col={C.CHILL} w={5}/>
+      <FlowLine x1={C_PL+4} y1={C_PCY} x2={C_PCX-C_PBW-12} y2={C_PCY} active={chillOn} col={C.CHILL}/>
+      <Pipe x1={C_PCX+C_PBW+10} y1={C_PCY} x2={C_PR} y2={C_PCY} active={chillOn} col={C.CHILL} w={5}/>
+      <FlowLine x1={C_PCX+C_PBW+12} y1={C_PCY} x2={C_PR-4} y2={C_PCY} active={chillOn} col={C.CHILL}/>
       <circle cx={C_PL} cy={C_PCY} r={6} fill={chillOn?C.CHILL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
       <circle cx={C_PR} cy={C_PCY} r={6} fill={chillOn?C.CHILL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
 
@@ -701,14 +696,14 @@ function Schematic({ d }) {
       <text x={C_PR+30} y={LOOP_TOP+11} textAnchor="middle" fontSize={8} fontWeight="700"
         fill={chillOn?C.CHILL:"#081828"} fontFamily="'Courier New',monospace">W.OUT</text>
 
-      <PumpDevice cx={C_PCX} cy={C_PCY} r={C_PR_} active={chillOn} col={C.CHILL}
+      {/* ── Chiller Pump — r=14 (era 20) ── */}
+      <PumpDevice cx={C_PCX} cy={C_PCY} active={chillOn} col={C.CHILL}
         pct={d.Chiller_Pump_invert} label="PUMP"/>
-      {/* Chiller pump hover zone */}
-      <HoverZone x={C_PCX-(C_PR_*2+64)/2} y={C_PCY-C_PR_-22}
-        w={C_PR_*2+64} h={C_PR_*2+52} tipKey="CHILLER_PUMP"
-        onHover={(k) => onHover(k, C_PCX, C_PCY-C_PR_-22)}/>
+      <HoverZone x={C_PCX-(C_PR_*2+44)/2} y={C_PCY-C_PR_-16}
+        w={C_PR_*2+44} h={C_PR_*2+36} tipKey="CHILLER_PUMP"
+        onHover={(k) => onHover(k, C_PCX, C_PCY-C_PR_-16)}/>
 
-      {/* ── TOOLTIP OVERLAY — rendered last so it's always on top ── */}
+      {/* ── TOOLTIP OVERLAY ── */}
       <SvgTooltip x={tooltip.x} y={tooltip.y} tipKey={tooltip.key} vw={VW+90}/>
     </svg>
   );
