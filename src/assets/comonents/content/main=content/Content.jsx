@@ -10,6 +10,9 @@ import KaldajaInterface from '../kaldaja/KaldajaInterface';
 import DashboardUtaPage from '../../menu-items/dashboard/DashboardUtaPage';
 import DashboardPage from '../../menu-items/dashboard/DashboardPage';
 import GraphicsPage from '../../menu-items/general/GraphicPage';
+import Settings from '../../menu-items/settings/Settings';
+import SettingsPage from '../../menu-items/settings/SettingsPage';
+
 
 
 
@@ -50,6 +53,8 @@ export default function Content({ resetTrigger, showMapTrigger }) {
         <DashboardUtaPage onUtaClick={(uta) => setSelectedUta(uta)} />
       ) : currentPage === "graphics" ? (
         <GraphicsPage />
+      ) : currentPage === "settings" ? (
+        <SettingsPage/>
       ) : currentPage === "uta" ? (
         <UtaInterface onBack={handleBack} />
       ) : currentPage === "chiller" ? (

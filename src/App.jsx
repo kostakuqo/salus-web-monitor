@@ -7,6 +7,7 @@ import HomePage from "./assets/comonents/menu-items/home/Homepage";
 import './App.css';
 import HartaPage from "./assets/comonents/menu-items/harta/HartaPage";
 import GraphicsPage from "./assets/comonents/menu-items/general/GraphicPage";
+import SettingsPage from "./assets/comonents/menu-items/settings/SettingsPage";
 
 // App.jsx
 export default function AppWrapper() {
@@ -32,7 +33,8 @@ export default function AppWrapper() {
             <Route path="/uta/*" element={<Content resetTrigger={resetTrigger} />} />
             <Route path="/chiller/*" element={<Content resetTrigger={resetTrigger} />} />
             <Route path="/kaldaja/*" element={<Content resetTrigger={resetTrigger} />} />
-            <Route path="/settings" element={null} />
+            <Route path="/settings/*" element={<Content resetTrigger={resetTrigger} />} />
+            <Route path="/settings/*" element={<SettingsPage/>} />
             <Route path="/general" element={null} />
             <Route path="/profile" element={null} />
             <Route path="/harta/*" element={<HartaPage />} />

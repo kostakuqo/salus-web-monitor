@@ -2,6 +2,7 @@ import React from "react";
 import DashboardUtaPage from "./DashboardUtaPage";
 import "./DashboardPage.css";
 
+
 export default function DashboardPage() {
   const handleUtaClick = (uta) => {
     console.log("UTA selectat:", uta.id);
@@ -10,10 +11,11 @@ export default function DashboardPage() {
 
   const handleChillerClick = (chiller) => {
     console.log("Chiller selectat:", chiller.id);
-    
+
   };
 
   return (
+
     <div className="dashboard-page">
 
 
@@ -23,9 +25,10 @@ export default function DashboardPage() {
       </section>
 
       <section>
+        {/* aici pot sa mai adaug alta componenta */}
 
-        <DashboardChillerPage onChillerClick={handleChillerClick} />
       </section>
     </div>
+
   );
 }
