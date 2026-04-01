@@ -831,8 +831,14 @@ If it declares any Font Awesome CSS pseudo-elements, they will not be rendered a
             gap: 10px;
           }
           .usp-chips { grid-column: 1 / -1; }
-          .usp-fields { grid-template-columns: 1fr 1fr; }
-          
+          .usp-fields {grid-template-columns: repeat(2, 1fr);}
+
+
+          .usp-fields input,
+          .usp-fields select,
+          .usp-fields textarea {width: 100%;box-sizing: border-box;}
+    
+        
           .usp-btn.start,
           .usp-btn.stop {
             flex: 1;
