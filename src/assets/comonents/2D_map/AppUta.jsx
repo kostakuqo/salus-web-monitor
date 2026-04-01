@@ -285,10 +285,10 @@ function Schematic({ d }) {
 
   const VW=860, VH=500;
   const RET_Y=78,  SUP_Y=202, DH=60;
-  const CX_X=36,   CX_W=56;
+  const CX_X=56,   CX_W=56;
   const CX_T=RET_Y-DH/4, CX_B=SUP_Y+DH/4;
   const CH_SUP=CX_X-10, CH_RET=CX_X+66;
-  const HY_X=-34, HY_W=35;
+  const HY_X=-14, HY_W=35;
   const DIN_X=HY_X+HY_W+7, DOUT_X=HY_X+HY_W+7, DAMP_W=23;
   const DUCT_START=CX_X+CX_W+7;
   const FAN_X=DUCT_START+8, FAN_W=84;
@@ -298,7 +298,7 @@ function Schematic({ d }) {
   const F3_X=582,    F3_W=20;
   const DP_X=614;
   const CONN_X=646,  CONN_W=56;
-  const ROOM_X=714,  ROOM_W=112;
+  const ROOM_X=714,  ROOM_W=80;
   const ROOM_H=SUP_Y+DH/2-(RET_Y-DH/2)+8;
   const ROOM_Y=RET_Y-DH/2-4;
   const LOOP_TOP=SUP_Y+DH/2+6;
