@@ -11,9 +11,7 @@ export default function Settings({ onOpenSettings }) {
       onClick={() => {
         if (onOpenSettings) {
           onOpenSettings();
-        } else {
-          console.warn("onOpenSettings nuk është dhënë!");
-        }
+        } 
       }}
     >
       <FontAwesomeIcon icon={faGear} className="menu-icon" />

@@ -46,34 +46,25 @@ function SvgTooltip({ x, y, tipKey, vw }) {
   if (!tipKey) return null;
   const tip = TOOLTIPS[tipKey];
   if (!tip) return null;
-
   const W = 200, H = 68;
   let tx = x - W / 2;
   if (tx < 8) tx = 8;
   if (tx + W > vw - 8) tx = vw - W - 8;
   const ty = y - H - 14;
-
   return (
     <g style={{ pointerEvents: "none" }}>
-      <polygon
-        points={`${x},${y - 10} ${x - 7},${y - 18} ${x + 7},${y - 18}`}
-        fill="#0d1526" stroke="#3b82f6" strokeWidth={1}
-      />
+      <polygon points={`${x},${y - 10} ${x - 7},${y - 18} ${x + 7},${y - 18}`}
+        fill="#0d1526" stroke="#3b82f6" strokeWidth={1}/>
       <foreignObject x={tx} y={ty < 4 ? y + 14 : ty} width={W} height={H + 20}>
         <div xmlns="http://www.w3.org/1999/xhtml" style={{
-          background: "#0d1526",
-          border: "1px solid #3b82f6",
-          borderRadius: 8,
-          padding: "7px 11px",
-          fontFamily: "'Courier New', monospace",
+          background: "#0d1526", border: "1px solid #3b82f6", borderRadius: 8,
+          padding: "7px 11px", fontFamily: "'Courier New', monospace",
           boxShadow: "0 8px 28px rgba(0,0,0,.7)",
         }}>
           <div style={{ fontSize: 9, fontWeight: 700, color: "#60a5fa", letterSpacing: ".1em", marginBottom: 4 }}>
             {tip.title}
           </div>
-          <div style={{ fontSize: 8, color: "#94a3b8", lineHeight: 1.5 }}>
-            {tip.desc}
-          </div>
+          <div style={{ fontSize: 8, color: "#94a3b8", lineHeight: 1.5 }}>{tip.desc}</div>
         </div>
       </foreignObject>
     </g>
@@ -82,13 +73,9 @@ function SvgTooltip({ x, y, tipKey, vw }) {
 
 function HoverZone({ x, y, w, h, tipKey, onHover }) {
   return (
-    <rect
-      x={x} y={y} width={w} height={h}
-      fill="transparent"
-      style={{ cursor: "help" }}
+    <rect x={x} y={y} width={w} height={h} fill="transparent" style={{ cursor: "help" }}
       onMouseEnter={() => onHover(tipKey, x + w / 2, y)}
-      onMouseLeave={() => onHover(null, 0, 0)}
-    />
+      onMouseLeave={() => onHover(null, 0, 0)}/>
   );
 }
 
@@ -140,18 +127,6 @@ function FlowLine({ x1, y1, x2, y2, active, col }) {
       ))}
     </>
   );
-}
-
-function PipeArrow({ x, y, dir, col, active }) {
-  const s = 7;
-  const fill = active ? col : C.DIM;
-  const pts = {
-    right: `${x},${y-s} ${x+s*1.6},${y} ${x},${y+s}`,
-    left:  `${x},${y-s} ${x-s*1.6},${y} ${x},${y+s}`,
-    down:  `${x-s},${y} ${x},${y+s*1.6} ${x+s},${y}`,
-    up:    `${x-s},${y} ${x},${y-s*1.6} ${x+s},${y}`,
-  };
-  return <polygon points={pts[dir]} fill={fill} opacity={active ? 1 : 0.4}/>;
 }
 
 function Fan({ cx, cy, r=28, active, col }) {
@@ -234,7 +209,7 @@ function WaterValve({ cx, cy, r=10, pct, active, col }) {
   const ay1 = cy + arcR*Math.sin(rad(-openAngle/2));
   const ax2 = cx + arcR*Math.cos(rad( openAngle/2));
   const ay2 = cy + arcR*Math.sin(rad( openAngle/2));
-  const stemH = r+8;
+  const stemH = r+1;
   return (
     <g>
       <polygon points={`${cx-r},${cy-r} ${cx},${cy} ${cx-r},${cy+r}`}
@@ -254,14 +229,10 @@ function WaterValve({ cx, cy, r=10, pct, active, col }) {
   );
 }
 
-// ─── PumpDevice — redus: r default 14 (era 22) ───────────────────────────────
-function PumpDevice({ cx, cy, r=14, active, col, pct, label }) {
-  const boxW = r*2+44; const boxH = r*2+36;
-  const bx = cx-boxW/2; const by = cy-r-16;
+function PumpDevice({ cx, cy, r=11, active, col, pct, label }) {
+  const boxW = r*2+36; const boxH = r*2+28;
+  const bx = cx-boxW/2; const by = cy-r-12;
   const fs = r*0.75;
-  const wy = cy+r*0.52; const wx = cx-r*0.32;
-  const amp=2, step=r*0.17;
-  const wavePath = `M${wx},${wy} q${step},${-amp} ${step*2},0 q${step},${amp} ${step*2},0`;
   return (
     <g>
       <rect x={bx} y={by} width={boxW} height={boxH} rx={5}
@@ -272,22 +243,13 @@ function PumpDevice({ cx, cy, r=14, active, col, pct, label }) {
       <circle cx={cx} cy={cy} r={r}   fill="#0A1420" stroke={active?col:C.EDGE} strokeWidth={1.5}/>
       <text x={cx} y={cy+fs*0.36} textAnchor="middle" fontSize={fs} fontWeight="700"
         fill={active?col:C.DIM} fontFamily="'Courier New',monospace" letterSpacing="-.05em">M</text>
-      <path d={wavePath} fill="none" stroke={active?col:C.DIM} strokeWidth={1} opacity={.7}/>
       {active && <circle cx={cx} cy={cy} r={r+4} fill="none" stroke={col} strokeWidth={1} opacity={0}>
         <animate attributeName="opacity" values=".5;0;.5" dur="2s" repeatCount="indefinite"/>
         <animate attributeName="r" values={`${r+4};${r+11};${r+4}`} dur="2s" repeatCount="indefinite"/>
       </circle>}
-      <rect x={bx-10} y={cy-5} width={10} height={10} rx={2}
-        fill={active?col+"33":C.DIM} stroke={active?col:C.EDGE} strokeWidth={1}/>
-      <text x={bx-5} y={cy-8} textAnchor="middle" fontSize={6} fontWeight="700"
-        fill={active?col:C.DIM} fontFamily="'Courier New',monospace">IN</text>
-      <rect x={bx+boxW} y={cy-5} width={10} height={10} rx={2}
-        fill={active?col+"33":C.DIM} stroke={active?col:C.EDGE} strokeWidth={1}/>
-      <text x={bx+boxW+5} y={cy-8} textAnchor="middle" fontSize={6} fontWeight="700"
-        fill={active?col:C.DIM} fontFamily="'Courier New',monospace">OUT</text>
-      <text x={cx} y={by-7} textAnchor="middle" fontSize={8} fontWeight="700"
+      <text x={cx} y={by-6} textAnchor="middle" fontSize={8} fontWeight="700"
         letterSpacing=".1em" fill={active?col:C.TEXT} fontFamily="'Courier New',monospace">{label}</text>
-      <ValBadge x={cx} y={by+boxH+13} value={pct} unit="%" col={active?C.WARN:C.DIM} small/>
+      <ValBadge x={cx} y={by+boxH+12} value={pct} unit="%" col={active?C.WARN:C.DIM} small/>
     </g>
   );
 }
@@ -310,13 +272,9 @@ function SvgLabel({ x, y, text, col, small=false }) {
     fontWeight="700" letterSpacing=".1em" fill={col} fontFamily="'Courier New',monospace">{text}</text>;
 }
 
-// ─── Main Schematic ───────────────────────────────────────────────────────────
 function Schematic({ d }) {
   const [tooltip, setTooltip] = useState({ key: null, x: 0, y: 0 });
-
-  const onHover = useCallback((key, x, y) => {
-    setTooltip({ key, x, y });
-  }, []);
+  const onHover = useCallback((key, x, y) => { setTooltip({ key, x, y }); }, []);
 
   const on      = d.status==="ON";
   const ventOn  = on && d.Ventilator>0;
@@ -326,12 +284,11 @@ function Schematic({ d }) {
   const anyOn   = on;
 
   const VW=860, VH=500;
-
-  const RET_Y=88,  SUP_Y=192, DH=50;
-  const CX_X=58,   CX_W=76;
-  const CX_T=RET_Y-DH/2-4, CX_B=SUP_Y+DH/2+4;
-  const CH_SUP=CX_X+21, CH_RET=CX_X+56;
-  const HY_X=12,   HY_W=35;
+  const RET_Y=78,  SUP_Y=202, DH=60;
+  const CX_X=36,   CX_W=56;
+  const CX_T=RET_Y-DH/4, CX_B=SUP_Y+DH/4;
+  const CH_SUP=CX_X-10, CH_RET=CX_X+66;
+  const HY_X=-34, HY_W=35;
   const DIN_X=HY_X+HY_W+7, DOUT_X=HY_X+HY_W+7, DAMP_W=23;
   const DUCT_START=CX_X+CX_W+7;
   const FAN_X=DUCT_START+8, FAN_W=84;
@@ -349,18 +306,14 @@ function Schematic({ d }) {
   const B_PL = BOIL_X+14;
   const B_PR = BOIL_X+BOIL_W-14;
   const B_PCX= (B_PL+B_PR)/2;
-  // ← pump radius agora 14 (era 20)
-  const B_PR_= 14;
-  const B_PCY= LOOP_TOP+130;
-  const B_PBW= (B_PR_*2+44)/2;
+  const B_PR_= 4;
+  const B_PCY= LOOP_TOP+150;
 
   const C_PL = CHILL_X+14;
   const C_PR = CHILL_X+CHILL_W-14;
   const C_PCX= (C_PL+C_PR)/2;
-  // ← pump radius agora 14 (era 20)
-  const C_PR_= 14;
-  const C_PCY= LOOP_TOP+130;
-  const C_PBW= (C_PR_*2+44)/2;
+  const C_PR_= -2;
+  const C_PCY= LOOP_TOP+150;
 
   const mid=(CX_T+CX_B)/2;
   const py1=RET_Y+DH/2+5, py2=SUP_Y-DH/2-5, pmid=(py1+py2)/2;
@@ -370,7 +323,6 @@ function Schematic({ d }) {
 
   const B_VCY = LOOP_TOP + (B_PCY - B_PR_ - 28 - LOOP_TOP)/2;
   const C_VCY = LOOP_TOP + (C_PCY - C_PR_ - 28 - LOOP_TOP)/2;
-
   const FR = 26;
 
   return (
@@ -381,30 +333,49 @@ function Schematic({ d }) {
       <rect x={8} y={RET_Y-DH/2-20} width={ROOM_X-16}
         height={SUP_Y+DH/2-RET_Y+DH/2+40} rx={6} fill={C.PLATE} stroke={C.EDGE} strokeWidth={1}/>
 
-      {/* ── HEX ── */}
+      {/* ══ HEX ══ */}
       <rect x={CX_X-4} y={CX_T-4} width={CX_W+8} height={CX_B-CX_T+8}
         rx={6} fill={C.STEEL} stroke={anyOn?"#2A6A5A":C.EDGE} strokeWidth={2}/>
       <rect x={CX_X} y={CX_T} width={CX_W} height={CX_B-CX_T}
         rx={4} fill="#0E1820" stroke={C.EDGE} strokeWidth={1}/>
-      <rect x={CH_SUP-9} y={CX_T+5} width={18} height={CX_B-CX_T-10}
-        rx={4} fill={aspOn?"#00E5FF0A":"#0A1218"} stroke={aspOn?C.SUP:C.EDGE} strokeWidth={1.5}/>
-      <rect x={CH_RET-9} y={CX_T+5} width={18} height={CX_B-CX_T-10}
-        rx={4} fill={ventOn?"#FF8C000A":"#0A1218"} stroke={ventOn?C.RET:C.EDGE} strokeWidth={1.5}/>
-      {Array.from({length:9}).map((_,i)=>{
-        const fy=CX_T+14+i*((CX_B-CX_T-28)/8);
-        return <line key={i} x1={CH_SUP+10} y1={fy} x2={CH_RET-10} y2={fy}
-          stroke={anyOn?"#2A5A6A":C.EDGE} strokeWidth={1.2} opacity={.6}/>;
+
+      {Array.from({length:6}).map((_,i) => {
+        const fy = CX_T+10+i*((CX_B-CX_T-20)/5);
+        return <line key={`g${i}`} x1={CX_X+5} y1={fy} x2={CX_X+CX_W-5} y2={fy}
+          stroke="#1A3A4A" strokeWidth={1} opacity={.3}/>;
       })}
-      <polygon points={`${CH_SUP},${mid+9} ${CH_SUP-6},${mid-4} ${CH_SUP+6},${mid-4}`} fill={aspOn?C.SUP:C.EDGE}/>
-      <polygon points={`${CH_RET},${mid-9} ${CH_RET-6},${mid+4} ${CH_RET+6},${mid+4}`} fill={ventOn?C.RET:C.EDGE}/>
-      <text x={CH_SUP} y={CX_T+15} textAnchor="middle" fontSize={6} fill={aspOn?C.SUP:"#2A5A6A"} fontFamily="'Courier New',monospace">SUP</text>
-      <text x={CH_RET} y={CX_T+15} textAnchor="middle" fontSize={6} fill={ventOn?C.RET:"#5A3A1A"} fontFamily="'Courier New',monospace">RET</text>
+
+      <line x1={CH_SUP} y1={CX_T+5} x2={CH_RET} y2={CX_B-5}
+        stroke={aspOn?C.SUP:"#1A3A4A"} strokeWidth={2} opacity={.7}/>
+      <line x1={CH_RET} y1={CX_T+5} x2={CH_SUP} y2={CX_B-5}
+        stroke={ventOn?C.RET:"#3A2A1A"} strokeWidth={2} opacity={.7}/>
+
+      {aspOn && [0,1,2].map(i => (
+        <circle key={`hs${i}`} r={3} fill={C.SUP} opacity={0.95}>
+          <animateMotion dur="1.6s" begin={`${-(i*0.53).toFixed(2)}s`}
+            repeatCount="indefinite"
+            path={`M${CH_SUP},${CX_T+5} L${CH_RET},${CX_B-5}`}/>
+        </circle>
+      ))}
+
+      {ventOn && [0,1,2].map(i => (
+        <circle key={`hr${i}`} r={3} fill={C.RET} opacity={0.95}>
+          <animateMotion dur="1.6s" begin={`${-(i*0.53).toFixed(2)}s`}
+            repeatCount="indefinite"
+            path={`M${CH_RET},${CX_T+5} L${CH_SUP},${CX_B-5}`}/>
+        </circle>
+      ))}
+
       <text x={CX_X+CX_W/2} y={CX_T-9} textAnchor="middle" fontSize={9} fontWeight="700"
         letterSpacing=".12em" fill="#4A8A9A" fontFamily="'Courier New',monospace">HEX</text>
+      <text x={CH_SUP} y={CX_T-1} textAnchor="middle" fontSize={6}
+        fill={aspOn?C.SUP:"#2A5A6A"} fontFamily="'Courier New',monospace">SUP</text>
+      <text x={CH_RET} y={CX_T-1} textAnchor="middle" fontSize={6}
+        fill={ventOn?C.RET:"#5A3A1A"} fontFamily="'Courier New',monospace">RET</text>
       <HoverZone x={CX_X-4} y={CX_T-4} w={CX_W+8} h={CX_B-CX_T+8} tipKey="HEX"
-        onHover={(k,_x,_y) => onHover(k, CX_X+CX_W/2, CX_T-4)}/>
+        onHover={(_k,_x,_y) => onHover("HEX", CX_X+CX_W/2, CX_T-4)}/>
 
-      {/* ── Fresh Air / Exhaust lines ── */}
+      {/* ── Fresh Air / Exhaust ── */}
       <Pipe x1={HY_X-60} y1={RET_Y} x2={HY_X} y2={RET_Y} active={aspOn} col={airColor(d.Air_inp_Temp)} w={4}/>
       <FlowLine x1={HY_X-58} y1={RET_Y} x2={HY_X-2} y2={RET_Y} active={aspOn} col={airColor(d.Air_inp_Temp)}/>
       <rect x={HY_X-72} y={RET_Y-10} width={14} height={20} rx={3}
@@ -446,20 +417,19 @@ function Schematic({ d }) {
 
       {/* ── Damper IN ── */}
       <Damper x={DIN_X} y={RET_Y} w={DAMP_W} h={DH-10} pct={d.Inp_Damper} active={on} col={C.SUP}/>
-      <SvgLabel x={DIN_X+DAMP_W/2} y={RET_Y-DH/2-9} text="D-IN" col={on?C.SUP:C.TEXT} small/>
+      <SvgLabel x={DIN_X+DAMP_W/2} y={RET_Y-DH/2-2} text="D-IN" col={on?C.SUP:C.TEXT} small/>
       <ValBadge x={DIN_X+DAMP_W/2} y={RET_Y-DH/2-23} value={d.Inp_Damper} unit="%" col={C.SUP} small/>
       <HoverZone x={DIN_X} y={RET_Y-DH/2} w={DAMP_W} h={DH-10} tipKey="DAMPER_IN"
         onHover={(k) => onHover(k, DIN_X+DAMP_W/2, RET_Y-DH/2)}/>
 
-      <Pipe x1={DIN_X+DAMP_W} y1={RET_Y} x2={CH_SUP} y2={RET_Y} active={aspOn} col={C.SUP} w={3}/>
-      <FlowLine x1={DIN_X+DAMP_W+2} y1={RET_Y} x2={CH_SUP-2} y2={RET_Y} active={aspOn} col={C.SUP}/>
-      <Pipe x1={CH_SUP} y1={RET_Y} x2={CH_SUP} y2={CX_T} active={aspOn} col={C.SUP} w={3}/>
-      <FlowLine x1={CH_SUP} y1={RET_Y+2} x2={CH_SUP} y2={CX_T-2} active={aspOn} col={C.SUP}/>
-      <FlowLine x1={CH_SUP} y1={CX_T+7} x2={CH_SUP} y2={CX_B-7} active={aspOn} col={C.SUP}/>
-      <Pipe x1={CH_SUP} y1={CX_B} x2={CH_SUP} y2={SUP_Y} active={aspOn} col={C.SUP} w={3}/>
-      <Pipe x1={CH_SUP} y1={SUP_Y} x2={DUCT_START} y2={SUP_Y} active={aspOn} col={C.SUP} w={3}/>
-      <FlowLine x1={CH_SUP+2} y1={CX_B} x2={CH_SUP+2} y2={SUP_Y-2} active={aspOn} col={C.SUP}/>
-      <FlowLine x1={CH_SUP+2} y1={SUP_Y} x2={DUCT_START-2} y2={SUP_Y} active={aspOn} col={C.SUP}/>
+      {/* <Pipe x1={DIN_X+DAMP_W} y1={RET_Y} x2={CH_SUP} y2={RET_Y} active={aspOn} col={C.SUP} w={3}/> */}
+      {/* <FlowLine x1={DIN_X+DAMP_W+2} y1={RET_Y} x2={CH_SUP-2} y2={RET_Y} active={aspOn} col={C.SUP}/> */}
+      {/* <Pipe x1={CH_SUP} y1={RET_Y} x2={CH_SUP} y2={CX_T} active={aspOn} col={C.SUP} w={3}/> */}
+      {/* <FlowLine x1={CH_SUP} y1={RET_Y+2} x2={CH_SUP} y2={CX_T-2} active={aspOn} col={C.SUP}/> */}
+      {/* <Pipe x1={CH_SUP} y1={CX_B} x2={CH_SUP} y2={SUP_Y} active={aspOn} col={C.SUP} w={3}/> */}
+      {/* <Pipe x1={CH_SUP} y1={SUP_Y} x2={DUCT_START} y2={SUP_Y} active={aspOn} col={C.SUP} w={3}/> */}
+      {/* <FlowLine x1={CH_SUP+2} y1={CX_B} x2={CH_SUP+2} y2={SUP_Y-2} active={aspOn} col={C.SUP}/> */}
+      {/* <FlowLine x1={CH_SUP+2} y1={SUP_Y} x2={DUCT_START-2} y2={SUP_Y} active={aspOn} col={C.SUP}/> */}
 
       {/* ── Dalja ── */}
       <rect x={HY_X} y={SUP_Y-DH/2+5} width={HY_W} height={DH-7} rx={4}
@@ -480,15 +450,14 @@ function Schematic({ d }) {
       <HoverZone x={DOUT_X} y={SUP_Y-DH/2} w={DAMP_W} h={DH-10} tipKey="DAMPER_OUT"
         onHover={(k) => onHover(k, DOUT_X+DAMP_W/2, SUP_Y-DH/2)}/>
 
-      <Pipe x1={DOUT_X+DAMP_W} y1={SUP_Y} x2={CH_RET} y2={SUP_Y} active={ventOn} col={C.RET} w={3}/>
-      <FlowLine x1={CH_RET-2} y1={SUP_Y} x2={DOUT_X+DAMP_W+2} y2={SUP_Y} active={ventOn} col={C.RET}/>
-      <Pipe x1={CH_RET} y1={CX_B} x2={CH_RET} y2={SUP_Y} active={ventOn} col={C.RET} w={3}/>
-      <FlowLine x1={CH_RET} y1={CX_B+2} x2={CH_RET} y2={SUP_Y-2} active={ventOn} col={C.RET}/>
-      <FlowLine x1={CH_RET} y1={CX_B-7} x2={CH_RET} y2={CX_T+7} active={ventOn} col={C.RET}/>
-      <Pipe x1={CH_RET} y1={RET_Y} x2={CH_RET} y2={CX_T} active={ventOn} col={C.RET} w={3}/>
-      <FlowLine x1={CH_RET} y1={RET_Y-2} x2={CH_RET} y2={CX_T+2} active={ventOn} col={C.RET}/>
-      <Pipe x1={DUCT_START} y1={RET_Y} x2={CH_RET} y2={RET_Y} active={ventOn} col={C.RET} w={3}/>
-      <FlowLine x1={CH_RET-2} y1={RET_Y} x2={DUCT_START+2} y2={RET_Y} active={ventOn} col={C.RET}/>
+      {/* <Pipe x1={DOUT_X+DAMP_W} y1={SUP_Y} x2={CH_RET} y2={SUP_Y} active={ventOn} col={C.RET} w={3}/> */}
+      {/* <FlowLine x1={CH_RET-2} y1={SUP_Y} x2={DOUT_X+DAMP_W+2} y2={SUP_Y} active={ventOn} col={C.RET}/> */}
+      {/* <Pipe x1={CH_RET} y1={CX_B} x2={CH_RET} y2={SUP_Y} active={ventOn} col={C.RET} w={3}/> */}
+      {/* <FlowLine x1={CH_RET} y1={CX_B+2} x2={CH_RET} y2={SUP_Y-2} active={ventOn} col={C.RET}/> */}
+      {/* <Pipe x1={CH_RET} y1={RET_Y} x2={CH_RET} y2={CX_T} active={ventOn} col={C.RET} w={3}/> */}
+      {/* <FlowLine x1={CH_RET} y1={RET_Y-2} x2={CH_RET} y2={CX_T+2} active={ventOn} col={C.RET}/> */}
+      {/* <Pipe x1={DUCT_START} y1={RET_Y} x2={CH_RET} y2={RET_Y} active={ventOn} col={C.RET} w={3}/> */}
+      {/* <FlowLine x1={CH_RET-2} y1={RET_Y} x2={DUCT_START+4} y2={RET_Y} active={ventOn} col={C.RET}/> */}
 
       {/* ── DUCTS ── */}
       <rect x={DUCT_START-3} y={RET_Y-DH/2-3} width={CONN_X+CONN_W-DUCT_START+6}
@@ -605,7 +574,7 @@ function Schematic({ d }) {
       <rect x={ROOM_X} y={ROOM_Y} width={ROOM_W} height={ROOM_H} rx={6}
         fill={anyOn?"#111E28":"#0C1520"} stroke={anyOn?"#2A6A5A":C.EDGE} strokeWidth={2}/>
       <text x={ROOM_X+ROOM_W/2} y={ROOM_Y+ROOM_H/2-7} textAnchor="middle" fontSize={10}
-        fontWeight="700" letterSpacing=".14em" fill={anyOn?C.HEAD:C.TEXT} fontFamily="'Courier New',monospace">ROOM</text>
+        fontWeight="700" letterSpacing=".14em" fill={anyOn?C.HEAD:C.TEXT} fontFamily="'Courier New',monospace">Degenza 1</text>
       <text x={ROOM_X+ROOM_W/2} y={ROOM_Y+ROOM_H/2+9} textAnchor="middle" fontSize={9}
         fontWeight="700" fill={airColor(d.Air_Output_Temp)} fontFamily="'Courier New',monospace">
         {d.Air_Output_Temp}°C
@@ -614,17 +583,16 @@ function Schematic({ d }) {
         onHover={(k) => onHover(k, ROOM_X+ROOM_W/2, ROOM_Y)}/>
 
       {/* ══ BOILER LOOP ══ */}
-      <rect x={B_PL-26} y={LOOP_TOP-6} width={B_PR-B_PL+52}
+      {/* <rect x={B_PL-26} y={LOOP_TOP-6} width={B_PR-B_PL+52}
         height={B_PCY+B_PR_+36-LOOP_TOP} rx={8}
         fill={boilOn?C.BOIL+"0B":"#080808"}
         stroke={boilOn?C.BOIL+"66":C.EDGE} strokeWidth={1.5}
-        strokeDasharray={boilOn?"none":"6 3"}/>
+        strokeDasharray={boilOn?"none":"6 3"}/> */}
 
       <Pipe x1={B_PL} y1={LOOP_TOP} x2={B_PL} y2={B_PCY-B_PR_-20} active={boilOn} col={C.BOIL} w={5}/>
       <FlowLine x1={B_PL} y1={B_PCY-B_PR_-22} x2={B_PL} y2={LOOP_TOP+6} active={boilOn} col={C.BOIL}/>
       <circle cx={B_PL} cy={LOOP_TOP} r={6} fill={boilOn?C.BOIL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
 
-      {/* BOILER VALVE */}
       <WaterValve cx={B_PL} cy={B_VCY} r={11} pct={d.Boil_Valve} active={boilOn} col={C.BOIL}/>
       <rect x={B_PL+15} y={B_VCY-9} width={56} height={18} rx={3}
         fill={C.STEEL} stroke={boilOn?C.BOIL+"88":C.EDGE} strokeWidth={1}/>
@@ -637,13 +605,6 @@ function Schematic({ d }) {
       <FlowLine x1={B_PR} y1={LOOP_TOP+6} x2={B_PR} y2={B_PCY-B_PR_-22} active={boilOn} col={C.BOIL}/>
       <circle cx={B_PR} cy={LOOP_TOP} r={6} fill={boilOn?C.BOIL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
 
-      <Pipe x1={B_PL} y1={B_PCY} x2={B_PCX-B_PBW-10} y2={B_PCY} active={boilOn} col={C.BOIL} w={5}/>
-      <FlowLine x1={B_PL+4} y1={B_PCY} x2={B_PCX-B_PBW-12} y2={B_PCY} active={boilOn} col={C.BOIL}/>
-      <Pipe x1={B_PCX+B_PBW+10} y1={B_PCY} x2={B_PR} y2={B_PCY} active={boilOn} col={C.BOIL} w={5}/>
-      <FlowLine x1={B_PCX+B_PBW+12} y1={B_PCY} x2={B_PR-4} y2={B_PCY} active={boilOn} col={C.BOIL}/>
-      <circle cx={B_PL} cy={B_PCY} r={6} fill={boilOn?C.BOIL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
-      <circle cx={B_PR} cy={B_PCY} r={6} fill={boilOn?C.BOIL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
-
       <ValBadge x={B_PL-30} y={LOOP_TOP+28} value={d.Water_InpBoilTemp} unit="°C" col={boilOn?C.BOIL:"#2A1A08"}/>
       <ValBadge x={B_PR+30} y={LOOP_TOP+28} value={d.Water_OutputBoilTemp} unit="°C" col={boilOn?C.BOIL:"#2A1A08"}/>
       <text x={B_PL-30} y={LOOP_TOP+11} textAnchor="middle" fontSize={8} fontWeight="700"
@@ -651,25 +612,23 @@ function Schematic({ d }) {
       <text x={B_PR+30} y={LOOP_TOP+11} textAnchor="middle" fontSize={8} fontWeight="700"
         fill={boilOn?C.BOIL:"#2A1A08"} fontFamily="'Courier New',monospace">W.OUT</text>
 
-      {/* ── Boiler Pump — r=14 (era 20) ── */}
       <PumpDevice cx={B_PCX} cy={B_PCY} active={boilOn} col={C.BOIL}
         pct={d.Boil_Pump_Invert} label="PUMP"/>
-      <HoverZone x={B_PCX-(B_PR_*2+44)/2} y={B_PCY-B_PR_-16}
-        w={B_PR_*2+44} h={B_PR_*2+36} tipKey="BOILER_PUMP"
+      <HoverZone x={B_PCX-29} y={B_PCY-B_PR_-16}
+        w={58} h={B_PR_*2+36} tipKey="BOILER_PUMP"
         onHover={(k) => onHover(k, B_PCX, B_PCY-B_PR_-16)}/>
 
       {/* ══ CHILLER LOOP ══ */}
-      <rect x={C_PL-26} y={LOOP_TOP-6} width={C_PR-C_PL+52}
+      {/* <rect x={C_PL-26} y={LOOP_TOP-6} width={C_PR-C_PL+52}
         height={C_PCY+C_PR_+36-LOOP_TOP} rx={8}
         fill={chillOn?C.CHILL+"0B":"#080808"}
         stroke={chillOn?C.CHILL+"66":C.EDGE} strokeWidth={1.5}
-        strokeDasharray={chillOn?"none":"6 3"}/>
+        strokeDasharray={chillOn?"none":"6 3"}/> */}
 
       <Pipe x1={C_PL} y1={LOOP_TOP} x2={C_PL} y2={C_PCY-C_PR_-20} active={chillOn} col={C.CHILL} w={5}/>
       <FlowLine x1={C_PL} y1={C_PCY-C_PR_-22} x2={C_PL} y2={LOOP_TOP+6} active={chillOn} col={C.CHILL}/>
       <circle cx={C_PL} cy={LOOP_TOP} r={6} fill={chillOn?C.CHILL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
 
-      {/* CHILLER VALVE */}
       <WaterValve cx={C_PL} cy={C_VCY} r={11} pct={d.Chiller_Valve} active={chillOn} col={C.CHILL}/>
       <rect x={C_PL+15} y={C_VCY-9} width={70} height={18} rx={3}
         fill={C.STEEL} stroke={chillOn?C.CHILL+"88":C.EDGE} strokeWidth={1}/>
@@ -682,13 +641,6 @@ function Schematic({ d }) {
       <FlowLine x1={C_PR} y1={LOOP_TOP+6} x2={C_PR} y2={C_PCY-C_PR_-22} active={chillOn} col={C.CHILL}/>
       <circle cx={C_PR} cy={LOOP_TOP} r={6} fill={chillOn?C.CHILL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
 
-      <Pipe x1={C_PL} y1={C_PCY} x2={C_PCX-C_PBW-10} y2={C_PCY} active={chillOn} col={C.CHILL} w={5}/>
-      <FlowLine x1={C_PL+4} y1={C_PCY} x2={C_PCX-C_PBW-12} y2={C_PCY} active={chillOn} col={C.CHILL}/>
-      <Pipe x1={C_PCX+C_PBW+10} y1={C_PCY} x2={C_PR} y2={C_PCY} active={chillOn} col={C.CHILL} w={5}/>
-      <FlowLine x1={C_PCX+C_PBW+12} y1={C_PCY} x2={C_PR-4} y2={C_PCY} active={chillOn} col={C.CHILL}/>
-      <circle cx={C_PL} cy={C_PCY} r={6} fill={chillOn?C.CHILL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
-      <circle cx={C_PR} cy={C_PCY} r={6} fill={chillOn?C.CHILL:C.EDGE} stroke={C.STEEL} strokeWidth={1.5}/>
-
       <ValBadge x={C_PL-30} y={LOOP_TOP+28} value={d.Water_InpChillTemp} unit="°C" col={chillOn?C.CHILL:"#081828"}/>
       <ValBadge x={C_PR+30} y={LOOP_TOP+28} value={d.Water_outChill_Temp} unit="°C" col={chillOn?C.CHILL:"#081828"}/>
       <text x={C_PL-30} y={LOOP_TOP+11} textAnchor="middle" fontSize={8} fontWeight="700"
@@ -696,20 +648,17 @@ function Schematic({ d }) {
       <text x={C_PR+30} y={LOOP_TOP+11} textAnchor="middle" fontSize={8} fontWeight="700"
         fill={chillOn?C.CHILL:"#081828"} fontFamily="'Courier New',monospace">W.OUT</text>
 
-      {/* ── Chiller Pump — r=14 (era 20) ── */}
       <PumpDevice cx={C_PCX} cy={C_PCY} active={chillOn} col={C.CHILL}
         pct={d.Chiller_Pump_invert} label="PUMP"/>
-      <HoverZone x={C_PCX-(C_PR_*2+44)/2} y={C_PCY-C_PR_-16}
-        w={C_PR_*2+44} h={C_PR_*2+36} tipKey="CHILLER_PUMP"
+      <HoverZone x={C_PCX-29} y={C_PCY-C_PR_-16}
+        w={58} h={C_PR_*2+36} tipKey="CHILLER_PUMP"
         onHover={(k) => onHover(k, C_PCX, C_PCY-C_PR_-16)}/>
 
-      {/* ── TOOLTIP OVERLAY ── */}
       <SvgTooltip x={tooltip.x} y={tooltip.y} tipKey={tooltip.key} vw={VW+90}/>
     </svg>
   );
 }
 
-// ─── Sensor Table ─────────────────────────────────────────────────────────────
 function SensorTable({ d }) {
   const on=d.status==="ON", boilOn=on&&d.Boil_Valve>0, chillOn=on&&d.Chiller_Valve>0;
   const groups = [
@@ -768,8 +717,7 @@ function SensorTable({ d }) {
   );
 }
 
-// ─── Root ─────────────────────────────────────────────────────────────────────
-export default function AhuDashboard() {
+export default function AppUta() {
   const [selId, setSelId] = useState(UNITS[0].id);
   const d = UNITS.find(u=>u.id===selId)??UNITS[0];
   const on=d.status==="ON", boilOn=on&&d.Boil_Valve>0, chillOn=on&&d.Chiller_Valve>0;
@@ -789,7 +737,6 @@ export default function AhuDashboard() {
         .ahu-blink { animation:ahuBlink 1s infinite; }
       `}</style>
 
-      {/* HEADER */}
       <div style={{ display:"flex", alignItems:"stretch",
         borderBottom:`2px solid ${C.EDGE}`, background:"#0C1520", flexShrink:0 }}>
         <div style={{ padding:"6px 16px", borderRight:`1px solid ${C.EDGE}`, minWidth:180 }}>
@@ -845,7 +792,6 @@ export default function AhuDashboard() {
         </div>
       </div>
 
-      {/* SCHEMATIC */}
       <div style={{ background:"#0E1820", position:"relative", flex:1, overflow:"hidden" }}>
         <div style={{ position:"absolute", inset:0, pointerEvents:"none", zIndex:1,
           backgroundImage:"repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.1) 2px,rgba(0,0,0,.1) 4px)" }}/>
@@ -854,7 +800,6 @@ export default function AhuDashboard() {
         </div>
       </div>
 
-      {/* SENSOR TABLE */}
       <SensorTable d={d}/>
     </div>
   );
