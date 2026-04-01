@@ -20,7 +20,6 @@ export default function Menu({ menuHidden, setMenuHidden, onNavigate }) {
     navigate(path);
     onNavigate?.();
 
-    // Închide meniul doar pe mobil
     if (window.innerWidth < 768) {
       setMenuHidden(true);
     }

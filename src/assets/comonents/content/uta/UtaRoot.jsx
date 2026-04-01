@@ -1,50 +1,56 @@
-// UtaRoot.jsx
-// ─────────────────────────────────────────────────────────────
-//  PARENT care deține state-ul shared.
-//  UtaInterface  ─┐
-//                 ├── citesc/scriu același utaData + setUtaData
-//  UtaSettingsPage─┘
-// ─────────────────────────────────────────────────────────────
-import React, { useState } from "react";
+
+import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom"; 
 import { initialUtaData } from "./uta data/utaData";
 import UtaInterface from "./UtaInterface";
-import UtaSettingsPage from "./UtaSettingsPage";
-import Settings from "../../menu-items/settings/Settings";
+import SettingsPage from "../../menu-items/settings/SettingsPage";
 
 export default function UtaRoot({ onBack }) {
-  // ── SINGLE SOURCE OF TRUTH ──────────────────────────────────
+  const navigate = useNavigate(); 
   const [utaData, setUtaData] = useState(initialUtaData);
-  const [activePage, setActivePage] = useState("interface"); // "interface" | "settings"
+  const [activePage, setActivePage] = useState("settings");
 
-  // ── HANDLERS condivisi ──────────────────────────────────────
-  const handleStart = (id) => {
+  const handleStart = useCallback((id) => {
     setUtaData(prev =>
       prev.map(u => u.id === id ? { ...u, status: "ON" } : u)
     );
-  };
+  }, []);
 
-  const handleStop = (id) => {
+  const handleStop = useCallback((id) => {
     setUtaData(prev =>
       prev.map(u => u.id === id ? { ...u, status: "OFF" } : u)
     );
-  };
+  }, []);
 
-  /**
-   * onSave primește { utaId, Air_inp_Temp, Air_Return_Temp, ... }
-   * și face merge în array.
-   */
-  const handleSave = ({ utaId, ...fields }) => {
-    setUtaData(prev =>
-      prev.map(u => u.id === utaId ? { ...u, ...fields } : u)
-    );
-  };
+const handleSave = useCallback(({ utaId, ...fields }) => {
+  console.log("📦 SAVE payload:", { utaId, ...fields });
+  setUtaData(prev =>
+    prev.map(u => u.id === utaId ? { ...u, ...fields } : u)
+  );
+}, []);
 
-  // ── RENDER ──────────────────────────────────────────────────
+  const handleOpenSettings = useCallback(() => {
+    setActivePage("settings");
+  }, []);
+
+  const handleBackFromSettings = useCallback(() => {
+    setActivePage("interface");
+  }, []);
+
+
+  const handleBackFromInterface = useCallback(() => {
+    if (onBack) {
+      onBack(); 
+    } else {
+      navigate(-1); 
+    }
+  }, [onBack, navigate]);
+
   if (activePage === "settings") {
     return (
-      <UtaSettingsPage
+      <SettingsPage
         utaData={utaData}
-        onBack={() => setActivePage("interface")}
+        onBack={handleBackFromSettings}
         onStart={handleStart}
         onStop={handleStop}
         onSave={handleSave}
@@ -56,11 +62,11 @@ export default function UtaRoot({ onBack }) {
     <UtaInterface
       utaData={utaData}
       setUtaData={setUtaData}
-      onBack={onBack}
+      onBack={handleBackFromInterface}
       onStart={handleStart}
       onStop={handleStop}
       onSave={handleSave}
-      onOpenSettings={() => setActivePage("settings")}
+      onOpenSettings={handleOpenSettings}
     />
   );
 }

@@ -15,19 +15,19 @@ const FORM_FIELDS = [
 ];
 
 export default function SettingsPage({
-  utaData: utaDataProp,   // opțional — dacă vine din UtaRoot
-  onBack ,  // <-- aici e back real
+  utaData: utaDataProp,
+  onBack,
   onSave,
   onStart,
   onStop,
 }) {
-  // dacă componenta e montată standalone în router (fără UtaRoot),
-  // folosește propriul state cu initialUtaData
+ 
+  
   const [localData, setLocalData] = useState(
     utaDataProp === undefined ? initialUtaData : null
   );
 
-  // sursa de adevăr: prop extern dacă există, altfel state local
+
   const utaData = utaDataProp ?? localData ?? [];
 
   // onSave intern când nu vine din afară
@@ -37,7 +37,7 @@ export default function SettingsPage({
     );
   });
 
-  // onStart/onStop interne când nu vin din afară
+
   const handleStart = onStart ?? ((id) => {
     setLocalData(prev =>
       (prev ?? []).map(u => u.id === id ? { ...u, status: "ON" } : u)
@@ -76,7 +76,6 @@ export default function SettingsPage({
   const handleSave = (uta) => {
     setSavingId(uta.id);
     setTimeout(() => {
-      // propagă în shared state prin UtaRoot
       handleSaveData({ utaId: uta.id, ...editValues });
       setSaveMsg(`${uta.id} — parametrat u ruajtën!`);
       setSavingId(null);
@@ -283,46 +282,41 @@ export default function SettingsPage({
           
           .usp-btn.start,
           .usp-btn.stop {
-           flex: 1;                     /* ocupă tot spațiul disponibil */
-                     /* butoane mai înalte */
-                     /* text mai mare */
-                  /* colțuri mai rotunjite */
-          box-shadow: 0 4px 6px rgba(0,0,0,0.25); /* umbră subtilă */
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 8px;                    /* spațiu între icon și text */
-          transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
-  }
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+          }
 
-  .usp-btn.start:hover {
-    background: #166534;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0,0,0,0.3);
-  }
+          .usp-btn.start:hover {
+            background: #166534;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
+          }
 
-  .usp-btn.stop:hover {
-    background: #7f1d1d;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0,0,0,0.3);
-  }
+          .usp-btn.stop:hover {
+            background: #7f1d1d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
+          }
 
-  .usp-row-header {
-    display: grid;
-    grid-template-columns: 28px 1fr;
-    grid-template-rows: auto auto auto auto; /* adăugat rând pentru butoane */
-    gap: 10px;
-  }
+          .usp-row-header {
+            display: grid;
+            grid-template-columns: 28px 1fr;
+            grid-template-rows: auto auto auto auto;
+            gap: 10px;
+          }
 
-  .usp-btn-container {
-    display: flex;
-    gap: 12px;
-    grid-column: 1 / -1;
-    justify-content: space-between;
-  }
-          
+          .usp-btn-container {
+            display: flex;
+            gap: 12px;
+            grid-column: 1 / -1;
+            justify-content: space-between;
+          }
         }
-          
       `}</style>
 
       <div className="usp-root">
@@ -333,7 +327,7 @@ export default function SettingsPage({
             className="usp-back"
             onClick={onBack}
           >
-            <FontAwesomeIcon icon={faArrowLeft} /> Back
+            x close
           </button>
           <div className="usp-title-block">
             <div className="usp-title">

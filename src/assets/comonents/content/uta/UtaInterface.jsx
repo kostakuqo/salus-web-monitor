@@ -43,15 +43,15 @@ const FIELD_LABELS = {
 };
 
 export default function UtaInterface({
-  utaData: utaDataProp,  // ← vine din UtaRoot (shared state)
-  setUtaData,            // ← vine din UtaRoot
+  utaData: utaDataProp,  
+  setUtaData,            
   onBack,
   onStart,
   onStop,
   onSave,
-  onOpenSettings,        // ← butonul Settings din header
+  onOpenSettings,        
 }) {
-  // fallback: dacă UtaInterface e folosit standalone (fără UtaRoot), folosește datele locale
+ 
   const [localUtaData, setLocalUtaData] = useState(
     utaDataProp === undefined ? initialUtaData : null
   );
@@ -62,26 +62,26 @@ export default function UtaInterface({
   const [editedUta,    setEditedUta]    = useState(null);
   const [saveMessage,  setSaveMessage]  = useState("");
 
-  // ── când se selectează o UTA, reflectă mereu datele fresh din utaData ──
   const selectedUtaFresh = selectedUta
     ? utaData.find(u => u.id === selectedUta.id) ?? selectedUta
     : null;
 
-  const handleSaveEditedUta = () => {
-    const fields = FORM_FIELDS.reduce((acc, f) => {
-      acc[f] = editedUta[f];
-      return acc;
-    }, {});
-    // propagă în shared state prin UtaRoot
-    onSave?.({ utaId: editedUta.id, ...fields });
-    // actualizează și selectedUta local ca să reflecte imediat
-    setSelectedUta(prev => prev ? { ...prev, ...fields } : prev);
-    setSaveMessage("Parametrat u ruajten me sukses!");
-    setEditMode(false);
-    setTimeout(() => setSaveMessage(""), 2000);
-  };
+const handleSaveEditedUta = () => {
+  const fields = FORM_FIELDS.reduce((acc, f) => {
+    acc[f] = editedUta[f];
+    return acc;
+  }, {});
 
-  // ── DETAIL VIEW ─────────────────────────────────────────────
+  console.log("🔍 UtaInterface onSave call:", { utaId: editedUta.id, ...fields });
+  console.log("🔍 onSave function:", onSave); 
+
+  onSave?.({ utaId: editedUta.id, ...fields });
+  setSelectedUta(prev => prev ? { ...prev, ...fields } : prev);
+  setSaveMessage("Parametrat u ruajten me sukses!");
+  setEditMode(false);
+  setTimeout(() => setSaveMessage(""), 2000);
+};
+
   if (selectedUtaFresh) {
     return (
       <div className="uta-interface main-uta">
@@ -243,7 +243,7 @@ export default function UtaInterface({
   return (
     <div className="uta-interface">
 
-      {/* header row cu buton Settings */}
+      
       <div className="uta-row header" style={{ display: "flex", alignItems: "center" }}>
         <div className="uta-cell"><strong>UTA ID</strong></div>
         <div className="uta-cell"><strong>Air In</strong></div>
@@ -252,15 +252,7 @@ export default function UtaInterface({
         <div className="uta-cell"><strong>Pressure</strong></div>
         <div className="uta-cell"><strong>Start</strong></div>
         <div className="uta-cell"><strong>Stop</strong></div>
-        {onOpenSettings && (
-          <button
-            className="uta-button edit"
-            style={{ marginLeft: "auto" }}
-            onClick={onOpenSettings}
-          >
-            <FontAwesomeIcon icon={faSliders} /> Settings
-          </button>
-        )}
+        
       </div>
 
       {(utaData ?? []).map(uta => (
@@ -272,6 +264,16 @@ export default function UtaInterface({
           onStop={() => onStop?.(uta.id)}
         />
       ))}
+
+      {onOpenSettings && (
+          <button
+            className="uta-button edit"
+            style={{ marginLeft: "auto" }}
+            onClick={onOpenSettings}
+          >
+            <FontAwesomeIcon icon={faSliders} /> Settings
+          </button>
+        )}
 
       <button className="back-button" onClick={onBack}>
         <FiArrowLeft /> Back

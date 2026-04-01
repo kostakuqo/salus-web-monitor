@@ -17,6 +17,7 @@ import SettingsPage from '../../menu-items/settings/SettingsPage';
 
 
 
+
 export default function Content({ resetTrigger, showMapTrigger }) {
   const location = useLocation();
   const navigate = useNavigate();

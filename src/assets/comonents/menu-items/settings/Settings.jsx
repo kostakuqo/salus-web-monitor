@@ -4,12 +4,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faGear, faHome } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from "react-router";
 
-
-export default function Settings() {
-    const navigate = useNavigate();
-    return <div className="settings-button" onClick={() => navigate("/settings")}>
-
-        <FontAwesomeIcon icon={faGear} className="menu-icon" />
-        <span>Settings</span>
+export default function Settings({ onOpenSettings }) {
+  return (
+    <div
+      className="settings-button"
+      onClick={() => {
+        if (onOpenSettings) {
+          onOpenSettings();
+        } else {
+          console.warn("onOpenSettings nuk është dhënë!");
+        }
+      }}
+    >
+      <FontAwesomeIcon icon={faGear} className="menu-icon" />
+      <span>Settings</span>
     </div>
+  );
 }
