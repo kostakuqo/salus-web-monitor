@@ -9,41 +9,42 @@ import HartaPage from "./assets/comonents/menu-items/harta/HartaPage";
 import GraphicsPage from "./assets/comonents/menu-items/general/GraphicPage";
 import SettingsPage from "./assets/comonents/menu-items/settings/SettingsPage";
 import UtaRoot from "./assets/comonents/content/uta/UtaRoot";
+import { UtaProvider } from "./services/UtaProvider";
 
 
 export default function AppWrapper() {
   const [resetTrigger, setResetTrigger] = useState(false);
   const [menuHidden, setMenuHidden] = useState(false);
 
-  return (
-    <Router>
-      <Header menuHidden={menuHidden} setMenuHidden={setMenuHidden} />
+   return (
+    <UtaProvider>
+      <Router>
+        <Header menuHidden={menuHidden} setMenuHidden={setMenuHidden} />
+        <div className={`main-layout ${menuHidden ? "menu-hidden" : ""}`}>
+          <Menu
+            menuHidden={menuHidden}
+            setMenuHidden={setMenuHidden}
+            onNavigate={() => setResetTrigger(prev => !prev)}
+          />
 
-      <div className={`main-layout ${menuHidden ? "menu-hidden" : ""}`}>
-        <Menu
-          menuHidden={menuHidden}
-          setMenuHidden={setMenuHidden}
-          onNavigate={() => setResetTrigger(prev => !prev)}
-        />
-
-        <div className="content">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/homepage" element={<HomePage />} />
-            <Route path="/dashboard/*" element={<Content resetTrigger={resetTrigger} />} />
-            <Route path="/uta/*" element={<Content resetTrigger={resetTrigger} />} />
-            <Route path="/chiller/*" element={<Content resetTrigger={resetTrigger} />} />
-            <Route path="/kaldaja/*" element={<Content resetTrigger={resetTrigger} />} />
-
-            <Route path="/settings/*" element={<UtaRoot/>} />
-            <Route path="/general" element={null} />
-            <Route path="/profile" element={null} />
-            <Route path="/harta/*" element={<HartaPage />} />
-            <Route path="/graphics/*" element={<GraphicsPage />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
+          <div className="content">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/homepage" element={<HomePage />} />
+              <Route path="/dashboard/*" element={<Content resetTrigger={resetTrigger} />} />
+              <Route path="/uta/*" element={<Content resetTrigger={resetTrigger} />} />
+              <Route path="/chiller/*" element={<Content resetTrigger={resetTrigger} />} />
+              <Route path="/kaldaja/*" element={<Content resetTrigger={resetTrigger} />} />
+              <Route path="/settings/*" element={<UtaRoot />} />
+              <Route path="/general" element={null} />
+              <Route path="/profile" element={null} />
+              <Route path="/harta/*" element={<HartaPage />} />
+              <Route path="/graphics/*" element={<GraphicsPage />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </UtaProvider>
   );
 }

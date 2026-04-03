@@ -1,4 +1,3 @@
-// UtaChartEmbed.jsx
 import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 import {
@@ -31,18 +30,13 @@ const ALL_PARAMS = [
   { key: "Out_Return_Pressure", label: "Presioni", unit: "bar", color: "#d946ef" },
 ];
 
-// ─── Hook: coordonate viewport (fără scrollY/scrollX — position:fixed e relativ la viewport)
 function useAnchorCoords(triggerRef, isOpen) {
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
 
   const recalc = useCallback(() => {
     if (!triggerRef.current) return;
     const r = triggerRef.current.getBoundingClientRect();
-    setCoords({
-      top: r.bottom + 4,
-      left: r.left,
-      width: r.width,
-    });
+    setCoords({ top: r.bottom + 4, left: r.left, width: r.width });
   }, [triggerRef]);
 
   useEffect(() => {
@@ -59,7 +53,6 @@ function useAnchorCoords(triggerRef, isOpen) {
   return { coords, recalc };
 }
 
-// ─── Portal: randează lista direct în <body> cu position:fixed la coordonate viewport
 function DropdownPortal({ isOpen, coords, minWidth = 180, innerRef, children }) {
   if (!isOpen) return null;
   return ReactDOM.createPortal(
@@ -85,7 +78,8 @@ function DropdownPortal({ isOpen, coords, minWidth = 180, innerRef, children }) 
   );
 }
 
-export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClose }) {
+// ✅ historyData adăugat în props
+export default function UtaChartEmbed({ utaData, selectedUta: initialUta, historyData = [], onClose }) {
   const [selectedParams, setSelectedParams] = useState([]);
   const [chartUta, setChartUta] = useState(initialUta || utaData?.[0] || null);
   const [paramOpen, setParamOpen] = useState(false);
@@ -99,7 +93,11 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
   const { coords: paramCoords, recalc: recalcParam } = useAnchorCoords(paramTriggerRef, paramOpen);
   const { coords: utaCoords, recalc: recalcUta } = useAnchorCoords(utaTriggerRef, utaOpen);
 
-  // Închide la click în afara dropdown-urilor
+  // Sincronizează chartUta când initialUta se schimbă din exterior
+  useEffect(() => {
+    if (initialUta) setChartUta(initialUta);
+  }, [initialUta?.id]);
+
   useEffect(() => {
     const handler = (e) => {
       if (
@@ -124,10 +122,14 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
   };
 
   const allUtas = utaData || (initialUta ? [initialUta] : []);
-  const activeData = chartUta ? [chartUta] : allUtas;
+
+  // ✅ MODIFICAREA CHEIE — folosește historyData dacă există, altfel datele curente
+  const activeData = historyData.length > 0
+    ? historyData
+    : (chartUta ? [chartUta] : allUtas);
 
   const chartData = useMemo(() => ({
-    labels: activeData.map((d, i) => d.time || `Pika ${i + 1}`),
+    labels: activeData.map(d => d.time || "—"),
     datasets: selectedParams.map(key => {
       const p = ALL_PARAMS.find(x => x.key === key);
       return {
@@ -137,7 +139,7 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
         backgroundColor: p.color + "22",
         borderWidth: 2.5,
         tension: 0.4,
-        pointRadius: 5,
+        pointRadius: activeData.length > 1 ? 4 : 6,
         pointHoverRadius: 8,
         pointBackgroundColor: p.color,
         pointBorderColor: "#0f1420",
@@ -152,12 +154,36 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
     maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
     plugins: {
-      legend: { position: "top", labels: { color: "#cbd5e1", font: { size: 12, family: "'DM Mono',monospace" }, usePointStyle: true } },
-      tooltip: { backgroundColor: "#1e2436", borderColor: "#334155", borderWidth: 1, titleColor: "#94a3b8", bodyColor: "#f1f5f9", padding: 12 },
+      legend: {
+        position: "top",
+        labels: {
+          color: "#cbd5e1",
+          font: { size: 12, family: "'DM Mono',monospace" },
+          usePointStyle: true,
+        },
+      },
+      tooltip: {
+        backgroundColor: "#1e2436",
+        borderColor: "#334155",
+        borderWidth: 1,
+        titleColor: "#94a3b8",
+        bodyColor: "#f1f5f9",
+        padding: 12,
+      },
     },
     scales: {
-      x: { grid: { color: "#1e293b" }, ticks: { color: "#64748b", font: { family: "'DM Mono',monospace", size: 11 } } },
-      y: { grid: { color: "#1e293b" }, ticks: { color: "#64748b", font: { family: "'DM Mono',monospace", size: 11 } } },
+      x: {
+        grid: { color: "#1e293b" },
+        ticks: {
+          color: "#64748b",
+          font: { family: "'DM Mono',monospace", size: 11 },
+          maxTicksLimit: 10, // ← nu aglomerează labels pe axa X
+        },
+      },
+      y: {
+        grid: { color: "#1e293b" },
+        ticks: { color: "#64748b", font: { family: "'DM Mono',monospace", size: 11 } },
+      },
     },
   };
 
@@ -206,52 +232,29 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
         }
         .uce-close:hover { background:#2d1f1f; color:#ef4444; }
 
-        .uce-box    { flex:1; background:#0a0f1a; border-radius:10px; border:1px solid #1e293b; display:flex; flex-direction:column; min-height:0; }
+        .uce-box { flex:1; background:#0a0f1a; border-radius:10px; border:1px solid #1e293b; display:flex; flex-direction:column; min-height:0; }
 
-        /* ─── FIX MOBILE PILLS ─── */
         .uce-boxhdr {
-          display:flex;
-          align-items:flex-start;
-          padding:10px 16px;
-          border-bottom:1px solid #1e293b;
-          flex-shrink:0;
-          flex-wrap:wrap;
-          gap:6px;
+          display:flex; align-items:flex-start; padding:10px 16px;
+          border-bottom:1px solid #1e293b; flex-shrink:0; flex-wrap:wrap; gap:6px;
         }
-        .uce-pills {
-          display:flex;
-          flex-wrap:wrap;
-          gap:5px;
-          align-items:center;
-          flex:1;
-          min-width:0;
-        }
-        .uce-pill-label {
-          font-size:10px;
-          color:#475569;
-          text-transform:uppercase;
-          letter-spacing:.08em;
-          white-space:nowrap;
-          line-height:22px;
-        }
+        .uce-pills { display:flex; flex-wrap:wrap; gap:5px; align-items:center; flex:1; min-width:0; }
+        .uce-pill-label { font-size:10px; color:#475569; text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; line-height:22px; }
         .uce-pill {
-          display:inline-flex;
-          align-items:center;
-          gap:4px;
-          background:#131929;
-          border:1px solid var(--c);
-          border-radius:20px;
-          padding:3px 8px;
-          font-size:10px;
-          color:var(--c);
-          white-space:nowrap;
-          line-height:1.4;
+          display:inline-flex; align-items:center; gap:4px;
+          background:#131929; border:1px solid var(--c); border-radius:20px;
+          padding:3px 8px; font-size:10px; color:var(--c); white-space:nowrap; line-height:1.4;
         }
-        /* ─────────────────────── */
-
         .uce-pill-dot { width:5px; height:5px; border-radius:50%; background:var(--c); flex-shrink:0; }
-        .uce-chart  { flex:1; padding:12px 16px; min-height:0; }
-        .uce-empty  { flex:1; display:flex; align-items:center; justify-content:center; color:#334155; font-size:13px; }
+        .uce-chart { flex:1; padding:12px 16px; min-height:0; }
+        .uce-empty { flex:1; display:flex; align-items:center; justify-content:center; color:#334155; font-size:13px; }
+
+        .uce-history-badge {
+          display:inline-flex; align-items:center; gap:5px;
+          background:#0f2030; border:1px solid #1e4060; border-radius:6px;
+          padding:3px 10px; font-size:10px; color:#38bdf8; letter-spacing:.06em;
+        }
+        .uce-history-dot { width:5px; height:5px; border-radius:50%; background:#38bdf8; animation:ucePulse 2s infinite; }
 
         .dd-opt:hover { background:#1a2035 !important; color:#e2e8f0 !important; }
       `}</style>
@@ -296,6 +299,14 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
               <FontAwesomeIcon icon={faChevronDown} className="uce-chevron" />
             </div>
           </div>
+
+          {/* ✅ Badge care arată câte puncte istorice sunt */}
+          {historyData.length > 0 && (
+            <div className="uce-history-badge">
+              <span className="uce-history-dot" />
+              {historyData.length} pikë
+            </div>
+          )}
 
           {onClose && (
             <button className="uce-close" onClick={onClose} title="Mbyll">

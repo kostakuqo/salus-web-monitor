@@ -1,15 +1,18 @@
 import React from "react";
-import { initialUtaData } from "../../content/uta/uta data/utaData";
 import DashboardUtaCard from "./DashboardUtaCard";
-import "./Dashboard.css"
+import "./Dashboard.css";
+import{useUta} from "../../../../services/UtaProvider"
 
 export default function DashboardUtaPage({ onUtaClick }) {
-  console.log("DashboardUtaPage render");
+  const { utas } = useUta(); // preia datele din context
+
+  console.log("DashboardUtaPage render cu utas:", utas);
+
   return (
     <div className="dashboard-page">
-      <h2>UTA </h2>
+      <h2>UTA</h2>
       <div className="dashboard-grid">
-        {initialUtaData.map((uta) => (
+        {utas.map((uta) => (
           <DashboardUtaCard
             key={uta.id}
             id={uta.id}

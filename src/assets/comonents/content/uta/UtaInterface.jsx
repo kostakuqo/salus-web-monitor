@@ -1,12 +1,11 @@
-// UtaInterface.jsx
 import React, { useState } from "react";
-import { initialUtaData } from "./uta data/utaData";
 import { FiArrowLeft } from "react-icons/fi";
 import { GoGraph } from "react-icons/go";
 import "./UtaInterface.css";
 import UtaCardElement from "./UtaCardElement";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import TemperatureChart from "./TemperatureChart";
+import { useUta } from "../../../../services/UtaProvider";
 import {
   faGear, faSave, faTimes,
   faPlay, faStop, faSliders,
@@ -20,72 +19,65 @@ const FORM_FIELDS = [
 ];
 
 const FIELD_LABELS = {
-  Air_inp_Temp:        { label: "Temperatura Air In",              unit: "°C"  },
-  Air_Output_Temp:     { label: "Temperatura Air Out",             unit: "°C"  },
-  Air_Return_Temp:     { label: "Temperatura Air Return",          unit: "°C"  },
-  Air_outHygro:        { label: "Lageshtira",                      unit: "%"   },
-  Water_InpChillTemp:  { label: "Temperatura Uj Hyrje Chiller",    unit: "°C"  },
-  Water_outChill_Temp: { label: "Temperatura Uj Dalje Chiller",    unit: "°C"  },
-  Water_InpBoilTemp:   { label: "Temperatura Uj Hyrje Kaldaja",    unit: "°C"  },
-  Water_OutputBoilTemp:{ label: "Temperatura Uj Dalje Kaldaja",    unit: "°C"  },
-  Boil_Pump_Invert:    { label: "Pompa Kaldaja",                   unit: "%"   },
-  Chiller_Pump_Invert: { label: "Pompa Chiller",                   unit: "%"   },
-  Boil_Valve:          { label: "Valvula Kaldaja",                 unit: "%"   },
-  Chiller_Valve:       { label: "Valvula Chiller",                 unit: "%"   },
-  Inp_Damper:          { label: "Damper Hyrje",                    unit: "%"   },
-  Output_Damper:       { label: "Damper Dalje",                    unit: "%"   },
-  Aspirator:           { label: "Aspirator",                       unit: "%"   },
-  Ventilator:          { label: "Ventilator",                      unit: "%"   },
-  Out_Return_Pressure: { label: "Presioni",                        unit: "bar" },
-  Sezon_Modality:      { label: "Sezon",                           unit: ""    },
-  status:              { label: "Status",                          unit: ""    },
-  id:                  { label: "UTA ID",                          unit: ""    },
+  Air_inp_Temp: { label: "Temperatura Air In", unit: "°C" },
+  Air_Output_Temp: { label: "Temperatura Air Out", unit: "°C" },
+  Air_Return_Temp: { label: "Temperatura Air Return", unit: "°C" },
+  Air_outHygro: { label: "Lageshtira", unit: "%" },
+  Water_InpChillTemp: { label: "Temperatura Uj Hyrje Chiller", unit: "°C" },
+  Water_outChill_Temp: { label: "Temperatura Uj Dalje Chiller", unit: "°C" },
+  Water_InpBoilTemp: { label: "Temperatura Uj Hyrje Kaldaja", unit: "°C" },
+  Water_OutputBoilTemp: { label: "Temperatura Uj Dalje Kaldaja", unit: "°C" },
+  Boil_Pump_Invert: { label: "Pompa Kaldaja", unit: "%" },
+  Chiller_Pump_Invert: { label: "Pompa Chiller", unit: "%" },
+  Boil_Valve: { label: "Valvula Kaldaja", unit: "%" },
+  Chiller_Valve: { label: "Valvula Chiller", unit: "%" },
+  Inp_Damper: { label: "Damper Hyrje", unit: "%" },
+  Output_Damper: { label: "Damper Dalje", unit: "%" },
+  Aspirator: { label: "Aspirator", unit: "%" },
+  Ventilator: { label: "Ventilator", unit: "%" },
+  Out_Return_Pressure: { label: "Presioni", unit: "bar" },
+  Sezon_Modality: { label: "Sezon", unit: "" },
+  status: { label: "Status", unit: "" },
+  id: { label: "UTA ID", unit: "" },
 };
 
 export default function UtaInterface({
-  utaData: utaDataProp,  
-  setUtaData,            
   onBack,
   onStart,
   onStop,
   onSave,
-  onOpenSettings,        
+  onOpenSettings,
 }) {
- 
-  const [localUtaData, setLocalUtaData] = useState(
-    utaDataProp === undefined ? initialUtaData : null
-  );
-  const utaData = utaDataProp ?? localUtaData ?? [];
-  const [selectedUta,  setSelectedUta]  = useState(null);
-  const [activeChart,  setActiveChart]  = useState(null);
-  const [editMode,     setEditMode]     = useState(false);
-  const [editedUta,    setEditedUta]    = useState(null);
-  const [saveMessage,  setSaveMessage]  = useState("");
+  const { utas: utaData, history } = useUta(); // ← adaugă history
+  const [selectedUta, setSelectedUta] = useState(null);
+  const [activeChart, setActiveChart] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editedUta, setEditedUta] = useState(null);
+  const [saveMessage, setSaveMessage] = useState("");
 
   const selectedUtaFresh = selectedUta
     ? utaData.find(u => u.id === selectedUta.id) ?? selectedUta
     : null;
 
-const handleSaveEditedUta = () => {
-  const fields = FORM_FIELDS.reduce((acc, f) => {
-    acc[f] = editedUta[f];
-    return acc;
-  }, {});
+  // ← istoricul pentru UTA selectată
+  const selectedHistory = history?.[selectedUtaFresh?.id] ?? [];
 
-  console.log("🔍 UtaInterface onSave call:", { utaId: editedUta.id, ...fields });
-  console.log("🔍 onSave function:", onSave); 
+  const handleSaveEditedUta = () => {
+    const fields = FORM_FIELDS.reduce((acc, f) => {
+      acc[f] = editedUta[f];
+      return acc;
+    }, {});
 
-  onSave?.({ utaId: editedUta.id, ...fields });
-  setSelectedUta(prev => prev ? { ...prev, ...fields } : prev);
-  setSaveMessage("Parametrat u ruajten me sukses!");
-  setEditMode(false);
-  setTimeout(() => setSaveMessage(""), 2000);
-};
+    onSave?.({ utaId: editedUta.id, ...fields });
+    setSelectedUta(prev => prev ? { ...prev, ...fields } : prev);
+    setSaveMessage("Parametrat u ruajten me sukses!");
+    setEditMode(false);
+    setTimeout(() => setSaveMessage(""), 2000);
+  };
 
   if (selectedUtaFresh) {
     return (
       <div className="uta-interface main-uta">
-
         {saveMessage && (
           <div className="alert-modal">
             <div className="alert-modal-content">
@@ -95,7 +87,6 @@ const handleSaveEditedUta = () => {
         )}
 
         <div className="uta-details-container">
-
           {/* HEADER */}
           <div className="uta-details-header">
             <button
@@ -216,7 +207,7 @@ const handleSaveEditedUta = () => {
             <GoGraph style={{ marginRight: "6px" }} /> Shiko Grafiket
           </button>
 
-          {/* CHART */}
+          {/* CHART ← adaugă historyData */}
           {activeChart === "main" && (
             <div
               className="uta-graph-container"
@@ -229,6 +220,7 @@ const handleSaveEditedUta = () => {
               <TemperatureChart
                 utaData={utaData}
                 selectedUta={selectedUtaFresh}
+                historyData={selectedHistory}  // ← linia istorică
                 onClose={() => setActiveChart(null)}
               />
             </div>
@@ -242,8 +234,6 @@ const handleSaveEditedUta = () => {
   // ── LIST VIEW ────────────────────────────────────────────────
   return (
     <div className="uta-interface">
-
-      
       <div className="uta-row header" style={{ display: "flex", alignItems: "center" }}>
         <div className="uta-cell"><strong>UTA ID</strong></div>
         <div className="uta-cell"><strong>Air In</strong></div>
@@ -252,10 +242,9 @@ const handleSaveEditedUta = () => {
         <div className="uta-cell"><strong>Pressure</strong></div>
         <div className="uta-cell"><strong>Start</strong></div>
         <div className="uta-cell"><strong>Stop</strong></div>
-        
       </div>
 
-      {(utaData ?? []).map(uta => (
+      {utaData.map(uta => (
         <UtaCardElement
           key={uta.id}
           {...uta}
@@ -266,19 +255,18 @@ const handleSaveEditedUta = () => {
       ))}
 
       {onOpenSettings && (
-          <button
-            className="uta-button edit"
-            style={{ marginLeft: "auto" }}
-            onClick={onOpenSettings}
-          >
-            <FontAwesomeIcon icon={faSliders} /> Settings
-          </button>
-        )}
+        <button
+          className="uta-button edit"
+          style={{ marginLeft: "auto" }}
+          onClick={onOpenSettings}
+        >
+          <FontAwesomeIcon icon={faSliders} /> Settings
+        </button>
+      )}
 
       <button className="back-button" onClick={onBack}>
         <FiArrowLeft /> Back
       </button>
-
     </div>
   );
 }

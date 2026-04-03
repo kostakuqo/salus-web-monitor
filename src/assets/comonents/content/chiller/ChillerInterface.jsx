@@ -5,37 +5,36 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGear, faSave, faTimes, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 import TemperatureChart from "../uta/TemperatureChart";
 import { initialChillerData } from "../chiller/data/chillersData";
-import { initialUtaData } from "../uta/uta data/utaData";
 import ChillerCardElement from "./ChillerCardElement";
 import "./ChillerInterface.css";
- 
-
-// ==== Mapping Chiller -> lista de UTA ID-uri ====
-const chillerToUtaMap = initialUtaData.reduce((map, uta) => {
-  const chillerId = uta.chiller?.id;
-  if (chillerId) {
-    if (!map[chillerId]) map[chillerId] = [];
-    map[chillerId].push(uta.id);
-  }
-  return map;
-}, {});
+import{useUta} from "../../../../services/UtaProvider"
 
 export default function ChillerInterface({ onBack }) {
   const [chillerData, setChillerData] = useState(initialChillerData);
+  const { utas } = useUta(); // preia datele UTA din context global
   const [selectedChiller, setSelectedChiller] = useState(null);
   const [activeChart, setActiveChart] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editedChiller, setEditedChiller] = useState(null);
   const [saveMessage, setSaveMessage] = useState("");
 
+  const chillerToUtaMap = utas.reduce((map, uta) => {
+    const chillerId = uta.chiller?.id;
+    if (chillerId) {
+      if (!map[chillerId]) map[chillerId] = [];
+      map[chillerId].push(uta.id);
+    }
+    return map;
+  }, {});
+
   const handleSaveEditedChiller = () => {
     console.log("Trimitem la API:", editedChiller);
-    setSaveMessage("Parametrat u ruajten me succes!");
+    setSaveMessage("Parametrat u ruajten me sukses!");
     setEditMode(false);
     setTimeout(() => setSaveMessage(""), 2000);
   };
 
-  // ==== VIEW DETALII CHILLER SELECTAT ====
+  // ── VIEW DETALII CHILLER SELECTAT ──────────────────────
   if (selectedChiller) {
     return (
       <div className="chiller-interface main-chiller">
@@ -66,20 +65,14 @@ export default function ChillerInterface({ onBack }) {
               {chillerToUtaMap[selectedChiller.id]?.join(", ") || "-"}
             </p>
 
-            {/* Status pătrat */}
             <div className="status-wrapper">
               <strong>Status Chiller:</strong>
-              <div
-                className={`status-box ${
-                  selectedChiller.status === "ON" ? "on" : "off"
-                }`}
-              >
+              <div className={`status-box ${selectedChiller.status === "ON" ? "on" : "off"}`}>
                 {selectedChiller.status === "ON" ? "Activ" : "Inactiv"}
               </div>
             </div>
           </div>
 
-          {/* Grid date chiller */}
           <div className="chiller-details-grid">
             <div className="data-card">
               <h4>Temp Ujit Hyrje</h4>
@@ -107,25 +100,14 @@ export default function ChillerInterface({ onBack }) {
             </div>
           </div>
 
-          {/* Chart buttons */}
-         
-
           {activeChart && (
             <div className="chiller-chart">
               <button onClick={() => setActiveChart(null)}>✕ Close</button>
               {activeChart === "water-in" && (
-                <TemperatureChart
-                  data={[selectedChiller]}
-                  dataKey="tempIn"
-                  label="Temp Ujit Hyrje"
-                />
+                <TemperatureChart data={[selectedChiller]} dataKey="tempIn" label="Temp Ujit Hyrje" />
               )}
               {activeChart === "water-out" && (
-                <TemperatureChart
-                  data={[selectedChiller]}
-                  dataKey="tempOut"
-                  label="Temp Ujit Dalje"
-                />
+                <TemperatureChart data={[selectedChiller]} dataKey="tempOut" label="Temp Ujit Dalje" />
               )}
             </div>
           )}
@@ -134,7 +116,7 @@ export default function ChillerInterface({ onBack }) {
     );
   }
 
-  // ==== LISTA CHILLERE ====
+  // ── LISTA CHILLERE ─────────────────────────────────────
   return (
     <div className="chiller-interface">
       <div className="chiller-row header">
@@ -150,16 +132,16 @@ export default function ChillerInterface({ onBack }) {
           key={chiller.id}
           chiller={chiller}
           utas={chillerToUtaMap[chiller.id]?.map((utaId) =>
-            initialUtaData.find((u) => u.id === utaId)
+            utas.find((u) => u.id === utaId)
           ) || []}
           onClick={() => setSelectedChiller(chiller)}
         />
       ))}
 
-     <button className="back-button" onClick={onBack}>
-             <span className="back-icon"><FiArrowLeft /></span>
-             Back
-           </button>
+      <button className="back-button" onClick={onBack}>
+        <span className="back-icon"><FiArrowLeft /></span>
+        Back
+      </button>
     </div>
   );
 }

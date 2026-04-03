@@ -1,7 +1,7 @@
 import React, { use } from "react";
 import "./Settings.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faGear, faHome } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faGear, faHome } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router";
 
 export default function Settings({ onOpenSettings }) {

@@ -5,7 +5,7 @@ import {
   faPlay, faStop, faGear, faSave, faTimes,
   faChevronDown, faChevronUp, faArrowLeft, faSliders,
 } from "@fortawesome/free-solid-svg-icons";
-import { initialUtaData } from "../../content/uta/uta data/utaData";
+// import { initialUtaData } from "../../content/uta/uta data/utaData";
 
 const FORM_FIELDS = [
   { key: "Air_inp_Temp", label: "Temp Air In", unit: "°C", step: 1 },
@@ -97,11 +97,11 @@ export default function SettingsPage({
 
         .usp-root * { box-sizing: border-box; margin: 0; padding: 0; }
         .usp-root {
-          min-height: 100vh;
+          min-height: 92.7vh;
           background: #080c14;
           font-family: 'IBM Plex Sans', sans-serif;
           color: #cbd5e1;
-          padding: 0 0 60px;
+          padding: 0 0 0px;
         }
 
         /* ── TOPBAR ── */

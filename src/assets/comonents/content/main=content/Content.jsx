@@ -12,6 +12,7 @@ import DashboardPage from '../../menu-items/dashboard/DashboardPage';
 import GraphicsPage from '../../menu-items/general/GraphicPage';
 import Settings from '../../menu-items/settings/Settings';
 import SettingsPage from '../../menu-items/settings/SettingsPage';
+// import UtaList from '../../../../services/services';
 
 
 export default function Content({ resetTrigger, showMapTrigger }) {
@@ -51,7 +52,7 @@ export default function Content({ resetTrigger, showMapTrigger }) {
       ) : currentPage === "graphics" ? (
         <GraphicsPage />
       ) : currentPage === "settings" ? (
-        <SettingsPage/>
+        <SettingsPage />
       ) : currentPage === "uta" ? (
         <UtaInterface onBack={handleBack} />
       ) : currentPage === "chiller" ? (
@@ -60,9 +61,14 @@ export default function Content({ resetTrigger, showMapTrigger }) {
         <KaldajaInterface onBack={handleBack} />
       ) : (
         <div>
-          <p style={{ color: "#94a3b8" }}>Selectați o pagină din meniu</p>
+          
         </div>
+
       )}
+
+      {/* <div>
+        <UtaList/>
+      </div> */}
     </div>
   );
 }

@@ -1,49 +1,38 @@
-
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom"; 
-import { initialUtaData } from "./uta data/utaData";
 import UtaInterface from "./UtaInterface";
 import SettingsPage from "../../menu-items/settings/SettingsPage";
+import{useUta} from "../../../../services/UtaProvider"
 
 export default function UtaRoot({ onBack }) {
   const navigate = useNavigate(); 
-  const [utaData, setUtaData] = useState(initialUtaData);
-  const [activePage, setActivePage] = useState("settings");
+  const { utas: utaData, setUtas: setUtaData } = useUta(); // folosește contextul
+  const [activePage, setActivePage] = React.useState("settings"); // start cu interface
 
+  // ── HANDLERE START/STOP/SAVE ──────────────────────────
   const handleStart = useCallback((id) => {
     setUtaData(prev =>
       prev.map(u => u.id === id ? { ...u, status: "ON" } : u)
     );
-  }, []);
+  }, [setUtaData]);
 
   const handleStop = useCallback((id) => {
     setUtaData(prev =>
       prev.map(u => u.id === id ? { ...u, status: "OFF" } : u)
     );
-  }, []);
+  }, [setUtaData]);
 
-const handleSave = useCallback(({ utaId, ...fields }) => {
-  console.log("📦 SAVE payload:", { utaId, ...fields });
-  setUtaData(prev =>
-    prev.map(u => u.id === utaId ? { ...u, ...fields } : u)
-  );
-}, []);
+  const handleSave = useCallback(({ utaId, ...fields }) => {
+    setUtaData(prev =>
+      prev.map(u => u.id === utaId ? { ...u, ...fields } : u)
+    );
+  }, [setUtaData]);
 
-  const handleOpenSettings = useCallback(() => {
-    setActivePage("settings");
-  }, []);
-
-  const handleBackFromSettings = useCallback(() => {
-    setActivePage("interface");
-  }, []);
-
-
+  // ── PAGINI ────────────────────────────────────────────
+  const handleOpenSettings = useCallback(() => setActivePage("settings"), []);
+  const handleBackFromSettings = useCallback(() => setActivePage("interface"), []);
   const handleBackFromInterface = useCallback(() => {
-    if (onBack) {
-      onBack(); 
-    } else {
-      navigate(-1); 
-    }
+    if (onBack) onBack(); else navigate(-1);
   }, [onBack, navigate]);
 
   if (activePage === "settings") {

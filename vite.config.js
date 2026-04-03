@@ -7,6 +7,10 @@ export default defineConfig({
   server: {
     fs: {
       strict: false
+    },
+    proxy: {
+      // toate request-urile către /api vor fi redirecționate la backend-ul tău de pe 5000
+      '/api': 'http://localhost:5000'
     }
   },
   build: {
