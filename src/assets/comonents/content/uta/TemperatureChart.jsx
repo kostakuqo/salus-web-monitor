@@ -7,6 +7,7 @@ import {
 import { Line } from "react-chartjs-2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useUta } from "../../../../services/UtaProvider";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -32,7 +33,6 @@ const ALL_PARAMS = [
 
 function useAnchorCoords(triggerRef, isOpen) {
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
-
   const recalc = useCallback(() => {
     if (!triggerRef.current) return;
     const r = triggerRef.current.getBoundingClientRect();
@@ -56,30 +56,22 @@ function useAnchorCoords(triggerRef, isOpen) {
 function DropdownPortal({ isOpen, coords, minWidth = 180, innerRef, children }) {
   if (!isOpen) return null;
   return ReactDOM.createPortal(
-    <div
-      ref={innerRef}
-      style={{
-        position: "fixed",
-        top: coords.top,
-        left: coords.left,
-        width: Math.max(coords.width, minWidth),
-        zIndex: 999999,
-        background: "#131929",
-        border: "1px solid #2d3748",
-        borderRadius: 8,
-        boxShadow: "0 12px 32px rgba(0,0,0,.6)",
-        maxHeight: "min(280px, 50vh)",
-        overflowY: "auto",
-      }}
-    >
+    <div ref={innerRef} style={{
+      position: "fixed", top: coords.top, left: coords.left,
+      width: Math.max(coords.width, minWidth), zIndex: 999999,
+      background: "#131929", border: "1px solid #2d3748", borderRadius: 8,
+      boxShadow: "0 12px 32px rgba(0,0,0,.6)",
+      maxHeight: "min(280px, 50vh)", overflowY: "auto",
+    }}>
       {children}
     </div>,
     document.body
   );
 }
 
-// ✅ historyData adăugat în props
-export default function UtaChartEmbed({ utaData, selectedUta: initialUta, historyData = [], onClose }) {
+export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClose }) {
+  const { history } = useUta();
+
   const [selectedParams, setSelectedParams] = useState([]);
   const [chartUta, setChartUta] = useState(initialUta || utaData?.[0] || null);
   const [paramOpen, setParamOpen] = useState(false);
@@ -93,24 +85,16 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
   const { coords: paramCoords, recalc: recalcParam } = useAnchorCoords(paramTriggerRef, paramOpen);
   const { coords: utaCoords, recalc: recalcUta } = useAnchorCoords(utaTriggerRef, utaOpen);
 
-  // Sincronizează chartUta când initialUta se schimbă din exterior
   useEffect(() => {
     if (initialUta) setChartUta(initialUta);
   }, [initialUta?.id]);
 
   useEffect(() => {
     const handler = (e) => {
-      if (
-        paramOpen &&
-        paramTriggerRef.current && !paramTriggerRef.current.contains(e.target) &&
-        paramDropRef.current && !paramDropRef.current.contains(e.target)
-      ) setParamOpen(false);
-
-      if (
-        utaOpen &&
-        utaTriggerRef.current && !utaTriggerRef.current.contains(e.target) &&
-        utaDropRef.current && !utaDropRef.current.contains(e.target)
-      ) setUtaOpen(false);
+      if (paramOpen && paramTriggerRef.current && !paramTriggerRef.current.contains(e.target) &&
+        paramDropRef.current && !paramDropRef.current.contains(e.target)) setParamOpen(false);
+      if (utaOpen && utaTriggerRef.current && !utaTriggerRef.current.contains(e.target) &&
+        utaDropRef.current && !utaDropRef.current.contains(e.target)) setUtaOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -122,11 +106,20 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
   };
 
   const allUtas = utaData || (initialUta ? [initialUta] : []);
+  const activeData = history[chartUta?.id] ?? [];
 
-  // ✅ MODIFICAREA CHEIE — folosește historyData dacă există, altfel datele curente
-  const activeData = historyData.length > 0
-    ? historyData
-    : (chartUta ? [chartUta] : allUtas);
+  // ✅ data curentă formatată frumos
+  const todayLabel = new Date().toLocaleDateString("sq-AL", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+
+  // ✅ primul si ultimul timestamp din date
+  const timeRange = activeData.length > 1
+    ? `${activeData[0].time} → ${activeData[activeData.length - 1].time}`
+    : null;
 
   const chartData = useMemo(() => ({
     labels: activeData.map(d => d.time || "—"),
@@ -139,7 +132,7 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
         backgroundColor: p.color + "22",
         borderWidth: 2.5,
         tension: 0.4,
-        pointRadius: activeData.length > 1 ? 4 : 6,
+        pointRadius: activeData.length > 1 ? 3 : 6,
         pointHoverRadius: 8,
         pointBackgroundColor: p.color,
         pointBorderColor: "#0f1420",
@@ -152,6 +145,7 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: false,
     interaction: { mode: "index", intersect: false },
     plugins: {
       legend: {
@@ -169,6 +163,14 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
         titleColor: "#94a3b8",
         bodyColor: "#f1f5f9",
         padding: 12,
+        callbacks: {
+          // ✅ arată data completa in tooltip
+          title: (items) => {
+            const idx = items[0]?.dataIndex;
+            const point = activeData[idx];
+            return point ? `📅 ${point.date || ""} ${point.time}` : "";
+          },
+        },
       },
     },
     scales: {
@@ -176,8 +178,10 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
         grid: { color: "#1e293b" },
         ticks: {
           color: "#64748b",
-          font: { family: "'DM Mono',monospace", size: 11 },
-          maxTicksLimit: 10, // ← nu aglomerează labels pe axa X
+          font: { family: "'DM Mono',monospace", size: 10 },
+          maxTicksLimit: 8,
+          maxRotation: 45,
+          minRotation: 45,
         },
       },
       y: {
@@ -188,26 +192,19 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
   };
 
   const optStyle = (active) => ({
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    padding: "9px 13px",
-    cursor: "pointer",
-    fontSize: 12,
+    display: "flex", alignItems: "center", gap: 8,
+    padding: "9px 13px", cursor: "pointer", fontSize: 12,
     color: active ? "#93c5fd" : "#94a3b8",
     background: active ? "#1a2a45" : "transparent",
-    borderBottom: "1px solid #1e293b",
-    transition: "background 0.12s",
+    borderBottom: "1px solid #1e293b", transition: "background 0.12s",
   });
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700&display=swap');
-
         .uce-wrap { display:flex; flex-direction:column; height:100%; font-family:'DM Mono',monospace; color:#e2e8f0; gap:12px; }
         .uce-row  { display:flex; align-items:center; gap:10px; flex-shrink:0; flex-wrap:wrap; }
-
         .uce-trigger {
           display:flex; justify-content:space-between; align-items:center; gap:8px;
           background:#1a2035; border:1px solid #334155; padding:7px 12px; border-radius:8px;
@@ -219,11 +216,9 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
         .uce-trigger-text  { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .uce-chevron       { font-size:9px; color:#60a5fa; transition:transform .2s; flex-shrink:0; }
         .uce-trigger.open .uce-chevron { transform:rotate(180deg); }
-
-        .uce-pulse    { width:7px; height:7px; border-radius:50%; background:#3b82f6; box-shadow:0 0 6px #3b82f6; animation:ucePulse 2s infinite; }
+        .uce-pulse { width:7px; height:7px; border-radius:50%; background:#3b82f6; box-shadow:0 0 6px #3b82f6; animation:ucePulse 2s infinite; }
         .uce-uta-name { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; color:#93c5fd; letter-spacing:.06em; }
         @keyframes ucePulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
         .uce-close {
           display:inline-flex; align-items:center; justify-content:center;
           width:34px; height:34px; background:#1a2035; border:1px solid #f43f5e;
@@ -231,31 +226,18 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
           font-size:14px; margin-left:auto; flex-shrink:0;
         }
         .uce-close:hover { background:#2d1f1f; color:#ef4444; }
-
         .uce-box { flex:1; background:#0a0f1a; border-radius:10px; border:1px solid #1e293b; display:flex; flex-direction:column; min-height:0; }
-
-        .uce-boxhdr {
-          display:flex; align-items:flex-start; padding:10px 16px;
-          border-bottom:1px solid #1e293b; flex-shrink:0; flex-wrap:wrap; gap:6px;
-        }
+        .uce-boxhdr { display:flex; align-items:center; padding:10px 16px; border-bottom:1px solid #1e293b; flex-shrink:0; flex-wrap:wrap; gap:8px; }
         .uce-pills { display:flex; flex-wrap:wrap; gap:5px; align-items:center; flex:1; min-width:0; }
         .uce-pill-label { font-size:10px; color:#475569; text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; line-height:22px; }
-        .uce-pill {
-          display:inline-flex; align-items:center; gap:4px;
-          background:#131929; border:1px solid var(--c); border-radius:20px;
-          padding:3px 8px; font-size:10px; color:var(--c); white-space:nowrap; line-height:1.4;
-        }
+        .uce-pill { display:inline-flex; align-items:center; gap:4px; background:#131929; border:1px solid var(--c); border-radius:20px; padding:3px 8px; font-size:10px; color:var(--c); white-space:nowrap; line-height:1.4; }
         .uce-pill-dot { width:5px; height:5px; border-radius:50%; background:var(--c); flex-shrink:0; }
         .uce-chart { flex:1; padding:12px 16px; min-height:0; }
         .uce-empty { flex:1; display:flex; align-items:center; justify-content:center; color:#334155; font-size:13px; }
-
-        .uce-history-badge {
-          display:inline-flex; align-items:center; gap:5px;
-          background:#0f2030; border:1px solid #1e4060; border-radius:6px;
-          padding:3px 10px; font-size:10px; color:#38bdf8; letter-spacing:.06em;
-        }
+        .uce-history-badge { display:inline-flex; align-items:center; gap:5px; background:#0f2030; border:1px solid #1e4060; border-radius:6px; padding:3px 10px; font-size:10px; color:#38bdf8; letter-spacing:.06em; }
         .uce-history-dot { width:5px; height:5px; border-radius:50%; background:#38bdf8; animation:ucePulse 2s infinite; }
-
+        .uce-date-badge { display:inline-flex; align-items:center; gap:5px; background:#12201a; border:1px solid #1a4030; border-radius:6px; padding:3px 10px; font-size:10px; color:#4ade80; letter-spacing:.04em; white-space:nowrap; }
+        .uce-range-badge { display:inline-flex; align-items:center; gap:5px; background:#1a1a2e; border:1px solid #2a2a4e; border-radius:6px; padding:3px 10px; font-size:9px; color:#818cf8; letter-spacing:.04em; white-space:nowrap; }
         .dd-opt:hover { background:#1a2035 !important; color:#e2e8f0 !important; }
       `}</style>
 
@@ -266,16 +248,8 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
 
           {/* Param trigger */}
           <div style={{ position: "relative", flex: 1, maxWidth: 340 }}>
-            <div
-              ref={paramTriggerRef}
-              className={`uce-trigger ${paramOpen ? "open" : ""}`}
-              onClick={() => {
-                const next = !paramOpen;
-                setParamOpen(next);
-                setUtaOpen(false);
-                if (next) recalcParam();
-              }}
-            >
+            <div ref={paramTriggerRef} className={`uce-trigger ${paramOpen ? "open" : ""}`}
+              onClick={() => { const n = !paramOpen; setParamOpen(n); setUtaOpen(false); if (n) recalcParam(); }}>
               <span className="uce-trigger-text">Zgjidh parametër...</span>
               <FontAwesomeIcon icon={faChevronDown} className="uce-chevron" />
             </div>
@@ -283,28 +257,25 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
 
           {/* UTA trigger */}
           <div style={{ position: "relative" }}>
-            <div
-              ref={utaTriggerRef}
-              className={`uce-trigger ${utaOpen ? "open" : ""}`}
+            <div ref={utaTriggerRef} className={`uce-trigger ${utaOpen ? "open" : ""}`}
               style={{ borderColor: "#3b82f6" }}
-              onClick={() => {
-                const next = !utaOpen;
-                setUtaOpen(next);
-                setParamOpen(false);
-                if (next) recalcUta();
-              }}
-            >
+              onClick={() => { const n = !utaOpen; setUtaOpen(n); setParamOpen(false); if (n) recalcUta(); }}>
               <div className="uce-pulse" />
               <span className="uce-uta-name">{chartUta?.id || "Zgjidh UTA"}</span>
               <FontAwesomeIcon icon={faChevronDown} className="uce-chevron" />
             </div>
           </div>
 
-          {/* ✅ Badge care arată câte puncte istorice sunt */}
-          {historyData.length > 0 && (
+          {/* ✅ Badge data curenta */}
+          <div className="uce-date-badge">
+            📅 {todayLabel}
+          </div>
+
+          {/* ✅ Badge puncte istorice */}
+          {activeData.length > 0 && (
             <div className="uce-history-badge">
               <span className="uce-history-dot" />
-              {historyData.length} pikë
+              {activeData.length} pikë
             </div>
           )}
 
@@ -314,6 +285,15 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
             </button>
           )}
         </div>
+
+        {/* ✅ Range timp dacă avem date */}
+        {timeRange && (
+          <div style={{ display: "flex", gap: 8 }}>
+            <div className="uce-range-badge">
+              🕐 {timeRange}
+            </div>
+          </div>
+        )}
 
         {/* PORTALS */}
         <DropdownPortal isOpen={paramOpen} coords={paramCoords} minWidth={240} innerRef={paramDropRef}>
@@ -333,24 +313,16 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
           {allUtas.map(uta => {
             const isAct = chartUta?.id === uta.id;
             const sk = (uta.status || "").toLowerCase();
-            const dotColor = sk === "running" ? "#4ade80" : sk === "stopped" ? "#f87171" : "#64748b";
-            const statusBg = sk === "running" ? "#14532d" : sk === "stopped" ? "#450a0a" : "#1e293b";
-            const statusTx = sk === "running" ? "#4ade80" : sk === "stopped" ? "#f87171" : "#64748b";
+            const dotColor = sk === "on" ? "#4ade80" : sk === "off" ? "#f87171" : "#64748b";
+            const statusBg = sk === "on" ? "#14532d" : sk === "off" ? "#450a0a" : "#1e293b";
+            const statusTx = sk === "on" ? "#4ade80" : sk === "off" ? "#f87171" : "#64748b";
             return (
-              <div
-                key={uta.id}
-                className="dd-opt"
-                style={optStyle(isAct)}
-                onClick={() => { setChartUta(uta); setUtaOpen(false); }}
-              >
+              <div key={uta.id} className="dd-opt" style={optStyle(isAct)}
+                onClick={() => { setChartUta(uta); setUtaOpen(false); }}>
                 <div style={{ width: 7, height: 7, borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
                 {uta.id}
                 {uta.status && (
-                  <span style={{
-                    fontSize: 9, padding: "2px 6px", borderRadius: 4,
-                    background: statusBg, color: statusTx,
-                    textTransform: "uppercase", letterSpacing: ".06em", marginLeft: "auto",
-                  }}>
+                  <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: statusBg, color: statusTx, textTransform: "uppercase", letterSpacing: ".06em", marginLeft: "auto" }}>
                     {uta.status}
                   </span>
                 )}
@@ -374,6 +346,14 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
                 : <span style={{ fontSize: 11, color: "#475569" }}>—</span>
               }
             </div>
+
+            {/* ✅ data in header-ul graficului */}
+            <span style={{
+              fontSize: 10, color: "#38bdf8", letterSpacing: ".06em",
+              whiteSpace: "nowrap", alignSelf: "center",
+            }}>
+              {chartUta?.id} — {todayLabel}
+            </span>
           </div>
 
           {selectedParams.length > 0
@@ -381,7 +361,6 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, histor
             : <div className="uce-empty">Zgjidh të paktën një parametër</div>
           }
         </div>
-
       </div>
     </>
   );

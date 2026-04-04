@@ -43,25 +43,71 @@ const FIELD_LABELS = {
 
 export default function UtaInterface({
   onBack,
-  onStart,
-  onStop,
   onSave,
   onOpenSettings,
 }) {
-  const { utas: utaData, history } = useUta(); // ← adaugă history
+  const { utas: utaData, setUtas, history } = useUta();
+
   const [selectedUta, setSelectedUta] = useState(null);
   const [activeChart, setActiveChart] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editedUta, setEditedUta] = useState(null);
   const [saveMessage, setSaveMessage] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
 
   const selectedUtaFresh = selectedUta
     ? utaData.find(u => u.id === selectedUta.id) ?? selectedUta
     : null;
 
-  // ← istoricul pentru UTA selectată
   const selectedHistory = history?.[selectedUtaFresh?.id] ?? [];
 
+  // ── START UTA ───────────────────────────────
+  const handleStart = async (utaId) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/uta/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ utaId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUtas(prev => prev.map(u => u.id === utaId ? { ...u, status: "ON" } : u));
+        setSelectedUta(prev => prev ? { ...prev, status: "ON" } : prev);
+
+        setStatusMessage(`✅ UTA ${utaId} a fost pornită cu succes!`);
+        setTimeout(() => setStatusMessage(""), 3000);
+      }
+    } catch (err) {
+      console.error("Start failed:", err);
+      setStatusMessage(`❌ Eroare la pornirea UTA ${utaId}`);
+      setTimeout(() => setStatusMessage(""), 3000);
+    }
+  };
+
+  // ── STOP UTA ────────────────────────────────
+  const handleStop = async (utaId) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/uta/stop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ utaId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUtas(prev => prev.map(u => u.id === utaId ? { ...u, status: "OFF" } : u));
+        setSelectedUta(prev => prev ? { ...prev, status: "OFF" } : prev);
+
+        setStatusMessage(`✅ UTA ${utaId} a fost oprită cu succes!`);
+        setTimeout(() => setStatusMessage(""), 3000);
+      }
+    } catch (err) {
+      console.error("Stop failed:", err);
+      setStatusMessage(`❌ Eroare la oprirea UTA ${utaId}`);
+      setTimeout(() => setStatusMessage(""), 3000);
+    }
+  };
+
+  // ── SAVE EDITED UTA ─────────────────────────
   const handleSaveEditedUta = () => {
     const fields = FORM_FIELDS.reduce((acc, f) => {
       acc[f] = editedUta[f];
@@ -69,15 +115,26 @@ export default function UtaInterface({
     }, {});
 
     onSave?.({ utaId: editedUta.id, ...fields });
+
+    setUtas(prev => prev.map(u => u.id === editedUta.id ? { ...u, ...fields } : u));
     setSelectedUta(prev => prev ? { ...prev, ...fields } : prev);
+
     setSaveMessage("Parametrat u ruajten me sukses!");
     setEditMode(false);
     setTimeout(() => setSaveMessage(""), 2000);
   };
 
+  // ── SELECTED UTA VIEW ──────────────────────
   if (selectedUtaFresh) {
     return (
       <div className="uta-interface main-uta">
+
+        {/* MESAJ STATUS */}
+        {statusMessage && (
+          <div className="status-message">{statusMessage}</div>
+        )}
+
+        {/* MESAJ SAVE */}
         {saveMessage && (
           <div className="alert-modal">
             <div className="alert-modal-content">
@@ -87,7 +144,6 @@ export default function UtaInterface({
         )}
 
         <div className="uta-details-container">
-          {/* HEADER */}
           <div className="uta-details-header">
             <button
               className="back-btn"
@@ -106,16 +162,10 @@ export default function UtaInterface({
             </span>
 
             <div className="uta-actions">
-              <button
-                className="uta-button start"
-                onClick={() => onStart?.(selectedUtaFresh.id)}
-              >
+              <button className="uta-button start" onClick={() => handleStart(selectedUtaFresh.id)}>
                 <FontAwesomeIcon icon={faPlay} /> Start
               </button>
-              <button
-                className="uta-button stop"
-                onClick={() => onStop?.(selectedUtaFresh.id)}
-              >
+              <button className="uta-button stop" onClick={() => handleStop(selectedUtaFresh.id)}>
                 <FontAwesomeIcon icon={faStop} /> Stop
               </button>
               <button
@@ -130,44 +180,22 @@ export default function UtaInterface({
             </div>
           </div>
 
-          {/* FORM */}
+          {/* FORM EDITARE */}
           {editMode && editedUta && (
             <div className="edit-form">
               <h3>Modifiko Parametrat</h3>
               <form onSubmit={e => { e.preventDefault(); handleSaveEditedUta(); }}>
-                <label>
-                  Temp Air In:
-                  <input
-                    type="number"
-                    value={editedUta.Air_inp_Temp}
-                    onChange={e => setEditedUta({ ...editedUta, Air_inp_Temp: +e.target.value })}
-                  />
-                </label>
-                <label>
-                  Temp Air Return:
-                  <input
-                    type="number"
-                    value={editedUta.Air_Return_Temp}
-                    onChange={e => setEditedUta({ ...editedUta, Air_Return_Temp: +e.target.value })}
-                  />
-                </label>
-                <label>
-                  Water Chill In:
-                  <input
-                    type="number"
-                    value={editedUta.Water_InpChillTemp}
-                    onChange={e => setEditedUta({ ...editedUta, Water_InpChillTemp: +e.target.value })}
-                  />
-                </label>
-                <label>
-                  Presioni:
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={editedUta.Out_Return_Pressure}
-                    onChange={e => setEditedUta({ ...editedUta, Out_Return_Pressure: +e.target.value })}
-                  />
-                </label>
+                {FORM_FIELDS.map(field => (
+                  <label key={field}>
+                    {FIELD_LABELS[field]?.label || field}:
+                    <input
+                      type="number"
+                      step={field.includes("Pressure") ? "0.1" : "1"}
+                      value={editedUta[field]}
+                      onChange={e => setEditedUta({ ...editedUta, [field]: +e.target.value })}
+                    />
+                  </label>
+                ))}
 
                 <div className="form-actions">
                   <button type="submit" className="save-data">
@@ -199,7 +227,7 @@ export default function UtaInterface({
             })}
           </div>
 
-          {/* GRAPH BUTTON */}
+          {/* GRAFICE */}
           <button
             className="uta-button graph-bottom"
             onClick={() => setActiveChart(prev => prev ? null : "main")}
@@ -207,33 +235,28 @@ export default function UtaInterface({
             <GoGraph style={{ marginRight: "6px" }} /> Shiko Grafiket
           </button>
 
-          {/* CHART ← adaugă historyData */}
           {activeChart === "main" && (
-            <div
-              className="uta-graph-container"
-              style={{
-                marginTop: "20px", height: "600px",
-                background: "#0f1420", borderRadius: "10px",
-                padding: "16px", border: "1px solid #1e293b",
-              }}
-            >
+            <div className="uta-graph-container">
               <TemperatureChart
                 utaData={utaData}
                 selectedUta={selectedUtaFresh}
-                historyData={selectedHistory}  // ← linia istorică
+                historyData={selectedHistory}
                 onClose={() => setActiveChart(null)}
               />
             </div>
           )}
-
         </div>
       </div>
     );
   }
 
-  // ── LIST VIEW ────────────────────────────────────────────────
+  // ── LIST VIEW ─────────────────────────────
   return (
     <div className="uta-interface">
+      {statusMessage && (
+        <div className="status-message">{statusMessage}</div>
+      )}
+
       <div className="uta-row header" style={{ display: "flex", alignItems: "center" }}>
         <div className="uta-cell"><strong>UTA ID</strong></div>
         <div className="uta-cell"><strong>Air In</strong></div>
@@ -249,8 +272,8 @@ export default function UtaInterface({
           key={uta.id}
           {...uta}
           onClick={() => setSelectedUta(uta)}
-          onStart={() => onStart?.(uta.id)}
-          onStop={() => onStop?.(uta.id)}
+          onStart={() => handleStart(uta.id)}
+          onStop={() => handleStop(uta.id)}
         />
       ))}
 
