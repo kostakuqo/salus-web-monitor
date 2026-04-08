@@ -10,10 +10,8 @@ import KaldajaInterface from '../kaldaja/KaldajaInterface';
 import DashboardUtaPage from '../../menu-items/dashboard/DashboardUtaPage';
 import DashboardPage from '../../menu-items/dashboard/DashboardPage';
 import GraphicsPage from '../../menu-items/general/GraphicPage';
-import Settings from '../../menu-items/settings/Settings';
 import SettingsPage from '../../menu-items/settings/SettingsPage';
-// import UtaList from '../../../../services/services';
-
+import ProfilePage from '../../menu-items/profile/ProfilePage'; // ← import ProfilePage
 
 export default function Content({ resetTrigger, showMapTrigger }) {
   const location = useLocation();
@@ -59,16 +57,11 @@ export default function Content({ resetTrigger, showMapTrigger }) {
         <ChillerInterface onBack={handleBack} />
       ) : currentPage === "kaldaja" ? (
         <KaldajaInterface onBack={handleBack} />
+      ) : currentPage === "profile" ? (
+        <ProfilePage />  // ← afișează ProfilePage aici
       ) : (
-        <div>
-          
-        </div>
-
+        <div></div>
       )}
-
-      {/* <div>
-        <UtaList/>
-      </div> */}
     </div>
   );
 }

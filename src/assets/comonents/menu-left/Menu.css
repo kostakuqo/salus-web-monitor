@@ -124,6 +124,55 @@
   background: #C82333 !important;
   color: white;
 }
+/* ── user info ── */
+.menu-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid #1a2236;
+  margin-bottom: 8px;
+}
+.menu-user-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: #1e3a5f;
+  border: 1px solid #2d5a8e;
+  color: #93c5fd;
+  font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  flex-shrink: 0;
+}
+.menu-user-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── logout btn ── */
+.menu-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: 1px solid #2a0f0f;
+  border-radius: 6px;
+  color: #f87171;
+  font-size: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: background .15s, border-color .15s;
+}
+.menu-logout-btn:hover {
+  background: #2a0f0f;
+  border-color: #7f1d1d;
+}
 
 
 @media (max-width: 768px) {

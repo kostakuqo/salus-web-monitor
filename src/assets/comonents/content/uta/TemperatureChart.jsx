@@ -1,36 +1,39 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 import {
-  Chart as ChartJS, CategoryScale, LinearScale,
-  PointElement, LineElement, Title, Tooltip, Legend,
+  Chart as ChartJS,
+  CategoryScale, LinearScale,
+  PointElement, LineElement,
+  Title, Tooltip, Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faCheck, faTimes, faClock } from "@fortawesome/free-solid-svg-icons";
 import { useUta } from "../../../../services/UtaProvider";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const ALL_PARAMS = [
-  { key: "Air_inp_Temp", label: "Temp Air hyrje", unit: "°C", color: "#f97316" },
-  { key: "Air_Output_Temp", label: "Temp Air dergim", unit: "°C", color: "#eab308" },
-  { key: "Air_Return_Temp", label: "Temp Air kthim", unit: "°C", color: "#84cc16" },
-  { key: "Air_outHygro", label: "Lagështira", unit: "%", color: "#06b6d4" },
-  { key: "Water_InpChillTemp", label: "Ujë Hyrje Chiller", unit: "°C", color: "#3b82f6" },
-  { key: "Water_outChill_Temp", label: "Ujë Dalje Chiller", unit: "°C", color: "#6366f1" },
-  { key: "Water_InpBoilTemp", label: "Ujë Hyrje Kaldaja", unit: "°C", color: "#ec4899" },
-  { key: "Water_OutputBoilTemp", label: "Ujë Dalje Kaldaja", unit: "°C", color: "#f43f5e" },
-  { key: "Boil_Pump_Invert", label: "Pompa Kaldaja", unit: "%", color: "#a855f7" },
-  { key: "Chiller_Pump_Invert", label: "Pompa Chiller", unit: "%", color: "#8b5cf6" },
-  { key: "Boil_Valve", label: "Valvula Kaldaja", unit: "%", color: "#14b8a6" },
-  { key: "Chiller_Valve", label: "Valvula Chiller", unit: "%", color: "#10b981" },
-  { key: "Inp_Damper", label: "Damper Hyrje", unit: "%", color: "#f59e0b" },
-  { key: "Output_Damper", label: "Damper Dalje", unit: "%", color: "#ef4444" },
-  { key: "Aspirator", label: "Aspirator", unit: "%", color: "#64748b" },
-  { key: "Ventilator", label: "Ventilator", unit: "%", color: "#0ea5e9" },
-  { key: "Out_Return_Pressure", label: "Presioni", unit: "bar", color: "#d946ef" },
+  { key: "Air_inp_Temp",         label: "Temp Air hyrje",      unit: "°C", color: "#f97316" },
+  { key: "Air_Output_Temp",      label: "Temp Air dërgim",     unit: "°C", color: "#eab308" },
+  { key: "Air_Return_Temp",      label: "Temp Air kthim",      unit: "°C", color: "#84cc16" },
+  { key: "Air_outHygro",         label: "Lagështira",          unit: "%",  color: "#06b6d4" },
+  { key: "Water_InpChillTemp",   label: "Ujë Hyrje Chiller",   unit: "°C", color: "#3b82f6" },
+  { key: "Water_outChill_Temp",  label: "Ujë Dalje Chiller",   unit: "°C", color: "#6366f1" },
+  { key: "Water_InpBoilTemp",    label: "Ujë Hyrje Kaldaja",   unit: "°C", color: "#ec4899" },
+  { key: "Water_OutputBoilTemp", label: "Ujë Dalje Kaldaja",   unit: "°C", color: "#f43f5e" },
+  { key: "Boil_Pump_Invert",     label: "Pompa Kaldaja",       unit: "%",  color: "#a855f7" },
+  { key: "Chiller_Pump_Invert",  label: "Pompa Chiller",       unit: "%",  color: "#8b5cf6" },
+  { key: "Boil_Valve",           label: "Valvula Kaldaja",     unit: "%",  color: "#14b8a6" },
+  { key: "Chiller_Valve",        label: "Valvula Chiller",     unit: "%",  color: "#10b981" },
+  { key: "Inp_Damper",           label: "Damper Hyrje",        unit: "%",  color: "#f59e0b" },
+  { key: "Output_Damper",        label: "Damper Dalje",        unit: "%",  color: "#ef4444" },
+  { key: "Aspirator",            label: "Aspirator",           unit: "%",  color: "#64748b" },
+  { key: "Ventilator",           label: "Ventilator",          unit: "%",  color: "#0ea5e9" },
+  { key: "Out_Return_Pressure",  label: "Presioni",            unit: "bar",color: "#d946ef" },
 ];
 
+/* ─── portal dropdown ───────────────────────────────────────────────────── */
 function useAnchorCoords(triggerRef, isOpen) {
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
   const recalc = useCallback(() => {
@@ -38,7 +41,6 @@ function useAnchorCoords(triggerRef, isOpen) {
     const r = triggerRef.current.getBoundingClientRect();
     setCoords({ top: r.bottom + 4, left: r.left, width: r.width });
   }, [triggerRef]);
-
   useEffect(() => {
     if (!isOpen) return;
     recalc();
@@ -49,7 +51,6 @@ function useAnchorCoords(triggerRef, isOpen) {
       window.removeEventListener("resize", recalc);
     };
   }, [isOpen, recalc]);
-
   return { coords, recalc };
 }
 
@@ -69,35 +70,51 @@ function DropdownPortal({ isOpen, coords, minWidth = 180, innerRef, children }) 
   );
 }
 
-export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClose }) {
+/* ─── helpers ───────────────────────────────────────────────────────────── */
+function toHHMM(timeStr) {
+  if (!timeStr) return "";
+  const m = timeStr.match(/(\d{2}:\d{2})$/);
+  return m ? m[1] : timeStr;
+}
+
+function dayProgress() {
+  const n = new Date();
+  return ((n.getHours() * 60 + n.getMinutes()) / 1440) * 100;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+export default function TemperatureChart({ utaData, selectedUta: initialUta, onClose }) {
   const { history } = useUta();
 
   const [selectedParams, setSelectedParams] = useState([]);
-  const [chartUta, setChartUta] = useState(initialUta || utaData?.[0] || null);
-  const [paramOpen, setParamOpen] = useState(false);
-  const [utaOpen, setUtaOpen] = useState(false);
+  const [chartUta,       setChartUta]       = useState(initialUta || utaData?.[0] || null);
+  const [paramOpen,      setParamOpen]      = useState(false);
+  const [utaOpen,        setUtaOpen]        = useState(false);
+  const [isMobile,       setIsMobile]       = useState(window.innerWidth < 640);
 
   const paramTriggerRef = useRef(null);
-  const utaTriggerRef = useRef(null);
-  const paramDropRef = useRef(null);
-  const utaDropRef = useRef(null);
+  const utaTriggerRef   = useRef(null);
+  const paramDropRef    = useRef(null);
+  const utaDropRef      = useRef(null);
 
   const { coords: paramCoords, recalc: recalcParam } = useAnchorCoords(paramTriggerRef, paramOpen);
-  const { coords: utaCoords, recalc: recalcUta } = useAnchorCoords(utaTriggerRef, utaOpen);
+  const { coords: utaCoords,   recalc: recalcUta   } = useAnchorCoords(utaTriggerRef,   utaOpen);
+
+  useEffect(() => { if (initialUta) setChartUta(initialUta); }, [initialUta?.id]);
 
   useEffect(() => {
-    if (initialUta) setChartUta(initialUta);
-  }, [initialUta?.id]);
+    const fn = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", fn);
+    return () => window.removeEventListener("resize", fn);
+  }, []);
 
   useEffect(() => {
-    const handler = (e) => {
-      if (paramOpen && paramTriggerRef.current && !paramTriggerRef.current.contains(e.target) &&
-        paramDropRef.current && !paramDropRef.current.contains(e.target)) setParamOpen(false);
-      if (utaOpen && utaTriggerRef.current && !utaTriggerRef.current.contains(e.target) &&
-        utaDropRef.current && !utaDropRef.current.contains(e.target)) setUtaOpen(false);
+    const h = (e) => {
+      if (paramOpen && !paramTriggerRef.current?.contains(e.target) && !paramDropRef.current?.contains(e.target)) setParamOpen(false);
+      if (utaOpen   && !utaTriggerRef.current?.contains(e.target)   && !utaDropRef.current?.contains(e.target))   setUtaOpen(false);
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
   }, [paramOpen, utaOpen]);
 
   const toggleParam = (key) => {
@@ -105,193 +122,232 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
     setParamOpen(false);
   };
 
-  const allUtas = utaData || (initialUta ? [initialUta] : []);
-  const activeData = history[chartUta?.id] ?? [];
+  const allUtas  = utaData || (initialUta ? [initialUta] : []);
+  const todayStr = (() => {
+    const n = new Date();
+    return `${n.getDate().toString().padStart(2,"0")}/${(n.getMonth()+1).toString().padStart(2,"0")}/${n.getFullYear()}`;
+  })();
 
-  // ✅ data curentă formatată frumos
+  // ── punctele de azi (deja filtrate la 5 min din UtaProvider) ────────────
+  const todayPts = useMemo(() => {
+    const raw = history[chartUta?.id] ?? [];
+    return raw.filter(p =>
+      p.date === todayStr ||
+      (p.time || "").startsWith(todayStr.substring(0, 5))
+    );
+  }, [history, chartUta?.id, todayStr]);
+
   const todayLabel = new Date().toLocaleDateString("sq-AL", {
-    weekday: "long",
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
+    weekday: "long", day: "2-digit", month: "long", year: "numeric",
   });
 
-  // ✅ primul si ultimul timestamp din date
-  const timeRange = activeData.length > 1
-    ? `${activeData[0].time} → ${activeData[activeData.length - 1].time}`
-    : null;
+  const firstTime = todayPts.length ? toHHMM(todayPts[0].time) : null;
+  const lastTime  = todayPts.length ? toHHMM(todayPts[todayPts.length - 1].time) : null;
 
+  // ── labels = HH:MM direct din punctele reale ────────────────────────────
+  // Linia se oprește la ultimul punct — nu există sloturi goale după.
+  const labels = useMemo(() => todayPts.map(p => toHHMM(p.time)), [todayPts]);
+
+  // ── chart data ───────────────────────────────────────────────────────────
   const chartData = useMemo(() => ({
-    labels: activeData.map(d => d.time || "—"),
+    labels,
     datasets: selectedParams.map(key => {
-      const p = ALL_PARAMS.find(x => x.key === key);
+      const p    = ALL_PARAMS.find(x => x.key === key);
+      const vals = todayPts.map(pt => pt[key] ?? null);
       return {
         label: `${p.label} (${p.unit})`,
-        data: activeData.map(d => d[key] ?? null),
+        data: vals,
         borderColor: p.color,
-        backgroundColor: p.color + "22",
-        borderWidth: 2.5,
-        tension: 0.4,
-        pointRadius: activeData.length > 1 ? 3 : 6,
-        pointHoverRadius: 8,
+        backgroundColor: p.color + "15",
+        borderWidth: isMobile ? 2 : 2.5,
+        tension: 0.35,
+        pointRadius: vals.map(v => v !== null ? (isMobile ? 3 : 4) : 0),
+        pointHoverRadius: 7,
         pointBackgroundColor: p.color,
         pointBorderColor: "#0f1420",
         pointBorderWidth: 2,
         fill: false,
+        spanGaps: false,
       };
     }),
-  }), [activeData, selectedParams]);
+  }), [todayPts, selectedParams, isMobile, labels]);
 
-  const chartOptions = {
+  // ── chart options ────────────────────────────────────────────────────────
+  const chartOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
     animation: false,
     interaction: { mode: "index", intersect: false },
     plugins: {
-      legend: {
-        position: "top",
-        labels: {
-          color: "#cbd5e1",
-          font: { size: 12, family: "'DM Mono',monospace" },
-          usePointStyle: true,
-        },
-      },
+      legend: { display: false },
       tooltip: {
         backgroundColor: "#1e2436",
         borderColor: "#334155",
         borderWidth: 1,
         titleColor: "#94a3b8",
         bodyColor: "#f1f5f9",
-        padding: 12,
+        padding: isMobile ? 8 : 12,
+        bodyFont:  { size: isMobile ? 11 : 12, family: "'DM Mono',monospace" },
+        titleFont: { size: isMobile ? 10 : 11, family: "'DM Mono',monospace" },
         callbacks: {
-          // ✅ arată data completa in tooltip
-          title: (items) => {
-            const idx = items[0]?.dataIndex;
-            const point = activeData[idx];
-            return point ? `📅 ${point.date || ""} ${point.time}` : "";
+          title: (items) => `🕐 ${labels[items[0]?.dataIndex] ?? ""}`,
+          label: (ctx) => {
+            if (ctx.parsed.y === null) return null;
+            const p = ALL_PARAMS.find(x => `${x.label} (${x.unit})` === ctx.dataset.label);
+            return ` ${p?.label ?? ctx.dataset.label}: ${ctx.parsed.y} ${p?.unit ?? ""}`;
           },
         },
+        filter: (item) => item.parsed.y !== null,
       },
     },
     scales: {
       x: {
-        grid: { color: "#1e293b" },
+        grid:   { color: "#1a2235", lineWidth: 1 },
+        border: { color: "#1e293b" },
         ticks: {
-          color: "#64748b",
-          font: { family: "'DM Mono',monospace", size: 10 },
-          maxTicksLimit: 8,
-          maxRotation: 45,
-          minRotation: 45,
+          color: "#475569",
+          font: { family: "'DM Mono',monospace", size: isMobile ? 9 : 11 },
+          // la 5 min avem max 288 puncte — afișăm ~8-12 etichete
+          maxTicksLimit: isMobile ? 6 : 12,
+          maxRotation: isMobile ? 45 : 30,
+          minRotation: 0,
+          autoSkip: true,
         },
       },
       y: {
-        grid: { color: "#1e293b" },
-        ticks: { color: "#64748b", font: { family: "'DM Mono',monospace", size: 11 } },
+        grid:   { color: "#1a2235", lineWidth: 1 },
+        border: { color: "#1e293b" },
+        ticks: {
+          color: "#475569",
+          font: { family: "'DM Mono',monospace", size: isMobile ? 9 : 11 },
+          maxTicksLimit: 6,
+        },
       },
     },
-  };
+    layout: { padding: { top: 8, right: isMobile ? 4 : 16, bottom: 4, left: 0 } },
+  }), [isMobile, labels]);
 
-  const optStyle = (active) => ({
-    display: "flex", alignItems: "center", gap: 8,
-    padding: "9px 13px", cursor: "pointer", fontSize: 12,
-    color: active ? "#93c5fd" : "#94a3b8",
+  /* ─── CSS ──────────────────────────────────────────────────────────────── */
+  const css = `
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700&display=swap');
+    .tc-wrap{display:flex;flex-direction:column;height:100%;font-family:'DM Mono',monospace;color:#e2e8f0;gap:10px;}
+    .tc-toprow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .tc-trigger{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#1a2035;border:1px solid #334155;padding:7px 11px;border-radius:8px;cursor:pointer;font-size:12px;color:#cbd5e1;user-select:none;transition:border-color .15s;min-width:0;}
+    .tc-trigger:hover{border-color:#3b82f6;} .tc-trigger.open{background:#1e2d4a;border-color:#60a5fa;}
+    .tc-trigger-text{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .tc-chevron{font-size:9px;color:#60a5fa;transition:transform .2s;flex-shrink:0;}
+    .tc-trigger.open .tc-chevron{transform:rotate(180deg);}
+    .tc-pulse{width:7px;height:7px;border-radius:50%;background:#3b82f6;box-shadow:0 0 6px #3b82f6;animation:tcPulse 2s infinite;flex-shrink:0;}
+    @keyframes tcPulse{0%,100%{opacity:1}50%{opacity:.25}}
+    .tc-uta-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#93c5fd;letter-spacing:.06em;}
+    .tc-close{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#1a2035;border:1px solid #f43f5e;border-radius:8px;color:#94a3b8;cursor:pointer;transition:all .15s;font-size:13px;flex-shrink:0;}
+    .tc-close:hover{background:#2d1f1f;color:#ef4444;}
+    .tc-badge{display:inline-flex;align-items:center;gap:5px;border-radius:6px;padding:3px 9px;font-size:10px;letter-spacing:.05em;white-space:nowrap;flex-shrink:0;}
+    .tc-badge-blue{background:#0f2030;border:1px solid #1e4060;color:#38bdf8;}
+    .tc-badge-green{background:#12201a;border:1px solid #1a4030;color:#4ade80;}
+    .tc-badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:tcPulse 2s infinite;}
+    .tc-timeline{position:relative;height:26px;background:#0d1525;border-radius:6px;border:1px solid #1e293b;overflow:hidden;flex-shrink:0;}
+    .tc-timeline-fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#1e3a5f,#1e4060);transition:width .5s ease;}
+    .tc-timeline-now{position:absolute;top:0;bottom:0;width:2px;background:#38bdf8;}
+    .tc-timeline-lbl{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:#38bdf8;letter-spacing:.05em;white-space:nowrap;}
+    .tc-info-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .tc-stat{display:inline-flex;align-items:center;gap:5px;background:#0d1525;border:1px solid #1e2d4a;border-radius:6px;padding:3px 9px;font-size:10px;color:#64748b;white-space:nowrap;}
+    .tc-stat strong{color:#94a3b8;}
+    .tc-box{flex:1;background:#080d1a;border-radius:10px;border:1px solid #1a2235;display:flex;flex-direction:column;min-height:0;}
+    .tc-boxhdr{display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid #1a2235;flex-shrink:0;flex-wrap:wrap;gap:6px;}
+    .tc-pills{display:flex;flex-wrap:wrap;gap:4px;align-items:center;flex:1;min-width:0;}
+    .tc-pill-hint{font-size:10px;color:#334155;}
+    .tc-pill{display:inline-flex;align-items:center;gap:4px;background:#0d1525;border:1px solid var(--pc);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--pc);white-space:nowrap;}
+    .tc-pill-dot{width:5px;height:5px;border-radius:50%;background:var(--pc);flex-shrink:0;}
+    .tc-pill-rm{cursor:pointer;margin-left:2px;opacity:.6;transition:opacity .15s;font-size:8px;}
+    .tc-pill-rm:hover{opacity:1;}
+    .tc-chart{flex:1;padding:10px 12px 8px;min-height:0;}
+    .tc-empty{flex:1;display:flex;align-items:center;justify-content:center;color:#2d3f5e;font-size:12px;}
+    .tc-legend{display:flex;flex-wrap:wrap;gap:8px 14px;padding:8px 14px;border-top:1px solid #1a2235;flex-shrink:0;}
+    .tc-leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#64748b;}
+    .tc-leg-sq{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+    .tc-opt{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;font-size:12px;font-family:'DM Mono',monospace;border-bottom:1px solid #1a2235;transition:background .1s;}
+    .tc-opt:hover{background:#1a2035;}
+    @media(max-width:639px){
+      .tc-toprow{gap:6px;}.tc-trigger{padding:6px 9px;font-size:11px;}.tc-badge{font-size:9px;padding:2px 7px;}
+      .tc-boxhdr{padding:6px 10px;}.tc-chart{padding:6px 8px;}.tc-legend{padding:6px 10px;gap:6px 10px;}
+    }
+  `;
+
+  const prog  = dayProgress();
+  const nowHM = new Date().toLocaleTimeString("sq-AL", { hour: "2-digit", minute: "2-digit" });
+
+  // durata acoperită de date
+  const coverage = useMemo(() => {
+    if (!firstTime || !lastTime) return null;
+    const [fh, fm] = firstTime.split(":").map(Number);
+    const [lh, lm] = lastTime.split(":").map(Number);
+    const diff = (lh * 60 + lm) - (fh * 60 + fm);
+    return diff >= 60 ? `${Math.floor(diff/60)}h ${diff%60}m` : `${diff}m`;
+  }, [firstTime, lastTime]);
+
+  const optColor = (active) => ({
+    color:      active ? "#93c5fd" : "#64748b",
     background: active ? "#1a2a45" : "transparent",
-    borderBottom: "1px solid #1e293b", transition: "background 0.12s",
   });
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700&display=swap');
-        .uce-wrap { display:flex; flex-direction:column; height:100%; font-family:'DM Mono',monospace; color:#e2e8f0; gap:12px; }
-        .uce-row  { display:flex; align-items:center; gap:10px; flex-shrink:0; flex-wrap:wrap; }
-        .uce-trigger {
-          display:flex; justify-content:space-between; align-items:center; gap:8px;
-          background:#1a2035; border:1px solid #334155; padding:7px 12px; border-radius:8px;
-          cursor:pointer; font-size:12px; color:#cbd5e1; user-select:none;
-          transition:border-color .15s; min-width:160px;
-        }
-        .uce-trigger:hover { border-color:#3b82f6; }
-        .uce-trigger.open  { background:#1e2d4a; border-color:#60a5fa; }
-        .uce-trigger-text  { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .uce-chevron       { font-size:9px; color:#60a5fa; transition:transform .2s; flex-shrink:0; }
-        .uce-trigger.open .uce-chevron { transform:rotate(180deg); }
-        .uce-pulse { width:7px; height:7px; border-radius:50%; background:#3b82f6; box-shadow:0 0 6px #3b82f6; animation:ucePulse 2s infinite; }
-        .uce-uta-name { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; color:#93c5fd; letter-spacing:.06em; }
-        @keyframes ucePulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-        .uce-close {
-          display:inline-flex; align-items:center; justify-content:center;
-          width:34px; height:34px; background:#1a2035; border:1px solid #f43f5e;
-          border-radius:8px; color:#94a3b8; cursor:pointer; transition:all .15s;
-          font-size:14px; margin-left:auto; flex-shrink:0;
-        }
-        .uce-close:hover { background:#2d1f1f; color:#ef4444; }
-        .uce-box { flex:1; background:#0a0f1a; border-radius:10px; border:1px solid #1e293b; display:flex; flex-direction:column; min-height:0; }
-        .uce-boxhdr { display:flex; align-items:center; padding:10px 16px; border-bottom:1px solid #1e293b; flex-shrink:0; flex-wrap:wrap; gap:8px; }
-        .uce-pills { display:flex; flex-wrap:wrap; gap:5px; align-items:center; flex:1; min-width:0; }
-        .uce-pill-label { font-size:10px; color:#475569; text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; line-height:22px; }
-        .uce-pill { display:inline-flex; align-items:center; gap:4px; background:#131929; border:1px solid var(--c); border-radius:20px; padding:3px 8px; font-size:10px; color:var(--c); white-space:nowrap; line-height:1.4; }
-        .uce-pill-dot { width:5px; height:5px; border-radius:50%; background:var(--c); flex-shrink:0; }
-        .uce-chart { flex:1; padding:12px 16px; min-height:0; }
-        .uce-empty { flex:1; display:flex; align-items:center; justify-content:center; color:#334155; font-size:13px; }
-        .uce-history-badge { display:inline-flex; align-items:center; gap:5px; background:#0f2030; border:1px solid #1e4060; border-radius:6px; padding:3px 10px; font-size:10px; color:#38bdf8; letter-spacing:.06em; }
-        .uce-history-dot { width:5px; height:5px; border-radius:50%; background:#38bdf8; animation:ucePulse 2s infinite; }
-        .uce-date-badge { display:inline-flex; align-items:center; gap:5px; background:#12201a; border:1px solid #1a4030; border-radius:6px; padding:3px 10px; font-size:10px; color:#4ade80; letter-spacing:.04em; white-space:nowrap; }
-        .uce-range-badge { display:inline-flex; align-items:center; gap:5px; background:#1a1a2e; border:1px solid #2a2a4e; border-radius:6px; padding:3px 10px; font-size:9px; color:#818cf8; letter-spacing:.04em; white-space:nowrap; }
-        .dd-opt:hover { background:#1a2035 !important; color:#e2e8f0 !important; }
-      `}</style>
-
-      <div className="uce-wrap">
+      <style>{css}</style>
+      <div className="tc-wrap">
 
         {/* TOP ROW */}
-        <div className="uce-row">
-
-          {/* Param trigger */}
-          <div style={{ position: "relative", flex: 1, maxWidth: 340 }}>
-            <div ref={paramTriggerRef} className={`uce-trigger ${paramOpen ? "open" : ""}`}
-              onClick={() => { const n = !paramOpen; setParamOpen(n); setUtaOpen(false); if (n) recalcParam(); }}>
-              <span className="uce-trigger-text">Zgjidh parametër...</span>
-              <FontAwesomeIcon icon={faChevronDown} className="uce-chevron" />
+        <div className="tc-toprow">
+          <div ref={paramTriggerRef} style={{ flex:1, maxWidth:300, minWidth:140 }}>
+            <div className={`tc-trigger ${paramOpen ? "open" : ""}`}
+              onClick={() => { const n=!paramOpen; setParamOpen(n); setUtaOpen(false); if(n) recalcParam(); }}>
+              <span className="tc-trigger-text">Shto parametër…</span>
+              <FontAwesomeIcon icon={faChevronDown} className="tc-chevron" />
             </div>
           </div>
 
-          {/* UTA trigger */}
-          <div style={{ position: "relative" }}>
-            <div ref={utaTriggerRef} className={`uce-trigger ${utaOpen ? "open" : ""}`}
-              style={{ borderColor: "#3b82f6" }}
-              onClick={() => { const n = !utaOpen; setUtaOpen(n); setParamOpen(false); if (n) recalcUta(); }}>
-              <div className="uce-pulse" />
-              <span className="uce-uta-name">{chartUta?.id || "Zgjidh UTA"}</span>
-              <FontAwesomeIcon icon={faChevronDown} className="uce-chevron" />
+          <div ref={utaTriggerRef}>
+            <div className={`tc-trigger ${utaOpen ? "open" : ""}`} style={{ borderColor:"#1e4060" }}
+              onClick={() => { const n=!utaOpen; setUtaOpen(n); setParamOpen(false); if(n) recalcUta(); }}>
+              <div className="tc-pulse" />
+              <span className="tc-uta-name">{chartUta?.id || "Zgjidh UTA"}</span>
+              <FontAwesomeIcon icon={faChevronDown} className="tc-chevron" />
             </div>
           </div>
 
-          {/* ✅ Badge data curenta */}
-          <div className="uce-date-badge">
-            📅 {todayLabel}
-          </div>
+          <div className="tc-badge tc-badge-green">📅 {todayLabel}</div>
 
-          {/* ✅ Badge puncte istorice */}
-          {activeData.length > 0 && (
-            <div className="uce-history-badge">
-              <span className="uce-history-dot" />
-              {activeData.length} pikë
+          {todayPts.length > 0 && (
+            <div className="tc-badge tc-badge-blue">
+              <span className="tc-badge-dot" />
+              {todayPts.length} / 288 pikë
             </div>
           )}
 
           {onClose && (
-            <button className="uce-close" onClick={onClose} title="Mbyll">
+            <button className="tc-close" onClick={onClose}>
               <FontAwesomeIcon icon={faTimes} />
             </button>
           )}
         </div>
 
-        {/* ✅ Range timp dacă avem date */}
-        {timeRange && (
-          <div style={{ display: "flex", gap: 8 }}>
-            <div className="uce-range-badge">
-              🕐 {timeRange}
-            </div>
+        {/* TIMELINE BAR */}
+        <div className="tc-timeline" title={`Ora tani: ${nowHM}`}>
+          <div className="tc-timeline-fill" style={{ width:`${prog}%` }} />
+          <div className="tc-timeline-now"  style={{ left:`${prog}%` }} />
+          <span className="tc-timeline-lbl">
+            <FontAwesomeIcon icon={faClock} style={{ marginRight:4 }} />
+            {nowHM}{lastTime && ` · last ${lastTime}`}
+          </span>
+        </div>
+
+        {/* INFO STATS */}
+        {todayPts.length > 0 && (
+          <div className="tc-info-row">
+            {firstTime  && <span className="tc-stat">start <strong>{firstTime}</strong></span>}
+            {lastTime   && <span className="tc-stat">last  <strong>{lastTime}</strong></span>}
+            {coverage   && <span className="tc-stat"> Permbledhje <strong>{coverage}</strong></span>}
+            <span className="tc-stat">interval <strong>5 min</strong></span>
           </div>
         )}
 
@@ -300,10 +356,10 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
           {ALL_PARAMS.map(p => {
             const sel = selectedParams.includes(p.key);
             return (
-              <div key={p.key} className="dd-opt" style={optStyle(sel)} onClick={() => toggleParam(p.key)}>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: p.color, flexShrink: 0 }} />
+              <div key={p.key} className="tc-opt" style={optColor(sel)} onClick={() => toggleParam(p.key)}>
+                <div style={{ width:8, height:8, borderRadius:"50%", background:p.color, flexShrink:0 }} />
                 {p.label} ({p.unit})
-                {sel && <FontAwesomeIcon icon={faCheck} style={{ fontSize: 10, color: "#3b82f6", marginLeft: "auto" }} />}
+                {sel && <FontAwesomeIcon icon={faCheck} style={{ fontSize:10, color:"#3b82f6", marginLeft:"auto" }} />}
               </div>
             );
           })}
@@ -311,55 +367,60 @@ export default function UtaChartEmbed({ utaData, selectedUta: initialUta, onClos
 
         <DropdownPortal isOpen={utaOpen} coords={utaCoords} minWidth={180} innerRef={utaDropRef}>
           {allUtas.map(uta => {
-            const isAct = chartUta?.id === uta.id;
-            const sk = (uta.status || "").toLowerCase();
-            const dotColor = sk === "on" ? "#4ade80" : sk === "off" ? "#f87171" : "#64748b";
-            const statusBg = sk === "on" ? "#14532d" : sk === "off" ? "#450a0a" : "#1e293b";
-            const statusTx = sk === "on" ? "#4ade80" : sk === "off" ? "#f87171" : "#64748b";
+            const isAct    = chartUta?.id === uta.id;
+            const sk       = (uta.status || "").toLowerCase();
+            const dotColor = sk==="on" ? "#4ade80" : sk==="off" ? "#f87171" : "#64748b";
+            const statusBg = sk==="on" ? "#14532d" : sk==="off" ? "#450a0a" : "#1e293b";
+            const statusTx = sk==="on" ? "#4ade80" : sk==="off" ? "#f87171" : "#64748b";
             return (
-              <div key={uta.id} className="dd-opt" style={optStyle(isAct)}
+              <div key={uta.id} className="tc-opt" style={optColor(isAct)}
                 onClick={() => { setChartUta(uta); setUtaOpen(false); }}>
-                <div style={{ width: 7, height: 7, borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
+                <div style={{ width:7, height:7, borderRadius:"50%", background:dotColor, flexShrink:0 }} />
                 {uta.id}
                 {uta.status && (
-                  <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: statusBg, color: statusTx, textTransform: "uppercase", letterSpacing: ".06em", marginLeft: "auto" }}>
+                  <span style={{ fontSize:9, padding:"2px 6px", borderRadius:4, background:statusBg, color:statusTx, textTransform:"uppercase", letterSpacing:".06em", marginLeft:"auto" }}>
                     {uta.status}
                   </span>
                 )}
-                {isAct && <FontAwesomeIcon icon={faCheck} style={{ fontSize: 10, color: "#3b82f6", marginLeft: "auto" }} />}
+                {isAct && <FontAwesomeIcon icon={faCheck} style={{ fontSize:10, color:"#3b82f6", marginLeft:"auto" }} />}
               </div>
             );
           })}
         </DropdownPortal>
 
         {/* CHART BOX */}
-        <div className="uce-box">
-          <div className="uce-boxhdr">
-            <div className="uce-pills">
-              <span className="uce-pill-label">active:</span>
+        <div className="tc-box">
+          <div className="tc-boxhdr">
+            <div className="tc-pills">
               {selectedParams.length > 0
                 ? ALL_PARAMS.filter(p => selectedParams.includes(p.key)).map(p => (
-                  <span key={p.key} className="uce-pill" style={{ "--c": p.color }}>
-                    <span className="uce-pill-dot" />{p.label} ({p.unit})
-                  </span>
-                ))
-                : <span style={{ fontSize: 11, color: "#475569" }}>—</span>
+                    <span key={p.key} className="tc-pill" style={{ "--pc": p.color }}>
+                      <span className="tc-pill-dot" />
+                      {p.label}
+                      <span className="tc-pill-rm" onClick={() => toggleParam(p.key)}>✕</span>
+                    </span>
+                  ))
+                : <span className="tc-pill-hint">Zgjidh parametër nga lista sipër</span>
               }
             </div>
-
-            {/* ✅ data in header-ul graficului */}
-            <span style={{
-              fontSize: 10, color: "#38bdf8", letterSpacing: ".06em",
-              whiteSpace: "nowrap", alignSelf: "center",
-            }}>
-              {chartUta?.id} — {todayLabel}
-            </span>
+            <span style={{ fontSize:10, color:"#2d4060", whiteSpace:"nowrap" }}>{chartUta?.id}</span>
           </div>
 
           {selectedParams.length > 0
-            ? <div className="uce-chart"><Line data={chartData} options={chartOptions} /></div>
-            : <div className="uce-empty">Zgjidh të paktën një parametër</div>
+            ? <div className="tc-chart"><Line data={chartData} options={chartOptions} /></div>
+            : <div className="tc-empty">Zgjidh të paktën një parametër ↑</div>
           }
+
+          {selectedParams.length > 0 && (
+            <div className="tc-legend">
+              {ALL_PARAMS.filter(p => selectedParams.includes(p.key)).map(p => (
+                <span key={p.key} className="tc-leg-item">
+                  <span className="tc-leg-sq" style={{ background: p.color }} />
+                  {p.label} ({p.unit})
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

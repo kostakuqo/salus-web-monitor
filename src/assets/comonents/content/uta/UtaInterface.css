@@ -1,5 +1,5 @@
 .uta-interface {
-  background: #e0f7fa;
+  background: #e0f7fa !important;
   border-radius: 8px;
   width: 100%;
   height: 100%;
@@ -339,6 +339,24 @@
   align-items: center;
   z-index: 9999;
 }
+.uta-graph-container {
+  min-height: 500px;
+  height: 70vh;
+  width: 100%;
+  margin-top: 40px;
+  background-color: #000000;
+  padding: 8px;
+}
+
+.uce-wrap{
+  width: 100%;
+}
+.uce-box{
+  height: 300px;
+}
+.uce-empty{
+  height: 300px;
+}
 
 .alert-modal-content {
   background-color: #ffffff !important;
@@ -350,6 +368,9 @@
   text-align: center;
   min-width: 200px;
   max-width: 400px;
+}
+.uce-chart{
+  height: 300px;
 }
 
 .uta-button.graph-bottom {
@@ -374,24 +395,37 @@
 .uta-button.graph-bottom:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-}
+ }
+ 
 .status-message {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #0f766e; /* verde profesionist */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #1A355E !important;
   color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  padding: 16px 32px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  z-index: 9999; 
   font-weight: bold;
-  z-index: 1000;
-  transition: opacity 0.3s ease;
+  font-size: 18px;
+  text-align: center;
+  opacity: 0;
+  animation: fadeInOut 3s forwards;
 }
 
-/* ============================================
-   MEDIA MOBIL
-   ============================================ */
+.status-message.error {
+  background-color: rgba(239, 68, 68, 0.95);
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -60%); }
+  10% { opacity: 1; transform: translate(-50%, -50%); }
+  90% { opacity: 1; transform: translate(-50%, -50%); }
+  100% { opacity: 0; transform: translate(-50%, -50%); }
+}
+
 
 @media (max-width: 600px) {
   .uta-actions {
@@ -403,6 +437,19 @@
     display: flex;
     gap: 6px;
     flex: 1 1 auto;
+  }
+  .uta-button {
+    padding: 4px 8px;      /* ↓ ul padding */
+    font-size: 12px;       /* ↓ tekst më i vogël */
+    height: 32px;          /* kontrollo height */
+    line-height: 1;        /* shmang height ekstra */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+   .uta-button svg {
+    margin-right: 4px;     /* ikonat më afër tekstit */
+    font-size: 12px;
   }
 
   .uta-details-header {

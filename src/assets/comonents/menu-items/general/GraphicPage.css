@@ -14,7 +14,7 @@
   min-height: 0; /* necesar pentru flex + dropdown */
   display: flex;
   flex-direction: column;
-  background: #0f1420;
+  background: #121B2E;
   padding: 16px;
   border: 1px solid #1e293b;
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);

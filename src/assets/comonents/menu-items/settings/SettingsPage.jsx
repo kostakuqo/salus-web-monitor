@@ -1,11 +1,11 @@
-// UtaSettingsPage.jsx
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useAuth } from "../../../../services/AuthProvider";
 import {
   faPlay, faStop, faGear, faSave, faTimes,
-  faChevronDown, faChevronUp, faArrowLeft, faSliders,
+  faChevronDown, faChevronUp, faSliders,
 } from "@fortawesome/free-solid-svg-icons";
-// import { initialUtaData } from "../../content/uta/uta data/utaData";
+import { useUta } from "../../../../services/UtaProvider";
 
 const FORM_FIELDS = [
   { key: "Air_inp_Temp", label: "Temp Air In", unit: "°C", step: 1 },
@@ -14,46 +14,66 @@ const FORM_FIELDS = [
   { key: "Out_Return_Pressure", label: "Presioni", unit: "bar", step: 0.1 },
 ];
 
-export default function SettingsPage({
-  utaData: utaDataProp,
-  onBack,
-  onSave,
-  onStart,
-  onStop,
-}) {
- 
-  
+export default function SettingsPage({ utaData: utaDataProp, onBack, onSave }) {
+  // ── Merr handleStart / handleStop nga konteksti ─────────────────────────
+  const {
+    handleStart: startUta,
+    handleStop: stopUta,
+  } = useUta();
+
   const [localData, setLocalData] = useState(
-    utaDataProp === undefined ? initialUtaData : null
+    utaDataProp === undefined ? [] : null
   );
 
+  const { role } = useAuth();
 
   const utaData = utaDataProp ?? localData ?? [];
+  const [statusMessage, setStatusMessage] = useState("");
 
-  // onSave intern când nu vine din afară
   const handleSaveData = onSave ?? (({ utaId, ...fields }) => {
     setLocalData(prev =>
       (prev ?? []).map(u => u.id === utaId ? { ...u, ...fields } : u)
     );
   });
 
+  const handleStart = async (utaId) => {
+    if (role === "viewer") {
+      setStatusMessage("❌ Nuk keni leje për të nisur UTA!");
+      setTimeout(() => setStatusMessage(""), 3000);
+      return;
+    }
+    try {
+      const data = await startUta(utaId);
+      if (data?.success) {
+        setStatusMessage(`✅ ${utaId} u startua me sukses!`);
+      }
+    } catch {
+      setStatusMessage(`❌ Eroare la pornirea UTA ${utaId}`);
+    }
+    setTimeout(() => setStatusMessage(""), 3000);
+  };
 
-  const handleStart = onStart ?? ((id) => {
-    setLocalData(prev =>
-      (prev ?? []).map(u => u.id === id ? { ...u, status: "ON" } : u)
-    );
-  });
-
-  const handleStop = onStop ?? ((id) => {
-    setLocalData(prev =>
-      (prev ?? []).map(u => u.id === id ? { ...u, status: "OFF" } : u)
-    );
-  });
-
+  const handleStop = async (utaId) => {
+    if (role === "viewer") {
+      setStatusMessage("❌ Nuk keni leje për të ndalur UTA!");
+      setTimeout(() => setStatusMessage(""), 3000);
+      return;
+    }
+    try {
+      const data = await stopUta(utaId);
+      if (data?.success) {
+        setStatusMessage(`✅ ${utaId} u ndalua me sukses!`);
+      }
+    } catch {
+      setStatusMessage(`❌ Eroare la ndaljen e UTA ${utaId}`);
+    }
+    setTimeout(() => setStatusMessage(""), 3000);
+  };
   const [expandedUta, setExpandedUta] = useState(null);
   const [editValues, setEditValues] = useState({});
   const [saveMsg, setSaveMsg] = useState("");
   const [savingId, setSavingId] = useState(null);
+
 
   const toggleExpand = (id) => {
     if (expandedUta === id) {
@@ -104,7 +124,6 @@ export default function SettingsPage({
           padding: 0 0 0px;
         }
 
-        /* ── TOPBAR ── */
         .usp-topbar {
           display: flex; align-items: center; gap: 16px;
           padding: 20px 32px;
@@ -133,34 +152,35 @@ export default function SettingsPage({
           border-radius: 4px; padding: 4px 10px;
         }
 
-        /* ── TOAST ── */
         .usp-toast {
-          position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+          position: fixed; bottom: 50%; left: 50%; transform: translateX(-50%);
           background: #0f2a18; border: 1px solid #166534;
           color: #4ade80; font-size: 12px; font-family: 'IBM Plex Mono', monospace;
           padding: 10px 22px; border-radius: 6px;
           animation: usp-fadein .2s ease; z-index: 9999;
         }
+          .usp-toast.error {
+          background: #2a0f0f;
+          border: 1px solid #7f1d1d;
+          color: #f87171;
+            }
         @keyframes usp-fadein {
           from { opacity:0; transform:translate(-50%,8px); }
           to   { opacity:1; transform:translate(-50%,0); }
         }
 
-        /* ── LIST ── */
         .usp-list {
           padding: 24px 32px;
           display: flex; flex-direction: column; gap: 2px;
         }
 
-        /* ── ROW ── */
         .usp-row {
           border: 1px solid #141e2e; border-radius: 8px;
-          margin-bottom:30px;
+          margin-bottom: 30px;
           overflow: hidden; transition: border-color .15s;
         }
         .usp-row.expanded { border-color: #1e3a5f; }
 
-        /* ── ROW HEADER ── */
         .usp-row-header {
           display: grid;
           grid-template-columns: 36px 1fr auto auto auto auto;
@@ -184,7 +204,6 @@ export default function SettingsPage({
           letter-spacing: .08em; margin-top: 2px;
         }
 
-        /* chips read-only */
         .usp-chips { display: flex; gap: 6px; flex-wrap: wrap; }
         .usp-chip {
           font-family: 'IBM Plex Mono', monospace; font-size: 10px;
@@ -194,10 +213,9 @@ export default function SettingsPage({
         }
         .usp-chip span { color: #94a3b8; }
 
-        /* buttons */
         .usp-btn {
           display: inline-flex; align-items: center; gap: 6px;
-          margin-right:10px;
+          margin-right: 10px;
           border: none; border-radius: 6px;
           font-family: 'IBM Plex Mono', monospace;
           font-size: 11px; font-weight: 500;
@@ -205,15 +223,14 @@ export default function SettingsPage({
           transition: opacity .15s, transform .1s; white-space: nowrap;
         }
         .usp-btn:active { transform: scale(.97); }
-        .usp-btn.start  { background: #14532d; color: #4ade80; border: 1px solid #166534; }
+        .usp-btn.start    { background: #14532d; color: #4ade80; border: 1px solid #166534; }
         .usp-btn.start:hover { background: #166534; }
-        .usp-btn.stop   { background: #450a0a; color: #f87171; border: 1px solid #7f1d1d; }
+        .usp-btn.stop     { background: #450a0a; color: #f87171; border: 1px solid #7f1d1d; }
         .usp-btn.stop:hover  { background: #7f1d1d; }
         .usp-btn.settings { background: #0f1e38; color: #60a5fa; border: 1px solid #1e3a5f; }
-        .usp-btn.settings:hover { background: #1e3a5f; }
+        .usp-btn.settings:hover  { background: #1e3a5f; }
         .usp-btn.settings.active { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
 
-        /* ── EXPAND PANEL ── */
         .usp-panel {
           background: #0a0f1a; border-top: 1px solid #141e2e;
           padding: 24px 20px 20px;
@@ -264,61 +281,34 @@ export default function SettingsPage({
           background: #0c2340; color: #60a5fa; border: 1px solid #1e4a7a;
           min-width: 100px; justify-content: center;
         }
-        .usp-btn.save:hover { background: #1e3a5f; }
-        .usp-btn.save.saving { opacity:.6; pointer-events:none; }
+        .usp-btn.save:hover   { background: #1e3a5f; }
+        .usp-btn.save.saving  { opacity:.6; pointer-events:none; }
         .usp-btn.cancel { background:#0c1220; color:#475569; border:1px solid #1e293b; }
         .usp-btn.cancel:hover { color:#94a3b8; border-color:#334155; }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 640px) {
           .usp-topbar, .usp-list { padding-left:16px; padding-right:16px; }
           .usp-row-header {
             grid-template-columns: 28px 1fr;
-            grid-template-rows: auto auto auto;
+            grid-template-rows: auto auto auto auto;
             gap: 10px;
           }
           .usp-chips { grid-column: 1 / -1; }
-          .usp-fields {grid-template-columns: repeat(2, 1fr);}
-
-
+          .usp-fields { grid-template-columns: repeat(2, 1fr); }
           .usp-fields input,
           .usp-fields select,
-          .usp-fields textarea {width: 100%;box-sizing: border-box;}
-    
-        
+          .usp-fields textarea { width: 100%; box-sizing: border-box; }
           .usp-btn.start,
           .usp-btn.stop {
             flex: 1;
             box-shadow: 0 4px 6px rgba(0,0,0,0.25);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
             transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
           }
-
-          .usp-btn.start:hover {
-            background: #166534;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
-          }
-
-          .usp-btn.stop:hover {
-            background: #7f1d1d;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
-          }
-
-          .usp-row-header {
-            display: grid;
-            grid-template-columns: 28px 1fr;
-            grid-template-rows: auto auto auto auto;
-            gap: 10px;
-          }
-
+          .usp-btn.start:hover { background: #166634; transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.3); }
+          .usp-btn.stop:hover  { background: #7f1d1d; transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.3); }
           .usp-btn-container {
-            display: flex;
-            gap: 12px;
+            display: flex; gap: 12px;
             grid-column: 1 / -1;
             justify-content: space-between;
           }
@@ -329,12 +319,7 @@ export default function SettingsPage({
 
         {/* TOPBAR */}
         <div className="usp-topbar">
-          <button
-            className="usp-back"
-            onClick={onBack}
-          >
-            x close
-          </button>
+          <button className="usp-back" onClick={onBack}>x close</button>
           <div className="usp-title-block">
             <div className="usp-title">
               <FontAwesomeIcon icon={faSliders} style={{ marginRight: 8, color: "#3b82f6" }} />
@@ -355,16 +340,13 @@ export default function SettingsPage({
               <div key={uta.id} className={`usp-row ${isExpanded ? "expanded" : ""}`}>
 
                 <div className="usp-row-header">
-
                   <div className="usp-status-dot" style={{ "--dot-color": dot }} />
 
-                  {/* id + status — live din utaData (reflectă Start/Stop imediat) */}
                   <div style={{ "--dot-color": dot }}>
                     <div className="usp-id">{uta.id}</div>
                     <div className="usp-status-label">{uta.status ?? "—"}</div>
                   </div>
 
-                  {/* chips — live din utaData (reflectă Save din UtaInterface imediat) */}
                   <div className="usp-chips">
                     <span className="usp-chip">Air In <span>{uta.Air_inp_Temp ?? "—"}°C</span></span>
                     <span className="usp-chip">Return <span>{uta.Air_Return_Temp ?? "—"}°C</span></span>
@@ -376,7 +358,6 @@ export default function SettingsPage({
                     <button className="usp-btn start" onClick={() => handleStart(uta.id)}>
                       <FontAwesomeIcon icon={faPlay} /> Start
                     </button>
-
                     <button className="usp-btn stop" onClick={() => handleStop(uta.id)}>
                       <FontAwesomeIcon icon={faStop} /> Stop
                     </button>
@@ -384,14 +365,18 @@ export default function SettingsPage({
 
                   <button
                     className={`usp-btn settings ${isExpanded ? "active" : ""}`}
-                    onClick={() => toggleExpand(uta.id)}
+                    onClick={() => {
+                      if (role === "viewer") {
+                        setStatusMessage("❌ Nuk keni leje për të modifikuar parametrat!");
+                        setTimeout(() => setStatusMessage(""), 3000);
+                        return;
+                      }
+                      toggleExpand(uta.id);
+                    }}
                   >
                     <FontAwesomeIcon icon={faGear} />
                     Parametrat
-                    <FontAwesomeIcon
-                      icon={isExpanded ? faChevronUp : faChevronDown}
-                      style={{ fontSize: 9 }}
-                    />
+                    <FontAwesomeIcon icon={isExpanded ? faChevronUp : faChevronDown} style={{ fontSize: 9 }} />
                   </button>
                 </div>
 
@@ -430,6 +415,7 @@ export default function SettingsPage({
                         className={`usp-btn save ${savingId === uta.id ? "saving" : ""}`}
                         onClick={() => handleSave(uta)}
                       >
+
                         <FontAwesomeIcon icon={faSave} />
                         {savingId === uta.id ? "Duke ruajtur..." : "Ruaj"}
                       </button>
@@ -442,9 +428,19 @@ export default function SettingsPage({
           })}
         </div>
 
+
+        {statusMessage && (
+          <div className={`usp-toast ${statusMessage.includes("❌") ? "error" : ""}`}>
+            {statusMessage}
+          </div>
+        )}
+
         {saveMsg && <div className="usp-toast">{saveMsg}</div>}
 
       </div>
+
+
+
     </>
   );
 }
