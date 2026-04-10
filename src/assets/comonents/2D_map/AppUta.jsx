@@ -108,16 +108,39 @@ function Pipe({ x1, y1, x2, y2, active, col, w = 3, dash = "" }) {
     stroke={active ? col : C.DIM} strokeWidth={w} strokeDasharray={dash} strokeLinecap="round" />;
 }
 
-function FlowLine({ x1, y1, x2, y2, active, col }) {
+// Particule pe linie dreaptă
+function FlowLine({ x1, y1, x2, y2, active, col, count = 3, r = 4 }) {
   if (!active) return null;
-  const dur = (Math.hypot(x2 - x1, y2 - y1) / 80).toFixed(1);
+  const dur = Math.max(0.5, (Math.hypot(x2 - x1, y2 - y1) / 80)).toFixed(1);
   const path = `M${x1},${y1} L${x2},${y2}`;
   return (
     <>
-      {[0, 1, 2].map(i => (
-        <circle key={i} r={4} fill={col} opacity={0.9}>
-          <animateMotion dur={`${dur}s`} begin={`${-(i * parseFloat(dur) / 3).toFixed(2)}s`}
+      {Array.from({ length: count }).map((_, i) => (
+        <circle key={i} r={r} fill={col} opacity={0.9}>
+          <animateMotion dur={`${dur}s`} begin={`${-(i * parseFloat(dur) / count).toFixed(2)}s`}
             repeatCount="indefinite" path={path} />
+        </circle>
+      ))}
+    </>
+  );
+}
+
+// ── Particule pe path SVG multi-segment (suportă L-bend, Z-path) ─────────────
+// pathD = string SVG "M x,y L x2,y2 L x3,y3 ..."
+// Direcția particulelor urmează EXACT ordinea punctelor din path
+function FlowPath({ pathD, active, col, dur = "2.5s", count = 4, r = 3.5, opacity = 0.88 }) {
+  if (!active) return null;
+
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <circle key={i + pathD} r={r} fill={col} opacity={opacity}>
+          <animateMotion
+            dur={dur}
+            begin={`${-(i * parseFloat(dur) / count).toFixed(2)}s`}
+            repeatCount="indefinite"
+            path={pathD}
+          />
         </circle>
       ))}
     </>
@@ -225,7 +248,7 @@ function WaterValve({ cx, cy, r = 10, pct, active, col }) {
 }
 
 function PumpDevice({ cx, cy, r = 11, active, col, pct, label }) {
-  const boxW = r * 2 + 36; const boxH = r * 2 + 28;
+  const boxW = r * 2 + 10; const boxH = r * 2 + 28;
   const bx = cx - boxW / 2; const by = cy - r - 12;
   const fs = r * 0.75;
   return (
@@ -270,28 +293,21 @@ function SvgLabel({ x, y, text, col, small = false }) {
 function WaterTank({ cx, cy, w = 160, h = 80, boilOn, chillOn, onHover }) {
   const x = cx - w / 2;
   const y = cy - h / 2;
-  const waterLevel = 0.65; // 65% plin
+  const waterLevel = 0.65;
   const waterH = (h - 10) * waterLevel;
   const waterY = y + h - 5 - waterH;
-
-  // culoare apă în funcție de mod
   const waterCol = boilOn ? "#FF6B0044" : chillOn ? "#0099FF44" : "#1A3A4A44";
   const waterStroke = boilOn ? C.BOIL : chillOn ? C.CHILL : "#2A5A6A";
-
   return (
     <g>
-      {/* umbra */}
       <rect x={x + 4} y={y + 4} width={w} height={h} rx={8} fill="#000000" opacity={0.3} />
-      {/* corp rezervor */}
       <rect x={x} y={y} width={w} height={h} rx={8}
         fill={C.STEEL} stroke={boilOn || chillOn ? waterStroke : C.EDGE} strokeWidth={2} />
-      {/* apă */}
       <clipPath id="tankClip">
         <rect x={x + 2} y={y + 2} width={w - 4} height={h - 4} rx={6} />
       </clipPath>
       <rect x={x + 2} y={waterY} width={w - 4} height={waterH + 3} rx={4}
         fill={waterCol} clipPath="url(#tankClip)" />
-      {/* valuri animate */}
       {(boilOn || chillOn) && (
         <g clipPath="url(#tankClip)" opacity={0.6}>
           <path d={`M${x + 2},${waterY + 6} Q${cx - 30},${waterY} ${cx},${waterY + 8} Q${cx + 30},${waterY + 16} ${x + w - 2},${waterY + 6}`}
@@ -304,29 +320,20 @@ function WaterTank({ cx, cy, w = 160, h = 80, boilOn, chillOn, onHover }) {
           </path>
         </g>
       )}
-      {/* linii orizontale decorative */}
       {[0.25, 0.5, 0.75].map((f, i) => (
         <line key={i} x1={x + 12} y1={y + h * f} x2={x + w - 12} y2={y + h * f}
           stroke={C.EDGE} strokeWidth={1} opacity={0.4} />
       ))}
-      {/* etichete niveluri */}
-      <text x={x + w - 8} y={y + h * 0.25 + 4} textAnchor="end" fontSize={6}
-        fill="#3A6A7A" fontFamily="'Courier New',monospace">75%</text>
-      <text x={x + w - 8} y={y + h * 0.5 + 4} textAnchor="end" fontSize={6}
-        fill="#3A6A7A" fontFamily="'Courier New',monospace">50%</text>
-      <text x={x + w - 8} y={y + h * 0.75 + 4} textAnchor="end" fontSize={6}
-        fill="#3A6A7A" fontFamily="'Courier New',monospace">25%</text>
-      {/* conector stânga (boiler) */}
+      <text x={x + w - 8} y={y + h * 0.25 + 4} textAnchor="end" fontSize={6} fill="#3A6A7A" fontFamily="'Courier New',monospace">75%</text>
+      <text x={x + w - 8} y={y + h * 0.5 + 4} textAnchor="end" fontSize={6} fill="#3A6A7A" fontFamily="'Courier New',monospace">50%</text>
+      <text x={x + w - 8} y={y + h * 0.75 + 4} textAnchor="end" fontSize={6} fill="#3A6A7A" fontFamily="'Courier New',monospace">25%</text>
       <circle cx={x} cy={cy - 18} r={5} fill={boilOn ? C.BOIL : C.EDGE} stroke={C.STEEL} strokeWidth={1.5} />
       <circle cx={x} cy={cy + 18} r={5} fill={boilOn ? C.BOIL : C.EDGE} stroke={C.STEEL} strokeWidth={1.5} />
-      {/* conector dreapta (chiller) */}
       <circle cx={x + w} cy={cy - 18} r={5} fill={chillOn ? C.CHILL : C.EDGE} stroke={C.STEEL} strokeWidth={1.5} />
       <circle cx={x + w} cy={cy + 18} r={5} fill={chillOn ? C.CHILL : C.EDGE} stroke={C.STEEL} strokeWidth={1.5} />
-      {/* titlu */}
       <text x={cx} y={y - 12} textAnchor="middle" fontSize={9} fontWeight="700"
         letterSpacing=".14em" fill={boilOn || chillOn ? "#4ABACC" : C.TEXT}
         fontFamily="'Courier New',monospace">DEPOZIT UJI</text>
-      {/* indicator status */}
       <g>
         <circle cx={x + 14} cy={y + 14} r={5}
           fill={boilOn || chillOn ? "#00FF88" : C.DIM}
@@ -336,7 +343,6 @@ function WaterTank({ cx, cy, w = 160, h = 80, boilOn, chillOn, onHover }) {
         <text x={x + 24} y={y + 18} fontSize={7} fill={boilOn || chillOn ? "#00FF88" : C.DIM}
           fontFamily="'Courier New',monospace">{boilOn || chillOn ? "ACTIV" : "STANDBY"}</text>
       </g>
-      {/* buton hover */}
       <HoverZone x={x} y={y} w={w} h={h} tipKey="TANK"
         onHover={(k) => onHover(k, cx, y)} />
     </g>
@@ -354,7 +360,7 @@ function Schematic({ d }) {
   const chillOn = on && d.Chiller_Valve > 0;
   const anyOn = on;
 
-  const VW = 860, VH = 500;
+  const VW = 860, VH = 600;
   const RET_Y = 78, SUP_Y = 202, DH = 60;
   const CX_X = 56, CX_W = 56;
   const CX_T = RET_Y - DH / 4, CX_B = SUP_Y + DH / 4;
@@ -364,7 +370,7 @@ function Schematic({ d }) {
   const DUCT_START = CX_X + CX_W + 7;
   const FAN_X = DUCT_START + 8, FAN_W = 84;
 
-  const BOIL_X = 282, BOIL_W = 78;
+  const BOIL_X = 252, BOIL_W = 78;
   const CHILL_X = 490, CHILL_W = 78;
   const F3_X = 582, F3_W = 20;
   const DP_X = 614;
@@ -375,18 +381,17 @@ function Schematic({ d }) {
   const LOOP_TOP = SUP_Y + DH / 2 + 6;
 
   const B_PL = BOIL_X + 14;
-  const B_PR = BOIL_X + BOIL_W - 14;
+  const B_PR = BOIL_X + BOIL_W - 37;
   const B_PCX = (B_PL + B_PR) / 2;
   const B_PR_ = 4;
   const B_PCY = LOOP_TOP + 150;
 
   const C_PL = CHILL_X + 14;
-  const C_PR = CHILL_X + CHILL_W - 14;
+  const C_PR = CHILL_X + CHILL_W - 37;
   const C_PCX = (C_PL + C_PR) / 2;
   const C_PR_ = -2;
   const C_PCY = LOOP_TOP + 150;
 
-  const mid = (CX_T + CX_B) / 2;
   const py1 = RET_Y + DH / 2 + 5, py2 = SUP_Y - DH / 2 - 5, pmid = (py1 + py2) / 2;
   const dpCol = on ? C.WARN : "#2A4A4A";
   const boilDT = boilOn ? Math.round(d.Water_InpBoilTemp - d.Water_OutputBoilTemp) : 0;
@@ -396,13 +401,81 @@ function Schematic({ d }) {
   const C_VCY = LOOP_TOP + (C_PCY - C_PR_ - 28 - LOOP_TOP) / 2;
   const FR = 26;
 
+  const TANK_CX = (B_PCX + C_PCX) / 2;
+  const TANK_CY = B_PCY + 120;
+  const TANK_W = 100;
+  const TANK_H = 40;
+  const TANK_LEFT = TANK_CX - TANK_W / 2;
+  const TANK_RIGHT = TANK_CX + TANK_W / 2;
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // BOILER — path-urile EXACTE urmând tubele din documentul 3
+  // ════════════════════════════════════════════════════════════════════════════
+
+  // INTRARE BOILER (jos → sus): Depozit → Pompă → Valvulă → Coil W.IN
+  // Tubele statice: TANK_LEFT,TANK_CY-16 → B_PL+48,TANK_CY-16 → B_PL+48,LOOP_TOP
+  // + coloana pompei B_PL,LOOP_TOP → B_PL,B_PCY-B_PR_-20
+  // Ordinea punctelor = direcția particulelor
+const bFeedPath = [
+  `M${B_PL + 48},${LOOP_TOP}`,
+  `L${B_PL + 48},${TANK_CY - 16}`,
+  `L${TANK_LEFT},${TANK_CY - 16}`,
+].join(" ");
+  // Durata proporțională cu distanța totală
+  const bFeedDist = (B_PL + 48 - TANK_LEFT) + (TANK_CY - 16 - LOOP_TOP);
+  const bFeedDur = `${Math.max(2.0, bFeedDist / 80).toFixed(1)}s`;
+
+  // IEȘIRE BOILER (sus → jos): Coil W.IN → jos → Pompă → Depozit
+  // Tubele statice: B_PL,LOOP_TOP → B_PL,B_PCY-B_PR_-20 (coloana pompei)
+  //                B_PCX,B_PCY+50 → B_PCX,TANK_CY+16 → TANK_LEFT,TANK_CY+16
+const bReturnPath = [
+  `M${TANK_LEFT},${TANK_CY + 16}`,
+  `L${B_PCX},${TANK_CY + 16}`,
+  `L${B_PCX},${B_PCY + 50}`,
+  `L${B_PL},${B_PCY - B_PR_ - 20}`,
+  `L${B_PL},${LOOP_TOP}`,
+].join(" ");
+  const bReturnDist = (B_PCY - B_PR_ - 20 - LOOP_TOP) + 50 + (TANK_CY + 16 - B_PCY - 50) + (B_PCX - TANK_LEFT);
+  const bReturnDur = `${Math.max(2.5, bReturnDist / 80).toFixed(1)}s`;
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // CHILLER — path-urile EXACTE urmând tubele din documentul 3
+  // ════════════════════════════════════════════════════════════════════════════
+
+  // INTRARE CHILLER (jos → sus): Depozit → Pompă → Valvulă → Coil W.IN
+  // Tubele: TANK_RIGHT,TANK_CY+16 → C_PR+22,TANK_CY+16 → C_PR+22,LOOP_TOP+60 → C_PR+22,LOOP_TOP
+  // + coloana pompei C_PL,LOOP_TOP → C_PL,C_PCY-C_PR_-20
+  const cFeedPath = [
+  `M${C_PR + 22},${LOOP_TOP}`,
+  `L${C_PR + 22},${LOOP_TOP + 60}`,
+  `L${C_PR + 22},${TANK_CY + 16}`,
+  `L${TANK_RIGHT},${TANK_CY + 16}`,
+].join(" ");
+  const cFeedDist = (C_PR + 22 - TANK_RIGHT) + (TANK_CY + 16 - LOOP_TOP);
+  const cFeedDur = `${Math.max(2.0, cFeedDist / 80).toFixed(1)}s`;
+
+  // IEȘIRE CHILLER (sus → jos): Coil W.IN → jos → Pompă → Depozit
+  // Tubele: C_PL,LOOP_TOP → C_PL,C_PCY-C_PR_-20 (coloana pompei)
+  //         C_PCX,C_PCY+51 → C_PCX,TANK_CY-16 → TANK_RIGHT,TANK_CY-16
+const cReturnPath = [
+  `M${TANK_RIGHT},${TANK_CY - 16}`,
+  `L${C_PCX},${TANK_CY - 16}`,
+  `L${C_PCX},${C_PCY + 51}`,
+  `L${C_PL},${C_PCY - C_PR_ - 20}`,
+  `L${C_PL},${LOOP_TOP}`,
+].join(" ");
+  const cReturnDist = (C_PCY - C_PR_ - 20 - LOOP_TOP) + 51 + (TANK_CY - 16 - C_PCY - 51) + (TANK_RIGHT - C_PCX);
+  const cReturnDur = `${Math.max(2.5, cReturnDist / 80).toFixed(1)}s`;
+
   return (
     <svg viewBox={`-90 -10 ${VW + 90} ${VH}`} width="100%" height="100%"
       preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
 
+      {/* ── AHU fond ──────────────────────────────────────────────────────── */}
       <rect x={8} y={RET_Y - DH / 2 - 20} width={ROOM_X - 16}
         height={SUP_Y + DH / 2 - RET_Y + DH / 2 + 40} rx={6} fill={C.PLATE} stroke={C.EDGE} strokeWidth={1} />
 
+      {/* ── HEX ───────────────────────────────────────────────────────────── */}
       <rect x={CX_X - 4} y={CX_T - 4} width={CX_W + 8} height={CX_B - CX_T + 8}
         rx={6} fill={C.STEEL} stroke={anyOn ? "#2A6A5A" : C.EDGE} strokeWidth={2} />
       <rect x={CX_X} y={CX_T} width={CX_W} height={CX_B - CX_T}
@@ -412,33 +485,28 @@ function Schematic({ d }) {
         return <line key={`g${i}`} x1={CX_X + 5} y1={fy} x2={CX_X + CX_W - 5} y2={fy}
           stroke="#1A3A4A" strokeWidth={1} opacity={.3} />;
       })}
-      <line x1={CH_SUP} y1={CX_T + 5} x2={CH_RET} y2={CX_B - 5}
-        stroke={aspOn ? C.SUP : "#1A3A4A"} strokeWidth={2} opacity={.7} />
-      <line x1={CH_RET} y1={CX_T + 5} x2={CH_SUP} y2={CX_B - 5}
-        stroke={ventOn ? C.RET : "#3A2A1A"} strokeWidth={2} opacity={.7} />
+      <line x1={CH_SUP} y1={CX_T + 5} x2={CH_RET} y2={CX_B - 5} stroke={aspOn ? C.SUP : "#1A3A4A"} strokeWidth={2} opacity={.7} />
+      <line x1={CH_RET} y1={CX_T + 5} x2={CH_SUP} y2={CX_B - 5} stroke={ventOn ? C.RET : "#3A2A1A"} strokeWidth={2} opacity={.7} />
       {aspOn && [0, 1, 2].map(i => (
         <circle key={`hs${i}`} r={3} fill={C.SUP} opacity={0.95}>
-          <animateMotion dur="1.6s" begin={`${-(i * 0.53).toFixed(2)}s`}
-            repeatCount="indefinite"
+          <animateMotion dur="1.6s" begin={`${-(i * 0.53).toFixed(2)}s`} repeatCount="indefinite"
             path={`M${CH_SUP},${CX_T + 5} L${CH_RET},${CX_B - 5}`} />
         </circle>
       ))}
       {ventOn && [0, 1, 2].map(i => (
         <circle key={`hr${i}`} r={3} fill={C.RET} opacity={0.95}>
-          <animateMotion dur="1.6s" begin={`${-(i * 0.53).toFixed(2)}s`}
-            repeatCount="indefinite"
+          <animateMotion dur="1.6s" begin={`${-(i * 0.53).toFixed(2)}s`} repeatCount="indefinite"
             path={`M${CH_RET},${CX_T + 5} L${CH_SUP},${CX_B - 5}`} />
         </circle>
       ))}
       <text x={CX_X + CX_W / 2} y={CX_T - 9} textAnchor="middle" fontSize={9} fontWeight="700"
         letterSpacing=".12em" fill="#4A8A9A" fontFamily="'Courier New',monospace">HEX</text>
-      <text x={CH_SUP} y={CX_T - 1} textAnchor="middle" fontSize={6}
-        fill={aspOn ? C.SUP : "#2A5A6A"} fontFamily="'Courier New',monospace">SUP</text>
-      <text x={CH_RET} y={CX_T - 1} textAnchor="middle" fontSize={6}
-        fill={ventOn ? C.RET : "#5A3A1A"} fontFamily="'Courier New',monospace">RET</text>
+      <text x={CH_SUP} y={CX_T - 1} textAnchor="middle" fontSize={6} fill={aspOn ? C.SUP : "#2A5A6A"} fontFamily="'Courier New',monospace">SUP</text>
+      <text x={CH_RET} y={CX_T - 1} textAnchor="middle" fontSize={6} fill={ventOn ? C.RET : "#5A3A1A"} fontFamily="'Courier New',monospace">RET</text>
       <HoverZone x={CX_X - 4} y={CX_T - 4} w={CX_W + 8} h={CX_B - CX_T + 8} tipKey="HEX"
         onHover={(_k, _x, _y) => onHover("HEX", CX_X + CX_W / 2, CX_T - 4)} />
 
+      {/* ── Hyrja / Dalja ajrit ────────────────────────────────────────────── */}
       <Pipe x1={HY_X - 60} y1={RET_Y} x2={HY_X} y2={RET_Y} active={aspOn} col={airColor(d.Air_inp_Temp)} w={4} />
       <FlowLine x1={HY_X - 58} y1={RET_Y} x2={HY_X - 2} y2={RET_Y} active={aspOn} col={airColor(d.Air_inp_Temp)} />
       <rect x={HY_X - 72} y={RET_Y - 10} width={14} height={20} rx={3}
@@ -448,9 +516,9 @@ function Schematic({ d }) {
           stroke={aspOn ? airColor(d.Air_inp_Temp) : C.EDGE} strokeWidth={1} opacity={.8} />
       ))}
       <text x={HY_X - 65} y={RET_Y - 14} textAnchor="middle" fontSize={6.5} fontWeight="700"
-        letterSpacing=".08em" fill={aspOn ? airColor(d.Air_inp_Temp) : C.DIM} fontFamily="'Courier New',monospace">Air</text>
+        fill={aspOn ? airColor(d.Air_inp_Temp) : C.DIM} fontFamily="'Courier New',monospace">Air</text>
       <text x={HY_X - 65} y={RET_Y - 22} textAnchor="middle" fontSize={6.5} fontWeight="700"
-        letterSpacing=".08em" fill={aspOn ? airColor(d.Air_inp_Temp) : C.DIM} fontFamily="'Courier New',monospace">Fresh</text>
+        fill={aspOn ? airColor(d.Air_inp_Temp) : C.DIM} fontFamily="'Courier New',monospace">Fresh</text>
       <Pipe x1={HY_X} y1={SUP_Y} x2={HY_X - 60} y2={SUP_Y} active={ventOn} col={C.RET} w={4} />
       <FlowLine x1={HY_X - 2} y1={SUP_Y} x2={HY_X - 58} y2={SUP_Y} active={ventOn} col={C.RET} />
       <rect x={HY_X - 72} y={SUP_Y - 10} width={14} height={20} rx={3}
@@ -460,9 +528,9 @@ function Schematic({ d }) {
           stroke={ventOn ? C.RET : C.EDGE} strokeWidth={1} opacity={.8} />
       ))}
       <text x={HY_X - 65} y={SUP_Y + 22} textAnchor="middle" fontSize={6.5} fontWeight="700"
-        letterSpacing=".08em" fill={ventOn ? C.RET : C.DIM} fontFamily="'Courier New',monospace">AER</text>
+        fill={ventOn ? C.RET : C.DIM} fontFamily="'Courier New',monospace">AER</text>
       <text x={HY_X - 65} y={SUP_Y + 30} textAnchor="middle" fontSize={6.5} fontWeight="700"
-        letterSpacing=".08em" fill={ventOn ? C.RET : C.DIM} fontFamily="'Courier New',monospace">Exhaust</text>
+        fill={ventOn ? C.RET : C.DIM} fontFamily="'Courier New',monospace">Exhaust</text>
 
       <rect x={HY_X} y={RET_Y - DH / 2} width={HY_W} height={DH - 7} rx={4}
         fill={aspOn ? C.PLATE : C.STEEL} stroke={aspOn ? airColor(d.Air_inp_Temp) : C.EDGE} strokeWidth={aspOn ? 1.5 : 1} />
@@ -497,17 +565,16 @@ function Schematic({ d }) {
       <HoverZone x={DOUT_X} y={SUP_Y - DH / 2} w={DAMP_W} h={DH - 10} tipKey="DAMPER_OUT"
         onHover={(k) => onHover(k, DOUT_X + DAMP_W / 2, SUP_Y - DH / 2)} />
 
+      {/* ── Kanalet e ajrit ────────────────────────────────────────────────── */}
       <rect x={DUCT_START - 3} y={RET_Y - DH / 2 - 3} width={CONN_X + CONN_W - DUCT_START + 6}
         height={DH + 6} rx={3} fill={C.PLATE} stroke={ventOn ? C.RET + "66" : C.EDGE} strokeWidth={2} />
-      <rect x={DUCT_START} y={RET_Y - DH / 2 + 1} width={CONN_X + CONN_W - DUCT_START}
-        height={DH - 2} rx={2} fill={C.STEEL} />
+      <rect x={DUCT_START} y={RET_Y - DH / 2 + 1} width={CONN_X + CONN_W - DUCT_START} height={DH - 2} rx={2} fill={C.STEEL} />
       <Pipe x1={DUCT_START} y1={RET_Y} x2={CONN_X + CONN_W} y2={RET_Y} active={ventOn} col={C.RET} w={2.5} dash="6 2" />
       <FlowLine x1={CONN_X - 3} y1={RET_Y} x2={FAN_X + FAN_W + 3} y2={RET_Y} active={ventOn} col={C.RET} />
       <FlowLine x1={FAN_X - 4} y1={RET_Y} x2={DUCT_START + 4} y2={RET_Y} active={ventOn} col={C.RET} />
       <rect x={DUCT_START - 3} y={SUP_Y - DH / 2 - 3} width={CONN_X + CONN_W - DUCT_START + 6}
         height={DH + 6} rx={3} fill={C.PLATE} stroke={aspOn ? C.SUP + "66" : C.EDGE} strokeWidth={2} />
-      <rect x={DUCT_START} y={SUP_Y - DH / 2 + 1} width={CONN_X + CONN_W - DUCT_START}
-        height={DH - 2} rx={2} fill={C.STEEL} />
+      <rect x={DUCT_START} y={SUP_Y - DH / 2 + 1} width={CONN_X + CONN_W - DUCT_START} height={DH - 2} rx={2} fill={C.STEEL} />
       <Pipe x1={DUCT_START} y1={SUP_Y} x2={CONN_X + CONN_W} y2={SUP_Y} active={aspOn} col={C.SUP} w={2.5} dash="6 2" />
       <FlowLine x1={DUCT_START + 3} y1={SUP_Y} x2={FAN_X - 4} y2={SUP_Y} active={aspOn} col={C.SUP} />
       <FlowLine x1={FAN_X + FAN_W + 2} y1={SUP_Y} x2={BOIL_X - 3} y2={SUP_Y} active={aspOn} col={C.SUP} />
@@ -518,6 +585,7 @@ function Schematic({ d }) {
       <FlowLine x1={F3_X + F3_W + 2} y1={SUP_Y} x2={CONN_X - 3} y2={SUP_Y}
         active={aspOn} col={airColor(d.Air_Output_Temp)} />
 
+      {/* ── Fansat ─────────────────────────────────────────────────────────── */}
       <Fan cx={FAN_X + FAN_W / 2} cy={RET_Y} r={FR} active={aspOn} col={C.RET} />
       <SvgLabel x={FAN_X + FAN_W / 2} y={RET_Y - DH / 2 - 11} text="ASPIRATOR" col={aspOn ? C.RET : C.TEXT} />
       <ValBadge x={FAN_X + FAN_W / 2} y={RET_Y - DH / 2 - 27} value={d.Aspirator} unit="%" col={C.RET} small />
@@ -534,6 +602,7 @@ function Schematic({ d }) {
       <HoverZone x={FAN_X + FAN_W / 2 - FR - 6} y={SUP_Y - FR - 6} w={(FR + 6) * 2} h={(FR + 6) * 2} tipKey="VENTILATOR"
         onHover={(k) => onHover(k, FAN_X + FAN_W / 2, SUP_Y - FR - 6)} />
 
+      {/* ── Coil-et ────────────────────────────────────────────────────────── */}
       <Coil x={BOIL_X} y={SUP_Y} w={BOIL_W} h={DH - 9} active={boilOn} col={C.BOIL} />
       <SvgLabel x={BOIL_X + BOIL_W / 2} y={SUP_Y + DH / 2 + 13} text="BOILER" col={boilOn ? C.BOIL : C.TEXT} />
       <Dot x={BOIL_X + 7} y={SUP_Y - DH / 2 + 5} col={C.BOIL} active={boilOn} />
@@ -558,6 +627,7 @@ function Schematic({ d }) {
       <HoverZone x={CHILL_X} y={SUP_Y - DH / 2} w={CHILL_W} h={DH - 9} tipKey="CHILLER_COIL"
         onHover={(k) => onHover(k, CHILL_X + CHILL_W / 2, SUP_Y - DH / 2)} />
 
+      {/* ── F3 + ΔP ────────────────────────────────────────────────────────── */}
       <Filter x={F3_X} y={SUP_Y} w={F3_W} h={DH - 9} active={aspOn} col={C.SUP} />
       <SvgLabel x={F3_X + F3_W / 2} y={SUP_Y + DH / 2 + 13} text="F3" col={aspOn ? C.SUP : C.TEXT} small />
       <HoverZone x={F3_X} y={SUP_Y - DH / 2} w={F3_W} h={DH - 9} tipKey="FILTER_F3"
@@ -574,6 +644,7 @@ function Schematic({ d }) {
       <HoverZone x={DP_X - 22} y={pmid - 14} w={44} h={28} tipKey="DP"
         onHover={(k) => onHover(k, DP_X, pmid - 14)} />
 
+      {/* ── ConnBox ────────────────────────────────────────────────────────── */}
       <ConnBox x={CONN_X} y={RET_Y} w={CONN_W} h={DH - 10} label="Kthimi" active={ventOn} col={C.RET} />
       <Dot x={CONN_X + 7} y={RET_Y - DH / 2 + 7} col={C.RET} active={ventOn} />
       <ValBadge x={CONN_X + CONN_W / 2} y={RET_Y - DH / 2 - 13} value={d.Air_Return_Temp} unit="°C"
@@ -594,9 +665,7 @@ function Schematic({ d }) {
       <HoverZone x={CONN_X} y={SUP_Y - DH / 2} w={CONN_W} h={DH - 10} tipKey="DERGIMI"
         onHover={(k) => onHover(k, CONN_X + CONN_W / 2, SUP_Y - DH / 2)} />
 
-      <Pipe x1={CONN_X + CONN_W} y1={RET_Y} x2={ROOM_X} y2={RET_Y} active={ventOn} col={C.RET} />
       <Pipe x1={CONN_X + CONN_W} y1={SUP_Y} x2={ROOM_X} y2={SUP_Y} active={aspOn} col={C.SUP} />
-      <FlowLine x1={ROOM_X - 2} y1={RET_Y} x2={CONN_X + CONN_W + 2} y2={RET_Y} active={ventOn} col={C.RET} />
       <FlowLine x1={CONN_X + CONN_W + 2} y1={SUP_Y} x2={ROOM_X - 2} y2={SUP_Y} active={aspOn} col={C.SUP} />
       <rect x={ROOM_X} y={ROOM_Y} width={ROOM_W} height={ROOM_H} rx={6}
         fill={anyOn ? "#111E28" : "#0C1520"} stroke={anyOn ? "#2A6A5A" : C.EDGE} strokeWidth={2} />
@@ -609,129 +678,202 @@ function Schematic({ d }) {
       <HoverZone x={ROOM_X} y={ROOM_Y} w={ROOM_W} h={ROOM_H} tipKey="ROOM"
         onHover={(k) => onHover(k, ROOM_X + ROOM_W / 2, ROOM_Y)} />
 
+      {/* ════════════════════════════════════════════════════════════════════ */}
+      {/* BOILER LOOP — tubele statice                                        */}
+      {/* ════════════════════════════════════════════════════════════════════ */}
+
+      {/* Coloana pompei → coil W.IN (sus) */}
       <Pipe x1={B_PL} y1={LOOP_TOP} x2={B_PL} y2={B_PCY - B_PR_ - 20} active={boilOn} col={C.BOIL} w={5} />
-      <FlowLine x1={B_PL} y1={B_PCY - B_PR_ - 22} x2={B_PL} y2={LOOP_TOP + 6} active={boilOn} col={C.BOIL} />
       <circle cx={B_PL} cy={LOOP_TOP} r={6} fill={boilOn ? C.BOIL : C.EDGE} stroke={C.STEEL} strokeWidth={1.5} />
       <WaterValve cx={B_PL} cy={B_VCY} r={11} pct={d.Boil_Valve} active={boilOn} col={C.BOIL} />
-      <rect x={B_PL + 15} y={B_VCY - 9} width={56} height={18} rx={3}
+      <rect x={B_PL - 58} y={B_VCY - 9} width={46} height={18} rx={3}
         fill={C.STEEL} stroke={boilOn ? C.BOIL + "88" : C.EDGE} strokeWidth={1} />
-      <text x={B_PL + 43} y={B_VCY + 4} textAnchor="middle" fontSize={8} fontWeight="700"
+      <text x={B_PL - 33} y={B_VCY + 4} textAnchor="middle" fontSize={8} fontWeight="700"
         fill={boilOn ? C.BOIL : C.DIM} fontFamily="'Courier New',monospace">Valve</text>
       <HoverZone x={B_PL - 14} y={B_VCY - 14} w={70} h={28} tipKey="BOILER_VALVE"
         onHover={(k) => onHover(k, B_PL + 20, B_VCY - 14)} />
-      <Pipe x1={B_PR} y1={LOOP_TOP} x2={B_PR} y2={B_PCY - B_PR_ - 20} active={boilOn} col={C.BOIL} w={5} />
-      <FlowLine x1={B_PR} y1={LOOP_TOP + 6} x2={B_PR} y2={B_PCY - B_PR_ - 22} active={boilOn} col={C.BOIL} />
-      <circle cx={B_PR} cy={LOOP_TOP} r={6} fill={boilOn ? C.BOIL : C.EDGE} stroke={C.STEEL} strokeWidth={1.5} />
+      <circle cx={B_PR + 22} cy={LOOP_TOP} r={6} fill={boilOn ? C.BOIL : C.EDGE} stroke={C.STEEL} strokeWidth={1.5} />
       <ValBadge x={B_PL - 30} y={LOOP_TOP + 28} value={d.Water_InpBoilTemp} unit="°C" col={boilOn ? C.BOIL : "#2A1A08"} />
-      <ValBadge x={B_PR + 30} y={LOOP_TOP + 28} value={d.Water_OutputBoilTemp} unit="°C" col={boilOn ? C.BOIL : "#2A1A08"} />
+      <ValBadge x={B_PR + 50} y={LOOP_TOP + 28} value={d.Water_OutputBoilTemp} unit="°C" col={boilOn ? C.BOIL : "#2A1A08"} />
       <text x={B_PL - 30} y={LOOP_TOP + 11} textAnchor="middle" fontSize={8} fontWeight="700"
         fill={boilOn ? C.BOIL : "#2A1A08"} fontFamily="'Courier New',monospace">W.IN</text>
-      <text x={B_PR + 30} y={LOOP_TOP + 11} textAnchor="middle" fontSize={8} fontWeight="700"
+      <text x={B_PR + 40} y={LOOP_TOP + 11} textAnchor="middle" fontSize={8} fontWeight="700"
         fill={boilOn ? C.BOIL : "#2A1A08"} fontFamily="'Courier New',monospace">W.OUT</text>
-      <PumpDevice cx={B_PCX} cy={B_PCY} active={boilOn} col={C.BOIL}
-        pct={d.Boil_Pump_Invert} label="PUMP" />
-      <HoverZone x={B_PCX - 29} y={B_PCY - B_PR_ - 16}
-        w={58} h={B_PR_ * 2 + 36} tipKey="BOILER_PUMP"
+      <PumpDevice cx={B_PCX} cy={B_PCY} active={boilOn} col={C.BOIL} pct={d.Boil_Pump_Invert} label="PUMP" />
+      <HoverZone x={B_PCX - 29} y={B_PCY - B_PR_ - 16} w={58} h={B_PR_ * 2 + 36} tipKey="BOILER_PUMP"
         onHover={(k) => onHover(k, B_PCX, B_PCY - B_PR_ - 16)} />
 
-        
+      {/* Conducta dërgim: pompë → depozit (poshtë) */}
+      <Pipe x1={B_PCX} y1={B_PCY + 50} x2={B_PCX} y2={TANK_CY + 16} active={boilOn} col={C.BOIL} w={4} />
+      <Pipe x1={TANK_LEFT} y1={TANK_CY + 16} x2={B_PCX} y2={TANK_CY + 16} active={boilOn} col={C.BOIL} w={4} />
 
+      {/* Conducta intrare: depozit → coil (retur me dash) */}
+      <Pipe x1={TANK_LEFT} y1={TANK_CY - 16} x2={B_PL + 48} y2={TANK_CY - 16} active={boilOn} col={C.BOIL} w={4} dash="6 3" />
+      <Pipe x1={B_PL + 48} y1={TANK_CY - 16} x2={B_PL + 48} y2={LOOP_TOP} active={boilOn} col={C.BOIL} w={4} dash="6 3" />
+
+      {/* ── PARTICULE BOILER ─────────────────────────────────────────────── */}
+      {/* INTRARE (jos→sus): Depozit → Pompă → Coil  —  portokalli i plotë */}
+      <FlowPath
+        pathD={bFeedPath}
+        active={boilOn}
+        col={C.BOIL}
+        dur={bFeedDur}
+        count={5}
+        r={3.5}
+        opacity={0.95}
+      />
+      {/* IEȘIRE (sus→jos): Coil → Pompă → Depozit  —  portokalli i çelur */}
+      <FlowPath
+        pathD={bReturnPath}
+        active={boilOn}
+        col="#FFAA44"
+        dur={bReturnDur}
+        count={5}
+        r={3}
+        opacity={0.8}
+      />
+
+      <text x={(B_PCX + TANK_LEFT) / 2} y={TANK_CY + 30} textAnchor="middle" fontSize={7} fontWeight="700"
+        fill={boilOn ? C.BOIL + "AA" : "#2A1A08"} fontFamily="'Courier New',monospace" letterSpacing=".08em">Dërgim</text>
+        <text x={(B_PCX + TANK_LEFT) /1.9} y={TANK_CY - 22} textAnchor="middle" fontSize={7} fontWeight="700"
+        fill={boilOn ? C.BOIL + "AA" : "#2A1A08"} fontFamily="'Courier New',monospace" letterSpacing=".08em">Kthim</text>
+
+      {/* ════════════════════════════════════════════════════════════════════ */}
+      {/* CHILLER LOOP — tubele statice                                       */}
+      {/* ════════════════════════════════════════════════════════════════════ */}
+
+      {/* Coloana pompei → coil W.IN (sus) */}
       <Pipe x1={C_PL} y1={LOOP_TOP} x2={C_PL} y2={C_PCY - C_PR_ - 20} active={chillOn} col={C.CHILL} w={5} />
-      <FlowLine x1={C_PL} y1={C_PCY - C_PR_ - 22} x2={C_PL} y2={LOOP_TOP + 6} active={chillOn} col={C.CHILL} />
       <circle cx={C_PL} cy={LOOP_TOP} r={6} fill={chillOn ? C.CHILL : C.EDGE} stroke={C.STEEL} strokeWidth={1.5} />
       <WaterValve cx={C_PL} cy={C_VCY} r={11} pct={d.Chiller_Valve} active={chillOn} col={C.CHILL} />
-      <rect x={C_PL + 15} y={C_VCY - 9} width={70} height={18} rx={3}
+      <rect x={C_PL - 58} y={C_VCY - 9} width={46} height={18} rx={1}
         fill={C.STEEL} stroke={chillOn ? C.CHILL + "88" : C.EDGE} strokeWidth={1} />
-      <text x={C_PL + 50} y={C_VCY + 4} textAnchor="middle" fontSize={8} fontWeight="700"
+      <text x={C_PL - 30} y={C_VCY + 4} textAnchor="middle" fontSize={8} fontWeight="700"
         fill={chillOn ? C.CHILL : C.DIM} fontFamily="'Courier New',monospace">Valve</text>
       <HoverZone x={C_PL - 14} y={C_VCY - 14} w={80} h={28} tipKey="CHILLER_VALVE"
         onHover={(k) => onHover(k, C_PL + 25, C_VCY - 14)} />
-      <Pipe x1={C_PR} y1={LOOP_TOP} x2={C_PR} y2={C_PCY - C_PR_ - 20} active={chillOn} col={C.CHILL} w={5} />
-      <FlowLine x1={C_PR} y1={LOOP_TOP + 6} x2={C_PR} y2={C_PCY - C_PR_ - 22} active={chillOn} col={C.CHILL} />
-      <circle cx={C_PR} cy={LOOP_TOP} r={6} fill={chillOn ? C.CHILL : C.EDGE} stroke={C.STEEL} strokeWidth={1.5} />
+      <circle cx={C_PR + 22} cy={LOOP_TOP} r={6} fill={chillOn ? C.CHILL : C.EDGE} stroke={C.STEEL} strokeWidth={1.5} />
       <ValBadge x={C_PL - 30} y={LOOP_TOP + 28} value={d.Water_InpChillTemp} unit="°C" col={chillOn ? C.CHILL : "#081828"} />
-      <ValBadge x={C_PR + 30} y={LOOP_TOP + 28} value={d.Water_outChill_Temp} unit="°C" col={chillOn ? C.CHILL : "#081828"} />
+      <ValBadge x={C_PR + 50} y={LOOP_TOP + 28} value={d.Water_outChill_Temp} unit="°C" col={chillOn ? C.CHILL : "#081828"} />
       <text x={C_PL - 30} y={LOOP_TOP + 11} textAnchor="middle" fontSize={8} fontWeight="700"
         fill={chillOn ? C.CHILL : "#081828"} fontFamily="'Courier New',monospace">W.IN</text>
-      <text x={C_PR + 30} y={LOOP_TOP + 11} textAnchor="middle" fontSize={8} fontWeight="700"
+      <text x={C_PR + 40} y={LOOP_TOP + 11} textAnchor="middle" fontSize={8} fontWeight="700"
         fill={chillOn ? C.CHILL : "#081828"} fontFamily="'Courier New',monospace">W.OUT</text>
-      <PumpDevice cx={C_PCX} cy={C_PCY} active={chillOn} col={C.CHILL}
-        pct={d.Chiller_Pump_invert} label="PUMP" />
-      <HoverZone x={C_PCX - 29} y={C_PCY - C_PR_ - 16}
-        w={58} h={C_PR_ * 2 + 36} tipKey="CHILLER_PUMP"
+      <PumpDevice cx={C_PCX} cy={C_PCY} active={chillOn} col={C.CHILL} pct={d.Chiller_Pump_invert} label="PUMP" />
+      <HoverZone x={C_PCX - 29} y={C_PCY - C_PR_ - 16} w={58} h={C_PR_ * 2 + 36} tipKey="CHILLER_PUMP"
         onHover={(k) => onHover(k, C_PCX, C_PCY - C_PR_ - 16)} />
+
+      {/* Conducta dërgim: pompë → depozit */}
+      <Pipe x1={C_PCX} y1={C_PCY + 51} x2={C_PCX} y2={TANK_CY - 16} active={chillOn} col={C.CHILL} w={4} />
+      <Pipe x1={C_PCX} y1={TANK_CY - 16} x2={TANK_RIGHT} y2={TANK_CY - 16} active={chillOn} col={C.CHILL} w={4} />
+
+      {/* Conducta intrare: depozit → coil (retur me dash) */}
+      <Pipe x1={TANK_RIGHT} y1={TANK_CY + 16} x2={C_PR + 22} y2={TANK_CY + 16} active={chillOn} col={C.CHILL} w={4} dash="6 3" />
+      <Pipe x1={C_PR + 22} y1={TANK_CY + 16} x2={C_PR + 22} y2={LOOP_TOP + 60} active={chillOn} col={C.CHILL} w={4} dash="6 3" />
+      <Pipe x1={C_PR + 22} y1={LOOP_TOP + 60} x2={C_PR + 22} y2={LOOP_TOP} active={chillOn} col={C.CHILL} w={4} dash="6 3" />
+
+      {/* ── PARTICULE CHILLER ────────────────────────────────────────────── */}
+      {/* INTRARE (jos→sus): Depozit → Pompă → Coil  —  kaltër i plotë */}
+      <FlowPath
+        pathD={cFeedPath}
+        active={chillOn}
+        col={C.CHILL}
+        dur={cFeedDur}
+        count={5}
+        r={3.5}
+        opacity={0.95}
+      />
+      {/* IEȘIRE (sus→jos): Coil → Pompă → Depozit  —  kaltër i çelur */}
+      <FlowPath
+        pathD={cReturnPath}
+        active={chillOn}
+        col="#66CCFF"
+        dur={cReturnDur}
+        count={5}
+        r={3}
+        opacity={0.8}
+      />
+
+      <text x={(C_PCX + TANK_RIGHT) / 2} y={TANK_CY - 20} textAnchor="middle" fontSize={7} fontWeight="700"
+        fill={chillOn ? C.CHILL : "#081828"} fontFamily="'Courier New',monospace" letterSpacing=".08em">Dërgim</text>
+      <text x={(C_PCX + TANK_RIGHT) / 2} y={TANK_CY + 30} textAnchor="middle" fontSize={7} fontWeight="700"
+        fill={chillOn ? C.CHILL + "AA" : "#081828"} fontFamily="'Courier New',monospace" letterSpacing=".08em">Kthim</text>
+
+      {/* ── DEPOZIT (vizatohet i fundit, mbi tuba) ─────────────────────── */}
+      <WaterTank
+        cx={TANK_CX} cy={TANK_CY}
+        w={TANK_W} h={TANK_H}
+        boilOn={boilOn} chillOn={chillOn}
+        onHover={onHover}
+      />
+
+      {/* ── Legjenda ────────────────────────────────────────────────────── */}
+      <g>
+        <rect x={TANK_CX - 120} y={TANK_CY + TANK_H / 2 + 16} width={240} height={36} rx={4}
+          fill={C.STEEL} stroke={C.EDGE} strokeWidth={1} opacity={0.85} />
+        {/* Boiler */}
+        <line x1={TANK_CX - 108} y1={TANK_CY + TANK_H / 2 + 28} x2={TANK_CX - 80} y2={TANK_CY + TANK_H / 2 + 28}
+          stroke={C.BOIL} strokeWidth={3} strokeLinecap="round" />
+        <text x={TANK_CX - 74} y={TANK_CY + TANK_H / 2 + 32} fontSize={7} fill={C.BOIL} fontFamily="'Courier New',monospace">Dërgim (hot)</text>
+        <line x1={TANK_CX - 108} y1={TANK_CY + TANK_H / 2 + 44} x2={TANK_CX - 80} y2={TANK_CY + TANK_H / 2 + 44}
+          stroke="#FFAA44" strokeWidth={3} strokeDasharray="5 3" strokeLinecap="round" />
+        <text x={TANK_CX - 74} y={TANK_CY + TANK_H / 2 + 48} fontSize={7} fill="#FFAA44" fontFamily="'Courier New',monospace">Kthim boiler</text>
+        {/* Chiller */}
+        <line x1={TANK_CX + 14} y1={TANK_CY + TANK_H / 2 + 28} x2={TANK_CX + 42} y2={TANK_CY + TANK_H / 2 + 28}
+          stroke={C.CHILL} strokeWidth={3} strokeLinecap="round" />
+        <text x={TANK_CX + 48} y={TANK_CY + TANK_H / 2 + 32} fontSize={7} fill={C.CHILL} fontFamily="'Courier New',monospace">Dërgim (cold)</text>
+        <line x1={TANK_CX + 14} y1={TANK_CY + TANK_H / 2 + 44} x2={TANK_CX + 42} y2={TANK_CY + TANK_H / 2 + 44}
+          stroke="#66CCFF" strokeWidth={3} strokeDasharray="5 3" strokeLinecap="round" />
+        <text x={TANK_CX + 48} y={TANK_CY + TANK_H / 2 + 48} fontSize={7} fill="#66CCFF" fontFamily="'Courier New',monospace">Kthim chiller</text>
+      </g>
 
       <SvgTooltip x={tooltip.x} y={tooltip.y} tipKey={tooltip.key} vw={VW + 90} />
     </svg>
-    
   );
-  
 }
 
 function SensorTable({ d }) {
   const on = d.status === "ON", boilOn = on && d.Boil_Valve > 0, chillOn = on && d.Chiller_Valve > 0;
   const groups = [
-    {
-      label: "AIR TEMPS", col: airColor(d.Air_Output_Temp), active: on, rows: [
-        { k: "Air_inp_Temp", v: `${d.Air_inp_Temp}°C` },
-        { k: "Air_Output_Temp", v: `${d.Air_Output_Temp}°C` },
-        { k: "Air_Return_Temp", v: `${d.Air_Return_Temp}°C` },
-        { k: "Air_outHygro", v: `${d.Air_outHygro}%` },
-      ]
-    },
-    {
-      label: "WATER TEMPS", col: boilOn ? C.BOIL : chillOn ? C.CHILL : C.TEXT, active: boilOn || chillOn, rows: [
-        { k: "Water_InpBoilTemp", v: `${d.Water_InpBoilTemp}°C` },
-        { k: "Water_OutputBoilTemp", v: `${d.Water_OutputBoilTemp}°C` },
-        { k: "Water_InpChillTemp", v: `${d.Water_InpChillTemp}°C` },
-        { k: "Water_outChill_Temp", v: `${d.Water_outChill_Temp}°C` },
-      ]
-    },
-    {
-      label: "ACTUATORS", col: C.WARN, active: on, rows: [
-        { k: "Boil_Valve", v: `${d.Boil_Valve}%` },
-        { k: "Chiller_Valve", v: `${d.Chiller_Valve}%` },
-        { k: "Inp_Damper", v: `${d.Inp_Damper}%` },
-        { k: "Output_Damper", v: `${d.Output_Damper}%` },
-      ]
-    },
-    {
-      label: "DRIVES & STATUS", col: C.OK, active: on, rows: [
-        { k: "Ventilator", v: `${d.Ventilator}%` },
-        { k: "Aspirator", v: `${d.Aspirator}%` },
-        { k: "Boil_Pump_Invert", v: `${d.Boil_Pump_Invert}%` },
-        { k: "Chiller_Pump_invert", v: `${d.Chiller_Pump_invert}%` },
-        { k: "Out_Return_Pressure", v: `${d.Out_Return_Pressure} bar` },
-        { k: "Power_Status", v: d.Power_Status },
-        { k: "Sezon_Modality", v: d.Sezon_Modality },
-      ]
-    },
+    { label: "AIR TEMPS", col: airColor(d.Air_Output_Temp), active: on, rows: [
+      { k: "Air_inp_Temp", v: `${d.Air_inp_Temp}°C` },
+      { k: "Air_Output_Temp", v: `${d.Air_Output_Temp}°C` },
+      { k: "Air_Return_Temp", v: `${d.Air_Return_Temp}°C` },
+      { k: "Air_outHygro", v: `${d.Air_outHygro}%` },
+    ]},
+    { label: "WATER TEMPS", col: boilOn ? C.BOIL : chillOn ? C.CHILL : C.TEXT, active: boilOn || chillOn, rows: [
+      { k: "Water_InpBoilTemp", v: `${d.Water_InpBoilTemp}°C` },
+      { k: "Water_OutputBoilTemp", v: `${d.Water_OutputBoilTemp}°C` },
+      { k: "Water_InpChillTemp", v: `${d.Water_InpChillTemp}°C` },
+      { k: "Water_outChill_Temp", v: `${d.Water_outChill_Temp}°C` },
+    ]},
+    { label: "ACTUATORS", col: C.WARN, active: on, rows: [
+      { k: "Boil_Valve", v: `${d.Boil_Valve}%` },
+      { k: "Chiller_Valve", v: `${d.Chiller_Valve}%` },
+      { k: "Inp_Damper", v: `${d.Inp_Damper}%` },
+      { k: "Output_Damper", v: `${d.Output_Damper}%` },
+    ]},
+    { label: "DRIVES & STATUS", col: C.OK, active: on, rows: [
+      { k: "Ventilator", v: `${d.Ventilator}%` },
+      { k: "Aspirator", v: `${d.Aspirator}%` },
+      { k: "Boil_Pump_Invert", v: `${d.Boil_Pump_Invert}%` },
+      { k: "Chiller_Pump_invert", v: `${d.Chiller_Pump_invert}%` },
+      { k: "Out_Return_Pressure", v: `${d.Out_Return_Pressure} bar` },
+      { k: "Power_Status", v: d.Power_Status },
+      { k: "Sezon_Modality", v: d.Sezon_Modality },
+    ]},
   ];
   return (
-    <div style={{
-      display: "grid", gridTemplateColumns: "repeat(4,1fr)",
-      borderTop: `2px solid ${C.EDGE}`, background: "#0C1520", flexShrink: 0
-    }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderTop: `2px solid ${C.EDGE}`, background: "#0C1520", flexShrink: 0 }}>
       {groups.map(({ label, col, active, rows }, idx) => (
         <div key={label} style={{ padding: "7px 12px", borderLeft: idx > 0 ? `1px solid ${C.EDGE}` : "none" }}>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 6,
-            marginBottom: 5, paddingBottom: 4, borderBottom: `1px solid ${C.EDGE}`
-          }}>
-            <div style={{
-              width: 7, height: 7, borderRadius: "50%",
-              background: active ? col : C.EDGE, boxShadow: active ? `0 0 5px ${col}` : "none"
-            }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5, paddingBottom: 4, borderBottom: `1px solid ${C.EDGE}` }}>
+            <div style={{ width: 7, height: 7, borderRadius: "50%", background: active ? col : C.EDGE, boxShadow: active ? `0 0 5px ${col}` : "none" }} />
             <span style={{ fontSize: 7, color: active ? col : C.TEXT, fontWeight: 700, letterSpacing: ".12em" }}>{label}</span>
-            <span style={{ marginLeft: "auto", fontSize: 6, color: active ? C.OK : "#2A4A3A", letterSpacing: ".1em" }}>
-              {active ? "● ACT" : "○ STB"}
-            </span>
+            <span style={{ marginLeft: "auto", fontSize: 6, color: active ? C.OK : "#2A4A3A", letterSpacing: ".1em" }}>{active ? "● ACT" : "○ STB"}</span>
           </div>
           {rows.map(({ k, v }) => (
-            <div key={k} style={{
-              display: "flex", justifyContent: "space-between",
-              alignItems: "baseline", marginBottom: 3
-            }}>
+            <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 3 }}>
               <span style={{ fontSize: 6, color: "#3A6A7A", letterSpacing: ".04em" }}>{k}</span>
               <span style={{ fontSize: 8.5, fontWeight: 700, color: active ? col : C.TEXT, letterSpacing: ".04em" }}>{v}</span>
             </div>
@@ -742,38 +884,22 @@ function SensorTable({ d }) {
   );
 }
 
-// ✅ MODIFICAREA PRINCIPALĂ — folosim useUta() din context în loc de fetch
 export default function AppUta() {
-  const { utas, loading } = useUta(); // ← date din context, refresh automat la 5s
+  const { utas, loading } = useUta();
   const [selId, setSelId] = useState(null);
-
-  // Mapăm Chiller_Pump_invert o singură dată
   const units = utas.map(u => ({
     ...u,
     Chiller_Pump_invert: u.Chiller_Pump_invert ?? u.Chiller_Pump_Invert ?? 0,
   }));
-
-  // Setează primul ID când datele sosesc prima dată
-  if (!selId && units.length > 0) {
-    setSelId(units[0].id);
-  }
+  if (!selId && units.length > 0) setSelId(units[0].id);
 
   if (loading) return (
-    <div style={{
-      color: "#00FF88", background: "#0E1820", height: "100vh",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      fontFamily: "'Courier New',monospace", fontSize: 14
-    }}>
+    <div style={{ color: "#00FF88", background: "#0E1820", height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Courier New',monospace", fontSize: 14 }}>
       Se încarcă datele...
     </div>
   );
-
   if (!units.length) return (
-    <div style={{
-      color: "#FF5533", background: "#0E1820", height: "100vh",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      fontFamily: "'Courier New',monospace", fontSize: 14
-    }}>
+    <div style={{ color: "#FF5533", background: "#0E1820", height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Courier New',monospace", fontSize: 14 }}>
       Nu s-au găsit date UTA.
     </div>
   );
@@ -786,22 +912,14 @@ export default function AppUta() {
   const seasonColor = d.Sezon_Modality === "HEATING" ? C.BOIL : d.Sezon_Modality === "COOLING" ? C.CHILL : "#4A8A7A";
 
   return (
-    <div style={{
-      fontFamily: "'Courier New',monospace",
-      background: "linear-gradient(160deg,#0E1820 0%,#121E28 100%)",
-      border: `1px solid ${C.EDGE}`, overflow: "hidden", width: "100%",
-      display: "flex", flexDirection: "column", height: "100vh"
-    }}>
+    <div style={{ fontFamily: "'Courier New',monospace", background: "linear-gradient(160deg,#0E1820 0%,#121E28 100%)", border: `1px solid ${C.EDGE}`, overflow: "hidden", width: "100%", display: "flex", flexDirection: "column", height: "100vh" }}>
       <style>{`
         @keyframes ahuFlow  { 0%{stroke-dashoffset:24} 100%{stroke-dashoffset:0} }
         @keyframes ahuBlink { 0%,100%{opacity:1} 50%{opacity:0} }
         .ahu-blink { animation:ahuBlink 1s infinite; }
       `}</style>
 
-      <div style={{
-        display: "flex", alignItems: "stretch",
-        borderBottom: `2px solid ${C.EDGE}`, background: "#0C1520", flexShrink: 0
-      }}>
+      <div style={{ display: "flex", alignItems: "stretch", borderBottom: `2px solid ${C.EDGE}`, background: "#0C1520", flexShrink: 0 }}>
         <div style={{ padding: "6px 16px", borderRight: `1px solid ${C.EDGE}`, minWidth: 180 }}>
           <div style={{ fontSize: 6.5, color: "#4A7A8A", letterSpacing: ".2em", marginBottom: 2 }}>BUILDING MANAGEMENT SYSTEM</div>
           <div style={{ fontSize: 14, color: C.HEAD, fontWeight: 700, letterSpacing: ".12em" }}>{d.id}</div>
@@ -809,11 +927,7 @@ export default function AppUta() {
         </div>
         <div style={{ flex: 1, display: "flex", alignItems: "center", padding: "0 16px", gap: 20 }}>
           <select value={selId ?? ""} onChange={e => setSelId(e.target.value)}
-            style={{
-              background: "#0C1520", color: C.OK, border: `1px solid #1E4A3A`,
-              borderRadius: 3, padding: "3px 8px", fontSize: 8, fontFamily: "inherit",
-              cursor: "pointer", outline: "none", letterSpacing: ".08em"
-            }}>
+            style={{ background: "#0C1520", color: C.OK, border: `1px solid #1E4A3A`, borderRadius: 3, padding: "3px 8px", fontSize: 8, fontFamily: "inherit", cursor: "pointer", outline: "none", letterSpacing: ".08em" }}>
             {units.map(u => (
               <option key={u.id} value={u.id} style={{ background: "#0C1520", color: u.status === "ON" ? C.OK : "#3A5A3A" }}>
                 {u.id}  ◆  {u.status}
@@ -823,10 +937,7 @@ export default function AppUta() {
           <div style={{ display: "flex", gap: 12 }}>
             {["PLC", "VFD", "BMS"].map(l => (
               <div key={l} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-                <div style={{
-                  width: 8, height: 8, borderRadius: "50%",
-                  background: anyOn ? C.OK : "#1A3A2A", boxShadow: anyOn ? `0 0 6px ${C.OK}` : "none"
-                }} />
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: anyOn ? C.OK : "#1A3A2A", boxShadow: anyOn ? `0 0 6px ${C.OK}` : "none" }} />
                 <span style={{ fontSize: 6.5, color: anyOn ? C.OK : "#2A4A3A", letterSpacing: ".1em" }}>{l}</span>
               </div>
             ))}
@@ -839,24 +950,14 @@ export default function AppUta() {
             { l: "ΔP", v: `${d.Out_Return_Pressure} bar`, col: C.WARN },
             { l: "HYGRO", v: `${d.Air_outHygro}%`, col: "#88BBFF" },
           ].map(({ l, v, col }) => (
-            <div key={l} style={{
-              padding: "4px 12px", borderLeft: `1px solid ${C.EDGE}`,
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2
-            }}>
+            <div key={l} style={{ padding: "4px 12px", borderLeft: `1px solid ${C.EDGE}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2 }}>
               <div style={{ fontSize: 6, color: "#4A7A8A", letterSpacing: ".15em" }}>{l}</div>
               <div style={{ fontSize: 12, fontWeight: 700, color: col, letterSpacing: ".05em" }}>{v}</div>
             </div>
           ))}
-          <div style={{
-            padding: "4px 16px", borderLeft: `2px solid ${C.EDGE}`,
-            display: "flex", flexDirection: "column", alignItems: "center",
-            justifyContent: "center", gap: 3, minWidth: 140
-          }}>
+          <div style={{ padding: "4px 16px", borderLeft: `2px solid ${C.EDGE}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, minWidth: 140 }}>
             <div style={{ fontSize: 6.5, color: "#4A7A8A", letterSpacing: ".15em" }}>SYSTEM STATUS</div>
-            <div style={{
-              fontSize: 8, color: statusColor, fontWeight: 700, letterSpacing: ".12em",
-              padding: "2px 10px", border: `1px solid ${statusColor}`, borderRadius: 2
-            }}>
+            <div style={{ fontSize: 8, color: statusColor, fontWeight: 700, letterSpacing: ".12em", padding: "2px 10px", border: `1px solid ${statusColor}`, borderRadius: 2 }}>
               {statusText}
               {anyOn && <span className="ahu-blink" style={{ marginLeft: 5 }}>◆</span>}
             </div>
@@ -866,10 +967,7 @@ export default function AppUta() {
       </div>
 
       <div style={{ background: "#0E1820", position: "relative", flex: 1, overflow: "hidden" }}>
-        <div style={{
-          position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1,
-          backgroundImage: "repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.1) 2px,rgba(0,0,0,.1) 4px)"
-        }} />
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1, backgroundImage: "repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.1) 2px,rgba(0,0,0,.1) 4px)" }} />
         <div style={{ position: "relative", zIndex: 2, height: "100%" }}>
           <Schematic d={d} />
         </div>
