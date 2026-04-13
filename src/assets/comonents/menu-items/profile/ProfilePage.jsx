@@ -71,7 +71,7 @@ console.log(`${hours}h ${minutes}m ${seconds}s`);
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <Row label="Username" value={username} />
           <Row label="Login ne" value={loginDate} />
-          <Row label="Sesioni skadon ne   " value={`${hours}h ${minutes}m ${seconds}s`} />
+          <Row label="Sesioni mbaron ne   " value={`${hours}h ${minutes}m ${seconds}s`} />
           <Row label="Rol" value="Admin" />
         </div>
       </div>

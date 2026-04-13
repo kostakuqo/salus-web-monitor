@@ -8,7 +8,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faCheck, faTimes, faClock } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faCheck, faTimes, faClock, faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { useUta } from "../../../../services/UtaProvider";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -82,23 +82,50 @@ function dayProgress() {
   return ((n.getHours() * 60 + n.getMinutes()) / 1440) * 100;
 }
 
+function getTodayStr() {
+  const n = new Date();
+  return `${n.getDate().toString().padStart(2,"0")}/${(n.getMonth()+1).toString().padStart(2,"0")}/${n.getFullYear()}`;
+}
+
+/** Formatează "DD/MM/YYYY" → label frumos */
+function formatDateLabel(dateStr, todayStr) {
+  if (dateStr === todayStr) return "Sot";
+  const [d, m, y] = dateStr.split("/").map(Number);
+  const date = new Date(y, m - 1, d);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (
+    date.getDate()     === yesterday.getDate() &&
+    date.getMonth()    === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear()
+  ) return "Dje";
+  return date.toLocaleDateString("sq-AL", { weekday: "short", day: "2-digit", month: "short" });
+}
+
 /* ══════════════════════════════════════════════════════════════════════════ */
 export default function TemperatureChart({ utaData, selectedUta: initialUta, onClose }) {
   const { history } = useUta();
 
+  const todayStr = getTodayStr();
+
   const [selectedParams, setSelectedParams] = useState([]);
   const [chartUta,       setChartUta]       = useState(initialUta || utaData?.[0] || null);
+  const [selectedDate,   setSelectedDate]   = useState(todayStr);
   const [paramOpen,      setParamOpen]      = useState(false);
   const [utaOpen,        setUtaOpen]        = useState(false);
+  const [dateOpen,       setDateOpen]       = useState(false);
   const [isMobile,       setIsMobile]       = useState(window.innerWidth < 640);
 
   const paramTriggerRef = useRef(null);
   const utaTriggerRef   = useRef(null);
+  const dateTriggerRef  = useRef(null);
   const paramDropRef    = useRef(null);
   const utaDropRef      = useRef(null);
+  const dateDropRef     = useRef(null);
 
   const { coords: paramCoords, recalc: recalcParam } = useAnchorCoords(paramTriggerRef, paramOpen);
   const { coords: utaCoords,   recalc: recalcUta   } = useAnchorCoords(utaTriggerRef,   utaOpen);
+  const { coords: dateCoords,  recalc: recalcDate  } = useAnchorCoords(dateTriggerRef,  dateOpen);
 
   useEffect(() => { if (initialUta) setChartUta(initialUta); }, [initialUta?.id]);
 
@@ -112,40 +139,59 @@ export default function TemperatureChart({ utaData, selectedUta: initialUta, onC
     const h = (e) => {
       if (paramOpen && !paramTriggerRef.current?.contains(e.target) && !paramDropRef.current?.contains(e.target)) setParamOpen(false);
       if (utaOpen   && !utaTriggerRef.current?.contains(e.target)   && !utaDropRef.current?.contains(e.target))   setUtaOpen(false);
+      if (dateOpen  && !dateTriggerRef.current?.contains(e.target)  && !dateDropRef.current?.contains(e.target))  setDateOpen(false);
     };
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
-  }, [paramOpen, utaOpen]);
+  }, [paramOpen, utaOpen, dateOpen]);
+
+  // Când se schimbă UTA, dacă data selectată nu există pentru noua UTA, reset la azi
+  useEffect(() => {
+    const raw = history[chartUta?.id] ?? [];
+    const dates = [...new Set(raw.map(p => p.date).filter(Boolean))];
+    if (!dates.includes(selectedDate)) setSelectedDate(todayStr);
+  }, [chartUta?.id]);
 
   const toggleParam = (key) => {
     setSelectedParams(p => p.includes(key) ? p.filter(k => k !== key) : [...p, key]);
     setParamOpen(false);
   };
 
-  const allUtas  = utaData || (initialUta ? [initialUta] : []);
-  const todayStr = (() => {
-    const n = new Date();
-    return `${n.getDate().toString().padStart(2,"0")}/${(n.getMonth()+1).toString().padStart(2,"0")}/${n.getFullYear()}`;
-  })();
+  const allUtas = utaData || (initialUta ? [initialUta] : []);
 
-  // ── punctele de azi (deja filtrate la 5 min din UtaProvider) ────────────
+  // ── Zilele disponibile pentru UTA selectată ──────────────────────────────
+  const availableDates = useMemo(() => {
+    const raw = history[chartUta?.id] ?? [];
+    const dates = [...new Set(raw.map(p => p.date).filter(Boolean))];
+    // sortăm descrescător (cele mai recente primele)
+    return dates.sort((a, b) => {
+      const parse = s => { const [d,m,y] = s.split("/").map(Number); return new Date(y,m-1,d); };
+      return parse(b) - parse(a);
+    });
+  }, [history, chartUta?.id]);
+
+  // ── Punctele pentru ziua selectată ──────────────────────────────────────
   const todayPts = useMemo(() => {
     const raw = history[chartUta?.id] ?? [];
     return raw.filter(p =>
-      p.date === todayStr ||
-      (p.time || "").startsWith(todayStr.substring(0, 5))
+      p.date === selectedDate ||
+      (p.time || "").startsWith(selectedDate.substring(0, 5))
     );
-  }, [history, chartUta?.id, todayStr]);
+  }, [history, chartUta?.id, selectedDate]);
 
-  const todayLabel = new Date().toLocaleDateString("sq-AL", {
-    weekday: "long", day: "2-digit", month: "long", year: "numeric",
-  });
+  const isToday   = selectedDate === todayStr;
+  const dateLabel = formatDateLabel(selectedDate, todayStr);
+
+  const todayLabelFull = (() => {
+    const [d, m, y] = selectedDate.split("/").map(Number);
+    return new Date(y, m-1, d).toLocaleDateString("sq-AL", {
+      weekday: "long", day: "2-digit", month: "long", year: "numeric",
+    });
+  })();
 
   const firstTime = todayPts.length ? toHHMM(todayPts[0].time) : null;
   const lastTime  = todayPts.length ? toHHMM(todayPts[todayPts.length - 1].time) : null;
 
-  // ── labels = HH:MM direct din punctele reale ────────────────────────────
-  // Linia se oprește la ultimul punct — nu există sloturi goale după.
   const labels = useMemo(() => todayPts.map(p => toHHMM(p.time)), [todayPts]);
 
   // ── chart data ───────────────────────────────────────────────────────────
@@ -207,7 +253,6 @@ export default function TemperatureChart({ utaData, selectedUta: initialUta, onC
         ticks: {
           color: "#475569",
           font: { family: "'DM Mono',monospace", size: isMobile ? 9 : 11 },
-          // la 5 min avem max 288 puncte — afișăm ~8-12 etichete
           maxTicksLimit: isMobile ? 6 : 12,
           maxRotation: isMobile ? 45 : 30,
           minRotation: 0,
@@ -245,6 +290,7 @@ export default function TemperatureChart({ utaData, selectedUta: initialUta, onC
     .tc-badge{display:inline-flex;align-items:center;gap:5px;border-radius:6px;padding:3px 9px;font-size:10px;letter-spacing:.05em;white-space:nowrap;flex-shrink:0;}
     .tc-badge-blue{background:#0f2030;border:1px solid #1e4060;color:#38bdf8;}
     .tc-badge-green{background:#12201a;border:1px solid #1a4030;color:#4ade80;}
+    .tc-badge-amber{background:#1c1505;border:1px solid #44300a;color:#fbbf24;}
     .tc-badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:tcPulse 2s infinite;}
     .tc-timeline{position:relative;height:26px;background:#0d1525;border-radius:6px;border:1px solid #1e293b;overflow:hidden;flex-shrink:0;}
     .tc-timeline-fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#1e3a5f,#1e4060);transition:width .5s ease;}
@@ -268,6 +314,12 @@ export default function TemperatureChart({ utaData, selectedUta: initialUta, onC
     .tc-leg-sq{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
     .tc-opt{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;font-size:12px;font-family:'DM Mono',monospace;border-bottom:1px solid #1a2235;transition:background .1s;}
     .tc-opt:hover{background:#1a2035;}
+    .tc-date-trigger{border-color:#2d3a1e !important;}
+    .tc-date-trigger:hover{border-color:#4ade80 !important;}
+    .tc-date-trigger.open{background:#182610 !important;border-color:#4ade80 !important;}
+    .tc-date-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#4ade80;letter-spacing:.06em;}
+    .tc-no-data{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#2d3f5e;font-size:12px;}
+    .tc-no-data-icon{font-size:28px;opacity:.3;}
     @media(max-width:639px){
       .tc-toprow{gap:6px;}.tc-trigger{padding:6px 9px;font-size:11px;}.tc-badge{font-size:9px;padding:2px 7px;}
       .tc-boxhdr{padding:6px 10px;}.tc-chart{padding:6px 8px;}.tc-legend{padding:6px 10px;gap:6px 10px;}
@@ -277,7 +329,6 @@ export default function TemperatureChart({ utaData, selectedUta: initialUta, onC
   const prog  = dayProgress();
   const nowHM = new Date().toLocaleTimeString("sq-AL", { hour: "2-digit", minute: "2-digit" });
 
-  // durata acoperită de date
   const coverage = useMemo(() => {
     if (!firstTime || !lastTime) return null;
     const [fh, fm] = firstTime.split(":").map(Number);
@@ -291,6 +342,11 @@ export default function TemperatureChart({ utaData, selectedUta: initialUta, onC
     background: active ? "#1a2a45" : "transparent",
   });
 
+  const optColorDate = (active) => ({
+    color:      active ? "#4ade80" : "#64748b",
+    background: active ? "#182610" : "transparent",
+  });
+
   return (
     <>
       <style>{css}</style>
@@ -298,24 +354,40 @@ export default function TemperatureChart({ utaData, selectedUta: initialUta, onC
 
         {/* TOP ROW */}
         <div className="tc-toprow">
+
+          {/* Param selector */}
           <div ref={paramTriggerRef} style={{ flex:1, maxWidth:300, minWidth:140 }}>
             <div className={`tc-trigger ${paramOpen ? "open" : ""}`}
-              onClick={() => { const n=!paramOpen; setParamOpen(n); setUtaOpen(false); if(n) recalcParam(); }}>
+              onClick={() => { const n=!paramOpen; setParamOpen(n); setUtaOpen(false); setDateOpen(false); if(n) recalcParam(); }}>
               <span className="tc-trigger-text">Shto parametër…</span>
               <FontAwesomeIcon icon={faChevronDown} className="tc-chevron" />
             </div>
           </div>
 
+          {/* UTA selector */}
           <div ref={utaTriggerRef}>
             <div className={`tc-trigger ${utaOpen ? "open" : ""}`} style={{ borderColor:"#1e4060" }}
-              onClick={() => { const n=!utaOpen; setUtaOpen(n); setParamOpen(false); if(n) recalcUta(); }}>
+              onClick={() => { const n=!utaOpen; setUtaOpen(n); setParamOpen(false); setDateOpen(false); if(n) recalcUta(); }}>
               <div className="tc-pulse" />
               <span className="tc-uta-name">{chartUta?.id || "Zgjidh UTA"}</span>
               <FontAwesomeIcon icon={faChevronDown} className="tc-chevron" />
             </div>
           </div>
 
-          <div className="tc-badge tc-badge-green">📅 {todayLabel}</div>
+          {/* Data selector */}
+          <div ref={dateTriggerRef}>
+            <div className={`tc-trigger tc-date-trigger ${dateOpen ? "open" : ""}`}
+              onClick={() => { const n=!dateOpen; setDateOpen(n); setParamOpen(false); setUtaOpen(false); if(n) recalcDate(); }}>
+              <FontAwesomeIcon icon={faCalendarAlt} style={{ fontSize:11, color:"#4ade80", flexShrink:0 }} />
+              <span className="tc-date-name">{dateLabel}</span>
+              <FontAwesomeIcon icon={faChevronDown} className="tc-chevron" style={{ color:"#4ade80" }} />
+            </div>
+          </div>
+
+          {/* Badge dată completă */}
+          <div className={`tc-badge ${isToday ? "tc-badge-green" : "tc-badge-amber"}`}>
+            {isToday ? "📅" : "📆"} {todayLabelFull}
+          </div>
 
           {todayPts.length > 0 && (
             <div className="tc-badge tc-badge-blue">
@@ -331,23 +403,29 @@ export default function TemperatureChart({ utaData, selectedUta: initialUta, onC
           )}
         </div>
 
-        {/* TIMELINE BAR */}
-        <div className="tc-timeline" title={`Ora tani: ${nowHM}`}>
-          <div className="tc-timeline-fill" style={{ width:`${prog}%` }} />
-          <div className="tc-timeline-now"  style={{ left:`${prog}%` }} />
-          <span className="tc-timeline-lbl">
-            <FontAwesomeIcon icon={faClock} style={{ marginRight:4 }} />
-            {nowHM}{lastTime && ` · last ${lastTime}`}
-          </span>
-        </div>
+        {/* TIMELINE BAR — afișăm doar pentru azi */}
+        {isToday && (
+          <div className="tc-timeline" title={`Ora tani: ${nowHM}`}>
+            <div className="tc-timeline-fill" style={{ width:`${prog}%` }} />
+            <div className="tc-timeline-now"  style={{ left:`${prog}%` }} />
+            <span className="tc-timeline-lbl">
+              <FontAwesomeIcon icon={faClock} style={{ marginRight:4 }} />
+              {nowHM}{lastTime && ` · last ${lastTime}`}
+            </span>
+          </div>
+        )}
 
         {/* INFO STATS */}
         {todayPts.length > 0 && (
           <div className="tc-info-row">
             {firstTime  && <span className="tc-stat">start <strong>{firstTime}</strong></span>}
             {lastTime   && <span className="tc-stat">last  <strong>{lastTime}</strong></span>}
-            {coverage   && <span className="tc-stat"> Permbledhje <strong>{coverage}</strong></span>}
+            {coverage   && <span className="tc-stat">Permbledhje <strong>{coverage}</strong></span>}
             <span className="tc-stat">interval <strong>5 min</strong></span>
+            {!isToday && <span className="tc-stat">📆 <strong>{selectedDate}</strong></span>}
+            {availableDates.length > 1 && (
+              <span className="tc-stat">ditë ruajtura <strong>{availableDates.length}</strong></span>
+            )}
           </div>
         )}
 
@@ -388,6 +466,29 @@ export default function TemperatureChart({ utaData, selectedUta: initialUta, onC
           })}
         </DropdownPortal>
 
+        {/* Date dropdown portal */}
+        <DropdownPortal isOpen={dateOpen} coords={dateCoords} minWidth={200} innerRef={dateDropRef}>
+          {availableDates.length === 0 ? (
+            <div className="tc-opt" style={{ color:"#334155", cursor:"default" }}>Nuk ka të dhëna</div>
+          ) : availableDates.map(d => {
+            const isAct = d === selectedDate;
+            const lbl   = formatDateLabel(d, todayStr);
+            const isT   = d === todayStr;
+            return (
+              <div key={d} className="tc-opt" style={optColorDate(isAct)}
+                onClick={() => { setSelectedDate(d); setDateOpen(false); }}>
+                <FontAwesomeIcon
+                  icon={faCalendarAlt}
+                  style={{ fontSize:10, color: isT ? "#4ade80" : "#fbbf24", flexShrink:0 }}
+                />
+                <span style={{ flex:1 }}>{lbl}</span>
+                <span style={{ fontSize:9, color:"#334155" }}>{d}</span>
+                {isAct && <FontAwesomeIcon icon={faCheck} style={{ fontSize:10, color:"#4ade80" }} />}
+              </div>
+            );
+          })}
+        </DropdownPortal>
+
         {/* CHART BOX */}
         <div className="tc-box">
           <div className="tc-boxhdr">
@@ -406,12 +507,18 @@ export default function TemperatureChart({ utaData, selectedUta: initialUta, onC
             <span style={{ fontSize:10, color:"#2d4060", whiteSpace:"nowrap" }}>{chartUta?.id}</span>
           </div>
 
-          {selectedParams.length > 0
-            ? <div className="tc-chart"><Line data={chartData} options={chartOptions} /></div>
-            : <div className="tc-empty">Zgjidh të paktën një parametër ↑</div>
-          }
+          {selectedParams.length === 0 ? (
+            <div className="tc-empty">Zgjidh të paktën një parametër ↑</div>
+          ) : todayPts.length === 0 ? (
+            <div className="tc-no-data">
+              <span className="tc-no-data-icon">📭</span>
+              <span>Nuk ka të dhëna për {dateLabel}</span>
+            </div>
+          ) : (
+            <div className="tc-chart"><Line data={chartData} options={chartOptions} /></div>
+          )}
 
-          {selectedParams.length > 0 && (
+          {selectedParams.length > 0 && todayPts.length > 0 && (
             <div className="tc-legend">
               {ALL_PARAMS.filter(p => selectedParams.includes(p.key)).map(p => (
                 <span key={p.key} className="tc-leg-item">
